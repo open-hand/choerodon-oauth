@@ -1,0 +1,19 @@
+server:
+  port: 8020
+  contextPath: /oauth
+spring:
+  application:
+    name: oauth-server
+  cloud:
+    config:
+      uri: http://localhost:8010/
+      enabled: false
+      fail-fast: true
+      retry:
+        max-attempts: 6
+        max-interval: 2000
+        multiplier: 1.1
+management:
+  port: 8021
+  security:
+    enabled: false

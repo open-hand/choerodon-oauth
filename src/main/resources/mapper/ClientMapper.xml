@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.oauth.infra.mapper.ClientMapper">
+    <select id="awesomeSelect" resultType="io.choerodon.oauth.infra.dataobject.ClientDO">
+        SELECT * FROM oauth_client WHERE organization_id = #{organizationId}
+            <if test="clientDO != null">
+                <if test="clientDO.id != null">
+                    AND id LIKE concat('%',#{clientDO.id},'%')
+                </if>
+                <if test="clientDO.name != null">
+                    AND name LIKE concat('%',#{clientDO.name},'%')
+                </if>
+                <if test="clientDO.authorizedGrantTypes != null">
+                    AND authorized_grant_types LIKE concat('%',#{clientDO.authorizedGrantTypes},'%')
+                </if>
+                <if test="clientDO.param != null">
+                    AND (
+                    id LIKE concat('%',#{clientDO.param},'%') OR
+                    name LIKE concat('%',#{clientDO.param},'%') OR
+                    authorized_grant_types LIKE concat('%',#{clientDO.param},'%')
+                    )
+                </if>
+            </if>
+    </select>
+    <select id="selectByName" resultType="io.choerodon.oauth.infra.dataobject.ClientDO">
+        SELECT * FROM oauth_client WHERE oauth_client.name = #{name}
+    </select>
+</mapper>

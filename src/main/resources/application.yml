@@ -1,0 +1,63 @@
+spring:
+  cloud:
+    stream:
+      default-binder: kafka
+      kafka:
+        binder:
+          brokers: 127.0.0.1:9092
+          zkNodes: 127.0.0.1:2181
+    bus:
+      enabled: true
+  sleuth:
+    stream:
+      enabled: true
+  datasource:
+    url: jdbc:mysql://localhost/iam_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: choerodon
+    password: 123456
+eureka:
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8000/eureka/}
+    registryFetchIntervalSeconds: 10
+mybatis:
+  mapperLocations: classpath*:/mapper/*.xml
+  configuration:
+    mapUnderscoreToCamelCase: true
+feign:
+  hystrix:
+    enabled: true
+hystrix:
+  stream:
+    queue:
+      enabled: true
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 10000
+choerodon:
+  oauth:
+    clear-token: true
+    enabled-single-login: false
+    access-token-validity-seconds: 86400
+    login:
+      field: mail,phone
+    loginPage:
+      profile: theCustomLoginPageProfile
+      title: Choerodon
+  reset-password:
+    check: true
+  default:
+    redirect:
+      url: localhost:8080/manager/swagger-ui.html
+hook:
+  token: abc
