@@ -31,7 +31,7 @@ mvn spring-boot:run
 
 ## Dependencies
 
-* MYSQL
+* MySQL
 * Kafka
 
 ## Reporting Issues
