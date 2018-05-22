@@ -7,7 +7,7 @@ This service is the authorized authentication center of the choerodon micro serv
 Add addition authorized login function (WeChat login, etc.)
 ## Requirements
 
-The oauth-server depends on the [iam-service](https://github.com/choerodon/iam-service) database, so make sure that the iam-service database is initialized before using it.
+The `oauth-server` depends on the [iam-service](https://github.com/choerodon/iam-service) database, so make sure that the `iam-service` database is initialized before using it.
 
 ## Installation and Getting Started
 
@@ -23,11 +23,12 @@ mvn spring-boot:run
 
 1. User login authorization :
     * The user completes the authorization in oauth through the username password.
-    * Oauth will produce an access_token based on the user and the authenticated client, and save it.
+    * Oauth will produce an `access_token` based on the user and the authenticated client, and save it.
 1. Access Resource Service Certification for user :
-    * The user requests carrying the access_token. After the oauth finishes checking, the request is forwarded by the gateway to the corresponding resource service.
+    * The user requests carrying the `access_token`. After the oauth finishes checking, the request is forwarded by the gateway to the corresponding resource service.
     * Return a 401 error for user request illegally and jumps to the login page to reauthorize.
-Find the information you want here.
+
+
 ## Dependencies
 
 * mysql
