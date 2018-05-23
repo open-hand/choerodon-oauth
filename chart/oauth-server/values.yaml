@@ -32,9 +32,9 @@ env:
   open:
     SPRING_CLOUD_CONFIG_ENABLED: true
     SPRING_CLOUD_CONFIG_URI: http://localhost:8010
-    SPRING_DATABASE_URL: jdbc:mysql://127.0.0.1/event_store_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
-    SPRING_DATABASE_USERNAME: username
-    SPRING_DATABASE_PASSWORD: password
+    SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1/event_store_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    SPRING_DATASOURCE_USERNAME: username
+    SPRING_DATASOURCE_PASSWORD: password
     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://register-server.io-choerodon:8000/eureka/
     SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka-0.kafka-headless.kafka.svc.cluster.local:9092,kafka-1.kafka-headless.kafka.svc.cluster.local:9092,kafka-2.kafka-headless.kafka.svc.cluster.local:9092
     SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES: zookeeper-0.zookeeper-headless.zookeeper.svc.cluster.local:2181,zookeeper-1.zookeeper-headless.zookeeper.svc.cluster.local:2181,zookeeper-2.zookeeper-headless.zookeeper.svc.cluster.local:2181
