@@ -43,7 +43,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
     @Value("${spring.application.name:oauth-server}")
     private String serviceName;
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private CustomUserDetailsServiceImpl userDetailsService;
     @Autowired
     private OrganizationRepository organizationRepository;
     @Autowired

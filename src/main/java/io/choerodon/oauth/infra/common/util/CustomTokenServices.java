@@ -55,6 +55,7 @@ public class CustomTokenServices extends DefaultTokenServices {
                 customUserDetails.setUserId(user.getId());
                 customUserDetails.setOrganizationId(user.getOrganizationId());
                 customUserDetails.setLanguage(user.getLanguage());
+                customUserDetails.setAdmin(user.getAdmin());
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         customUserDetails, "unknown", Collections.emptyList());
                 OAuth2Request request = new OAuth2Request(null, null, null, true, null, null, null, null, null);
@@ -72,6 +73,7 @@ public class CustomTokenServices extends DefaultTokenServices {
                 detail.setLanguage(userDO.getLanguage());
                 detail.setTimeZone(userDO.getTimeZone());
                 detail.setEmail(userDO.getEmail());
+                detail.setAdmin(userDO.getAdmin());
                 result.setDetails(detail);
             }
         }
