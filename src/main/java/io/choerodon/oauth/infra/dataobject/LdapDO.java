@@ -1,5 +1,6 @@
 package io.choerodon.oauth.infra.dataobject;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -7,6 +8,8 @@ import javax.persistence.Table;
 import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
+
+import java.util.Date;
 
 /**
  * @author wuguokai
@@ -21,12 +24,24 @@ public class LdapDO extends AuditDomain {
     private String name;
     private Long organizationId;
     private String serverAddress;
-    private String encryption;
-    private String status;
+    private String port;
+    private String account;
+    private String password;
+    @Column(name = "use_ssl")
+    private Boolean useSSL;
+    @Column(name = "is_enabled")
+    private Boolean enabled;
+    @Column(name = "is_syncing")
+    private Boolean syncing;
     private String baseDn;
-    private String ldapAttributeName;
-    private String domain;
-    private String description;
+    private String directoryType;
+    private String loginNameField;
+    private String realNameField;
+    private String emailField;
+    private String passwordField;
+    private String phoneField;
+    private Long totalSyncCount;
+    private Date syncBeginTime;
 
     public Long getId() {
         return id;
@@ -60,20 +75,52 @@ public class LdapDO extends AuditDomain {
         this.serverAddress = serverAddress;
     }
 
-    public String getEncryption() {
-        return encryption;
+    public String getPort() {
+        return port;
     }
 
-    public void setEncryption(String encryption) {
-        this.encryption = encryption;
+    public void setPort(String port) {
+        this.port = port;
     }
 
-    public String getStatus() {
-        return status;
+    public String getAccount() {
+        return account;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Boolean getUseSSL() {
+        return useSSL;
+    }
+
+    public void setUseSSL(Boolean useSSL) {
+        this.useSSL = useSSL;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Boolean getSyncing() {
+        return syncing;
+    }
+
+    public void setSyncing(Boolean syncing) {
+        this.syncing = syncing;
     }
 
     public String getBaseDn() {
@@ -84,27 +131,67 @@ public class LdapDO extends AuditDomain {
         this.baseDn = baseDn;
     }
 
-    public String getLdapAttributeName() {
-        return ldapAttributeName;
+    public String getDirectoryType() {
+        return directoryType;
     }
 
-    public void setLdapAttributeName(String ldapAttributeName) {
-        this.ldapAttributeName = ldapAttributeName;
+    public void setDirectoryType(String directoryType) {
+        this.directoryType = directoryType;
     }
 
-    public String getDomain() {
-        return domain;
+    public String getLoginNameField() {
+        return loginNameField;
     }
 
-    public void setDomain(String domain) {
-        this.domain = domain;
+    public void setLoginNameField(String loginNameField) {
+        this.loginNameField = loginNameField;
     }
 
-    public String getDescription() {
-        return description;
+    public String getRealNameField() {
+        return realNameField;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setRealNameField(String realNameField) {
+        this.realNameField = realNameField;
+    }
+
+    public String getEmailField() {
+        return emailField;
+    }
+
+    public void setEmailField(String emailField) {
+        this.emailField = emailField;
+    }
+
+    public String getPasswordField() {
+        return passwordField;
+    }
+
+    public void setPasswordField(String passwordField) {
+        this.passwordField = passwordField;
+    }
+
+    public String getPhoneField() {
+        return phoneField;
+    }
+
+    public void setPhoneField(String phoneField) {
+        this.phoneField = phoneField;
+    }
+
+    public Long getTotalSyncCount() {
+        return totalSyncCount;
+    }
+
+    public void setTotalSyncCount(Long totalSyncCount) {
+        this.totalSyncCount = totalSyncCount;
+    }
+
+    public Date getSyncBeginTime() {
+        return syncBeginTime;
+    }
+
+    public void setSyncBeginTime(Date syncBeginTime) {
+        this.syncBeginTime = syncBeginTime;
     }
 }
