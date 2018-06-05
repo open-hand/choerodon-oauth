@@ -9,9 +9,9 @@ image:
   pullPolicy: Always
 
 preJob:
+  appname: oauth-server
   preConfig:
     configFile: application.yml
-    appname: oauth-server
     mysql:
       host: localhost
       port: 3306
@@ -24,10 +24,10 @@ deployment:
 
 metrics:
   path: /prometheus
-  group: java-spring
+  group: spring-boot
 
 logs:
-  parser: java-spring
+  parser: spring-boot
 
 env:
   open:
