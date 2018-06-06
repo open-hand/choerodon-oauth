@@ -23,7 +23,6 @@ public class LdapUtil {
     private static final String INITIAL_CONTEXT_FACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
     private static final String SECURITY_AUTHENTICATION = "simple";
     private static final Logger LOGGER = LoggerFactory.getLogger(LdapUtil.class);
-    private static final Set<String> attributeSet = new HashSet<>(Arrays.asList("employeeNumber", "mail", "mobile"));
 
 
     private LdapUtil() {
@@ -85,6 +84,7 @@ public class LdapUtil {
      * @return userDn
      */
     public static String getUserDn(LdapContext ldapContext, LdapDO ldap, String username) {
+        Set<String> attributeSet = new HashSet<>(Arrays.asList("employeeNumber", "mail", "mobile"));
         attributeSet.add(ldap.getLoginNameField());
         attributeSet.add(ldap.getRealNameField());
         attributeSet.add(ldap.getEmailField());
@@ -140,6 +140,32 @@ public class LdapUtil {
             return false;
         }
         return true;
+    }
+
+    /**
+     * 匿名用户根据objectClass来获取一个entry返回
+     * @param ldap
+     * @param ldapContext
+     * @return
+     */
+    public static Attributes anonymousUserGetByObjectClass(LdapDO ldap, LdapContext ldapContext) {
+        SearchControls constraints = new SearchControls();
+        constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        NamingEnumeration namingEnumeration = null;
+        try {
+            namingEnumeration = ldapContext.search("", "objectClass=*", constraints);
+            while (namingEnumeration != null && namingEnumeration.hasMoreElements()) {
+                SearchResult searchResult = (SearchResult) namingEnumeration.nextElement();
+                Attributes attributes = searchResult.getAttributes();
+                if (attributes.get("objectClass") != null
+                        && attributes.get("objectClass").contains(ldap.getObjectClass())) {
+                    return attributes;
+                }
+            }
+        }catch (NamingException e) {
+            LOGGER.info("ldap search fail: {}", e);
+        }
+        return null;
     }
 
     //测试方法
