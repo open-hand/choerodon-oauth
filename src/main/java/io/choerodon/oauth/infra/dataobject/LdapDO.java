@@ -35,6 +35,7 @@ public class LdapDO extends AuditDomain {
     private Boolean syncing;
     private String baseDn;
     private String directoryType;
+    private String objectClass;
     private String loginNameField;
     private String realNameField;
     private String emailField;
@@ -81,22 +82,6 @@ public class LdapDO extends AuditDomain {
 
     public void setPort(String port) {
         this.port = port;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Boolean getUseSSL() {
@@ -193,5 +178,29 @@ public class LdapDO extends AuditDomain {
 
     public void setSyncBeginTime(Date syncBeginTime) {
         this.syncBeginTime = syncBeginTime;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getObjectClass() {
+        return objectClass;
+    }
+
+    public void setObjectClass(String objectClass) {
+        this.objectClass = objectClass;
     }
 }

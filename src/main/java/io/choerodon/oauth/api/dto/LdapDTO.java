@@ -27,6 +27,8 @@ public class LdapDTO {
     private Boolean syncing;
     private String baseDn;
     private String directoryType;
+    @NotEmpty(message = "error.ldap.objectClass.empty")
+    private String objectClass;
     private String loginNameField;
     private String realNameField;
     private String emailField;
@@ -194,5 +196,13 @@ public class LdapDTO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public String getObjectClass() {
+        return objectClass;
+    }
+
+    public void setObjectClass(String objectClass) {
+        this.objectClass = objectClass;
     }
 }
