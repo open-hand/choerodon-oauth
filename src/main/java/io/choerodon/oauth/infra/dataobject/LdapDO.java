@@ -9,7 +9,6 @@ import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
-import java.util.Date;
 
 /**
  * @author wuguokai
@@ -31,18 +30,13 @@ public class LdapDO extends AuditDomain {
     private Boolean useSSL;
     @Column(name = "is_enabled")
     private Boolean enabled;
-    @Column(name = "is_syncing")
-    private Boolean syncing;
     private String baseDn;
     private String directoryType;
     private String objectClass;
     private String loginNameField;
     private String realNameField;
     private String emailField;
-    private String passwordField;
     private String phoneField;
-    private Long totalSyncCount;
-    private Date syncBeginTime;
 
     public Long getId() {
         return id;
@@ -100,14 +94,6 @@ public class LdapDO extends AuditDomain {
         this.enabled = enabled;
     }
 
-    public Boolean getSyncing() {
-        return syncing;
-    }
-
-    public void setSyncing(Boolean syncing) {
-        this.syncing = syncing;
-    }
-
     public String getBaseDn() {
         return baseDn;
     }
@@ -148,36 +134,12 @@ public class LdapDO extends AuditDomain {
         this.emailField = emailField;
     }
 
-    public String getPasswordField() {
-        return passwordField;
-    }
-
-    public void setPasswordField(String passwordField) {
-        this.passwordField = passwordField;
-    }
-
     public String getPhoneField() {
         return phoneField;
     }
 
     public void setPhoneField(String phoneField) {
         this.phoneField = phoneField;
-    }
-
-    public Long getTotalSyncCount() {
-        return totalSyncCount;
-    }
-
-    public void setTotalSyncCount(Long totalSyncCount) {
-        this.totalSyncCount = totalSyncCount;
-    }
-
-    public Date getSyncBeginTime() {
-        return syncBeginTime;
-    }
-
-    public void setSyncBeginTime(Date syncBeginTime) {
-        this.syncBeginTime = syncBeginTime;
     }
 
     public String getAccount() {
