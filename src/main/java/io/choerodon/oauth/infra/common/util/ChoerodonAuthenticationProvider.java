@@ -43,7 +43,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
     @Value("${spring.application.name:oauth-server}")
     private String serviceName;
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private CustomUserDetailsServiceImpl userDetailsService;
     @Autowired
     private OrganizationRepository organizationRepository;
     @Autowired
@@ -142,7 +142,12 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         UserDO userDO = userService.findByLoginName(loginName);
         if (userDO.getLdap()) {
             LdapDO ldap = ldapService.queryByLoginName(loginName);
-            isPass = LdapUtil.authenticate(loginName, credentials, ldap) != null;
+            //ldap登陆，如果ldap停用或者不存在，则返回false，登录失败
+            if (ldap != null && ldap.getEnabled()) {
+                isPass = LdapUtil.authenticate(loginName, credentials, ldap) != null;
+            } else {
+                isPass = false;
+            }
         } else {
             BCryptPasswordEncoder encode = new BCryptPasswordEncoder();
             isPass = encode.matches(credentials, userPassword);

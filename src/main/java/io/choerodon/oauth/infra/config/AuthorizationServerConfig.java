@@ -17,7 +17,7 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import io.choerodon.oauth.infra.common.util.CustomClientDetailsService;
 import io.choerodon.oauth.infra.common.util.CustomTokenServices;
 import io.choerodon.oauth.infra.common.util.CustomTokenStore;
-import io.choerodon.oauth.infra.common.util.CustomUserDetailsService;
+import io.choerodon.oauth.infra.common.util.CustomUserDetailsServiceImpl;
 
 
 /**
@@ -28,14 +28,14 @@ import io.choerodon.oauth.infra.common.util.CustomUserDetailsService;
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
     private AuthenticationManager authenticationManager;
     private CustomClientDetailsService clientDetailsService;
-    private CustomUserDetailsService userDetailsService;
+    private CustomUserDetailsServiceImpl userDetailsService;
     private DataSource dataSource;
     private CustomTokenStore tokenStore;
     private OauthProperties choerodonOauthProperties;
 
     public AuthorizationServerConfig(AuthenticationManager authenticationManager,
                                      CustomClientDetailsService clientDetailsService,
-                                     CustomUserDetailsService userDetailsService,
+                                     CustomUserDetailsServiceImpl userDetailsService,
                                      DataSource dataSource,
                                      CustomTokenStore tokenStore,
                                      OauthProperties choerodonOauthProperties) {

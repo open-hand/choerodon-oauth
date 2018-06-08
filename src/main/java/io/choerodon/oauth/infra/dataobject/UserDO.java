@@ -1,6 +1,7 @@
 package io.choerodon.oauth.infra.dataobject;
 
 import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -31,15 +32,25 @@ public class UserDO extends AuditDomain {
     private String phone;
     private String imageUrl;
     private String profilePhoto;
-    private Boolean isEnabled;
-    private Boolean isLdap;
+    @Column(name = "is_enabled")
+    private Boolean enabled;
+    @Column(name = "is_ldap")
+    private Boolean ldap;
     private String language;
     private String timeZone;
     private Date lastPasswordUpdatedAt;
     private Date lastLoginAt;
-    private Boolean isLocked; //连续登录错误次数超出规定次数后是否锁定账户
+    /**
+     * 连续登录错误次数超出规定次数后是否锁定账户
+     */
+    @Column(name = "is_locked")
+    private Boolean locked;
+
     private Date lockedUntilAt;
     private Integer passwordAttempt;
+
+    @Column(name = "is_admin")
+    private Boolean admin;
 
     public Long getId() {
         return id;
@@ -113,14 +124,6 @@ public class UserDO extends AuditDomain {
         this.profilePhoto = profilePhoto;
     }
 
-    public Boolean getLdap() {
-        return isLdap;
-    }
-
-    public void setLdap(Boolean ldap) {
-        isLdap = ldap;
-    }
-
     public String getLanguage() {
         return language;
     }
@@ -170,18 +173,34 @@ public class UserDO extends AuditDomain {
     }
 
     public Boolean getEnabled() {
-        return isEnabled;
+        return enabled;
     }
 
     public void setEnabled(Boolean enabled) {
-        isEnabled = enabled;
+        this.enabled = enabled;
+    }
+
+    public Boolean getLdap() {
+        return ldap;
+    }
+
+    public void setLdap(Boolean ldap) {
+        this.ldap = ldap;
     }
 
     public Boolean getLocked() {
-        return isLocked;
+        return locked;
     }
 
     public void setLocked(Boolean locked) {
-        isLocked = locked;
+        this.locked = locked;
+    }
+
+    public Boolean getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        this.admin = admin;
     }
 }

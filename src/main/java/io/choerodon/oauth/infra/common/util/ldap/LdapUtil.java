@@ -10,8 +10,6 @@ import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +23,6 @@ public class LdapUtil {
     private static final String INITIAL_CONTEXT_FACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
     private static final String SECURITY_AUTHENTICATION = "simple";
     private static final Logger LOGGER = LoggerFactory.getLogger(LdapUtil.class);
-    private static final Set<String> attributeSet = new HashSet<>(Arrays.asList("employeeNumber", "mail", "mobile"));
 
 
     private LdapUtil() {
@@ -42,7 +39,7 @@ public class LdapUtil {
      */
     public static LdapContext authenticate(String userName, String password, LdapDO ldap) {
         String userDn;
-        LdapContext ldapContext = ldapConnect(ldap.getServerAddress(), ldap.getBaseDn());
+        LdapContext ldapContext = ldapConnect(ldap.getServerAddress(), ldap.getBaseDn(), ldap.getPort(), ldap.getUseSSL());
         if (ldapContext == null) {
             return null;
         }
@@ -58,13 +55,18 @@ public class LdapUtil {
      *
      * @param url    ldap url
      * @param baseDn ldap baseDn
+     * @param port ldap port
      * @return 返回ldapContext
      */
-    public static LdapContext ldapConnect(String url, String baseDn) {
-        HashMap<String, String> ldapEnv = new HashMap<>();
+    public static LdapContext ldapConnect(String url, String baseDn, String port, Boolean useSSL) {
+        HashMap<String, String> ldapEnv = new HashMap<>(5);
         ldapEnv.put(Context.INITIAL_CONTEXT_FACTORY, INITIAL_CONTEXT_FACTORY);
-        ldapEnv.put(Context.PROVIDER_URL, url + "/" + baseDn);//LDAP server
+        ldapEnv.put(Context.PROVIDER_URL, url + ":"+ port + "/" + baseDn);
         ldapEnv.put(Context.SECURITY_AUTHENTICATION, SECURITY_AUTHENTICATION);
+        if (useSSL) {
+            // Specify SSL
+            ldapEnv.put(Context.SECURITY_PROTOCOL, "ssl");
+        }
         try {
             return new InitialLdapContext(new Hashtable<>(ldapEnv), null);
         } catch (NamingException e) {
@@ -82,12 +84,42 @@ public class LdapUtil {
      * @return userDn
      */
     public static String getUserDn(LdapContext ldapContext, LdapDO ldap, String username) {
-        SearchControls constraints = new SearchControls();
+        Set<String> attributeSet = initAttributeSet(ldap);
+        NamingEnumeration namingEnumeration = getNamingEnumeration(ldapContext, username, attributeSet);
         StringBuilder userDn = new StringBuilder();
+        while (namingEnumeration != null && namingEnumeration.hasMoreElements()) {
+            //maybe more than one element
+            Object obj = namingEnumeration.nextElement();
+            if (obj instanceof SearchResult) {
+                SearchResult searchResult = (SearchResult) obj;
+                userDn.append(searchResult.getName()).append(",").append(ldap.getBaseDn());
+            }
+        }
+        return userDn.toString();
+    }
+
+    private static Set<String> initAttributeSet(LdapDO ldap) {
+        Set<String> attributeSet = new HashSet<>(Arrays.asList("employeeNumber", "mail", "mobile"));
+        if (ldap.getLoginNameField() != null) {
+            attributeSet.add(ldap.getLoginNameField());
+        }
+        if (ldap.getRealNameField() != null) {
+            attributeSet.add(ldap.getRealNameField());
+        }
+        if (ldap.getEmailField() != null) {
+            attributeSet.add(ldap.getEmailField());
+        }
+        if (ldap.getPhoneField() != null) {
+            attributeSet.add(ldap.getPhoneField());
+        }
+        return attributeSet;
+    }
+
+    public static NamingEnumeration getNamingEnumeration(LdapContext ldapContext, String username, Set<String> attributeSet) {
+        SearchControls constraints = new SearchControls();
         constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
         NamingEnumeration namingEnumeration = null;
         try {
-            attributeSet.add(ldap.getLdapAttributeName());
             Iterator<String> iterator = attributeSet.iterator();
             while (iterator.hasNext()) {
                 namingEnumeration = ldapContext.search("",
@@ -99,15 +131,7 @@ public class LdapUtil {
         } catch (NamingException e) {
             LOGGER.info("ldap search fail: {}", e);
         }
-        while (namingEnumeration != null && namingEnumeration.hasMoreElements()) {
-            //maybe more than one element
-            Object obj = namingEnumeration.nextElement();
-            if (obj instanceof SearchResult) {
-                SearchResult searchResult = (SearchResult) obj;
-                userDn.append(searchResult.getName()).append(",").append(ldap.getBaseDn());
-            }
-        }
-        return userDn.toString();
+        return namingEnumeration;
     }
 
     /**
@@ -128,6 +152,32 @@ public class LdapUtil {
             return false;
         }
         return true;
+    }
+
+    /**
+     * 匿名用户根据objectClass来获取一个entry返回
+     * @param ldap
+     * @param ldapContext
+     * @return
+     */
+    public static Attributes anonymousUserGetByObjectClass(LdapDO ldap, LdapContext ldapContext) {
+        SearchControls constraints = new SearchControls();
+        constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        NamingEnumeration namingEnumeration = null;
+        try {
+            namingEnumeration = ldapContext.search("", "objectClass=*", constraints);
+            while (namingEnumeration != null && namingEnumeration.hasMoreElements()) {
+                SearchResult searchResult = (SearchResult) namingEnumeration.nextElement();
+                Attributes attributes = searchResult.getAttributes();
+                if (attributes.get("objectClass") != null
+                        && attributes.get("objectClass").contains(ldap.getObjectClass())) {
+                    return attributes;
+                }
+            }
+        }catch (NamingException e) {
+            LOGGER.info("ldap search fail: {}", e);
+        }
+        return null;
     }
 
     //测试方法

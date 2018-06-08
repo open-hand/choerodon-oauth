@@ -1,22 +1,21 @@
 package io.choerodon.oauth.infra.common.util;
 
-import java.util.Collections;
-
+import io.choerodon.core.oauth.CustomUserDetails;
+import io.choerodon.oauth.domain.service.IUserService;
+import io.choerodon.oauth.infra.dataobject.UserDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import io.choerodon.core.oauth.CustomUserDetails;
-import io.choerodon.oauth.domain.service.IUserService;
-import io.choerodon.oauth.infra.dataobject.UserDO;
+import java.util.Collections;
 
 /**
  * @author wuguokai
  */
 @Service
 @SuppressWarnings("unchecked")
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private IUserService userService;
@@ -37,15 +36,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         details.setTimeZone(userDO.getTimeZone());
         details.setEmail(userDO.getEmail());
         details.setOrganizationId(userDO.getOrganizationId());
-        /*
-        if(userDO.getAdditionInfo() != null){
-            try{
-                details.setAdditionInfo(MAPPER.readValue(userDO.getAdditionInfo(), Map.class));
-            }catch (Exception e){
-                LOGGER.warn("parser addition info error: {}", e);
-            }
-        }
-        */
+        details.setAdmin(userDO.getAdmin());
         return details;
     }
 }

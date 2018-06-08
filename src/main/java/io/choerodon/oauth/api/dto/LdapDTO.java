@@ -1,19 +1,36 @@
 package io.choerodon.oauth.api.dto;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * @author wuguokai
  */
 public class LdapDTO {
     private Long id;
+    @NotEmpty(message = "error.ldap.name.empty")
     private String name;
+    @NotNull(message = "error.ldap.organizationId.null")
     private Long organizationId;
+    @NotEmpty(message = "error.ldap.serverAddress.empty")
     private String serverAddress;
-    private String encryption;
-    private String status;
+    @NotEmpty(message = "error.ldap.port.empty")
+    private String port;
+    @NotEmpty(message = "error.ldap.account.empty")
+    private String account;
+    @NotEmpty(message = "error.ldap.password.empty")
+    private String password;
+    private Boolean useSSL;
+    private Boolean enabled;
     private String baseDn;
-    private String ldapAttributeName;
-    private String domain;
-    private String description;
+    private String directoryType;
+    @NotEmpty(message = "error.ldap.objectClass.empty")
+    private String objectClass;
+    private String loginNameField;
+    private String realNameField;
+    private String emailField;
+    private String phoneField;
     private Long objectVersionNumber;
 
     public Long getId() {
@@ -48,20 +65,44 @@ public class LdapDTO {
         this.serverAddress = serverAddress;
     }
 
-    public String getEncryption() {
-        return encryption;
+    public String getPort() {
+        return port;
     }
 
-    public void setEncryption(String encryption) {
-        this.encryption = encryption;
+    public void setPort(String port) {
+        this.port = port;
     }
 
-    public String getStatus() {
-        return status;
+    public String getAccount() {
+        return account;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Boolean getUseSSL() {
+        return useSSL;
+    }
+
+    public void setUseSSL(Boolean useSSL) {
+        this.useSSL = useSSL;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getBaseDn() {
@@ -72,28 +113,44 @@ public class LdapDTO {
         this.baseDn = baseDn;
     }
 
-    public String getLdapAttributeName() {
-        return ldapAttributeName;
+    public String getDirectoryType() {
+        return directoryType;
     }
 
-    public void setLdapAttributeName(String ldapAttributeName) {
-        this.ldapAttributeName = ldapAttributeName;
+    public void setDirectoryType(String directoryType) {
+        this.directoryType = directoryType;
     }
 
-    public String getDomain() {
-        return domain;
+    public String getLoginNameField() {
+        return loginNameField;
     }
 
-    public void setDomain(String domain) {
-        this.domain = domain;
+    public void setLoginNameField(String loginNameField) {
+        this.loginNameField = loginNameField;
     }
 
-    public String getDescription() {
-        return description;
+    public String getRealNameField() {
+        return realNameField;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setRealNameField(String realNameField) {
+        this.realNameField = realNameField;
+    }
+
+    public String getEmailField() {
+        return emailField;
+    }
+
+    public void setEmailField(String emailField) {
+        this.emailField = emailField;
+    }
+
+    public String getPhoneField() {
+        return phoneField;
+    }
+
+    public void setPhoneField(String phoneField) {
+        this.phoneField = phoneField;
     }
 
     public Long getObjectVersionNumber() {
@@ -102,5 +159,13 @@ public class LdapDTO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public String getObjectClass() {
+        return objectClass;
+    }
+
+    public void setObjectClass(String objectClass) {
+        this.objectClass = objectClass;
     }
 }
