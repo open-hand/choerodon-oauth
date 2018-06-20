@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+import io.choerodon.oauth.infra.enums.LoginExceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -45,7 +46,6 @@ import io.choerodon.oauth.infra.dataobject.UserDO;
 @Controller
 public class OauthController {
     private static final String ATTRIBUTE_NAME = "SPRING_SECURITY_SAVED_REQUEST";
-    private static final String USERNAME_NOT_FOUND_OR_PASSWORD_WRONG_EXCEPTION = "usernameNotFoundOrPasswordIsWrong";
     private static final String INDEX_TEMPLATE_NAME = "index-default";
     private static final Logger LOGGER = LoggerFactory.getLogger(OauthController.class);
     private static Map<String, String> loginWayMap = new LinkedHashMap<>();
@@ -102,7 +102,7 @@ public class OauthController {
         List<String> loginWays = initLoginWay();
         String returnPage = INDEX_TEMPLATE_NAME;
         Map<String, String> error = new HashMap<>();
-        error.put(USERNAME_NOT_FOUND_OR_PASSWORD_WRONG_EXCEPTION, null);
+        error.put(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(), null);
         // error.put("passwordWrong",null);
         model.addAttribute("title", loginTitle);
         model.addAttribute("loginWays", String.join("/", loginWays));
@@ -152,7 +152,10 @@ public class OauthController {
         }
         //数据库中无该用户
         if (userDO == null) {
-            error.put(USERNAME_NOT_FOUND_OR_PASSWORD_WRONG_EXCEPTION, messageSource.getMessage(USERNAME_NOT_FOUND_OR_PASSWORD_WRONG_EXCEPTION, null, "登录名不存在或登录名与密码错误", currentLocale));
+            error.put(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
+                    messageSource.getMessage(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
+                            null,
+                            "登录名不存在或登录名与密码错误", currentLocale));
             model.addAllAttributes(error);
             return returnPage;
         }

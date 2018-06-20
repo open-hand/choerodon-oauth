@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import io.choerodon.oauth.infra.enums.LoginExceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -65,7 +66,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         //获取当前登录用户信息
         UserDO userDO = userService.findUser(username);
         if (userDO == null) {
-            throw new AuthenticationServiceException("usernameNotFoundOrPasswordIsWrong");
+            throw new AuthenticationServiceException(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value());
         }
         OrganizationDO org = organizationRepository.selectByPrimaryKey(userDO.getOrganizationId());
         BasePasswordPolicyDO passwordPolicy = basePasswordPolicyMapper.findByOrgId(org.getId());
@@ -86,7 +87,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
             userDO = userService.findUser(username);
         }
         if (!userDO.getEnabled()) {
-            throw new AuthenticationServiceException("userNotActive");
+            throw new AuthenticationServiceException(LoginExceptions.USER_IS_NOT_ACTIVATED.value());
         }
         //判断用户是否被锁
         long nowTime = System.currentTimeMillis();
@@ -96,7 +97,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
                 Long lockUntilTime = lockDate.getTime();
                 if (lockUntilTime > nowTime) {
                     //账号处于被锁期间,返回登录页面
-                    throw new CustomAuthenticationException("accountLocked",
+                    throw new CustomAuthenticationException(LoginExceptions.ACCOUNT_IS_LOCKED.value(),
                             new SimpleDateFormat(DATA_FORMAT).format(lockDate));
                 } else {
                     //给用户解锁
@@ -128,9 +129,9 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
             BeanUtils.copyProperties(userDO, baseUserDO);
             if (passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUserDO)) {
                 if (captchaCode == null || captcha == null || "".equals(captcha)) {
-                    throw new AuthenticationServiceException("captchaNull");
+                    throw new AuthenticationServiceException(LoginExceptions.CAPTCHA_IS_NULL.value());
                 } else if (!captchaCode.equalsIgnoreCase(captcha)) {
-                    throw new AuthenticationServiceException("captchaWrong");
+                    throw new AuthenticationServiceException(LoginExceptions.CAPTCHA_IS_WRONG.value());
                 }
             }
         }
@@ -160,6 +161,6 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         if (organizationDO == null) {
             throw new AuthenticationServiceException("error.organization.not.exist");
         }
-        throw new AuthenticationServiceException("usernameNotFoundOrPasswordIsWrong");
+        throw new AuthenticationServiceException(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value());
     }
 }
