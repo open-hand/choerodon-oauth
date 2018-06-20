@@ -112,7 +112,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails,
                                                   UsernamePasswordAuthenticationToken authentication) {
-        String rawPassword = (String) authentication.getCredentials();
+        String rawPassword = new String(PasswordDecode.decode((String) authentication.getCredentials()));
         String username = userDetails.getUsername();
         String passWd = userDetails.getPassword();
 
