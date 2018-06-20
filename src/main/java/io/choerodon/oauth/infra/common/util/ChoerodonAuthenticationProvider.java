@@ -129,7 +129,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
             if (passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUserDO)) {
                 if (captchaCode == null || captcha == null || "".equals(captcha)) {
                     throw new AuthenticationServiceException("captchaNull");
-                } else if (!captchaCode.equals(captcha)) {
+                } else if (!captchaCode.equalsIgnoreCase(captcha)) {
                     throw new AuthenticationServiceException("captchaWrong");
                 }
             }
