@@ -20,21 +20,19 @@ $(function() {
         $("#usernameIsNullMsg").css('display','none');
         $("#passwordIsNullMsg").css('display','none');
         $("#usernameOrPasswordNotFoundMsg").html("");
-        if ($("#username").val() == '') {
+        var username = $("#username").val();
+        var password = $("#password").val();
+        if (username == '') {
             $("#usernameIsNullMsg").css('display','block');
             return;
         }
-        if ($("#password").val() == '') {
+        if (password == '') {
             $("#passwordIsNullMsg").css('display','block');
             return;
-        var username = document.getElementById("username");
-        var password = document.getElementById("password");
-        if (username !== '' && password !== '') {
-            password.value = encode(password.value);
-            $('.login-form').submit();
         }
+        $("#password").val(encode(password));
         $('.login-form').submit();
-    }})
+    })
     document.onkeydown = function(event) {
         var e = event || window.event;
         if (e && e.keyCode == 13) {
@@ -44,15 +42,15 @@ $(function() {
 })
 $("#list").hide();
 
-function encode(inputPassword) {
+function encode(password) {
     var output = "";
     var chr1, chr2, chr3 = "";
     var enc1, enc2, enc3, enc4 = "";
     var i = 0;
     do {
-        chr1 = input.charCodeAt(i++);
-        chr2 = input.charCodeAt(i++);
-        chr3 = input.charCodeAt(i++);
+        chr1 = password.charCodeAt(i++);
+        chr2 = password.charCodeAt(i++);
+        chr3 = password.charCodeAt(i++);
         enc1 = chr1 >> 2;
         enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
         enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
@@ -66,7 +64,7 @@ function encode(inputPassword) {
             + keyStr.charAt(enc3) + keyStr.charAt(enc4);
         chr1 = chr2 = chr3 = "";
         enc1 = enc2 = enc3 = enc4 = "";
-    } while (i < input.length);
+    } while (i < password.length);
     return output;
 }
 
