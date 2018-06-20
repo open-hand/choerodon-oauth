@@ -34,7 +34,7 @@ $(function() {
             $('.login-form').submit();
         }
         $('.login-form').submit();
-    })
+    }})
     document.onkeydown = function(event) {
         var e = event || window.event;
         if (e && e.keyCode == 13) {
