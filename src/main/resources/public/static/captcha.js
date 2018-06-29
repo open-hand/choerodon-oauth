@@ -20,8 +20,8 @@ $(function() {
         $("#usernameIsNullMsg").css('display','none');
         $("#passwordIsNullMsg").css('display','none');
         $("#usernameOrPasswordNotFoundMsg").html("");
-        var username = $("#username").val();
-        var password = $("#password").val();
+        var username = $.trim($("#username").val());
+        var password = $.trim($("#password").val());
         if (username == '') {
             $("#usernameIsNullMsg").css('display','block');
             return;
