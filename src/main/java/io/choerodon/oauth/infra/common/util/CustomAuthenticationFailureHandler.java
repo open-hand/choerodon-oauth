@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import io.choerodon.oauth.infra.enums.LoginExceptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -44,8 +45,13 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
             }
 
         }
+        String message = null;
+        if (exception != null) {
+            message = exception.getMessage();
+        }
         UserDO userDO = iUserService.findUser(username);
-        if (userDO != null) {
+        if (userDO != null
+                && LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value().equalsIgnoreCase(message)) {
             //TODO 在开启密码策略并且有错误次数时才记录
             loginRecord.loginError(userDO.getId());
         }

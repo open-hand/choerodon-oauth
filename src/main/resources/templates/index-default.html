@@ -320,8 +320,10 @@
             <div th:text="${usernameNotFound}" class="alert alert-error"></div>
             <div th:text="${userNotActive}" class="alert alert-error"></div>
             <div th:text="${accountLocked}" class="alert alert-error"></div>
-            <div th:text="${usernameNotFoundOrPasswordIsWrong}" class="alert alert-error"></div>
+            <div th:text="${usernameNotFoundOrPasswordIsWrong}" class="alert alert-error" id="usernameOrPasswordNotFoundMsg"></div>
             <div th:text="${passwordExpire}" class="alert alert-error"></div>
+            <div class="alert alert-error" id="usernameIsNullMsg" style="display: none">请输入登录账号</div>
+            <div class="alert alert-error" id="passwordIsNullMsg" style="display: none">请输入密码</div>
             <!-- 是否开启验证码-->
             <div th:if="${isNeedCaptcha}" class="control-group">
                 <label class="control-label ">
@@ -353,7 +355,6 @@
             <div style="clear:both"></div>
         </div>
     </form>
-
 </div>
 
 <div style="position:absolute;z-index:999;bottom:10px;color:#555;font-size: 12px;">Copyright © The choerodon Author®.

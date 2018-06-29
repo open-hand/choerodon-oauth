@@ -55,13 +55,13 @@ public class LdapUtil {
      *
      * @param url    ldap url
      * @param baseDn ldap baseDn
-     * @param port ldap port
+     * @param port   ldap port
      * @return 返回ldapContext
      */
     public static LdapContext ldapConnect(String url, String baseDn, String port, Boolean useSSL) {
         HashMap<String, String> ldapEnv = new HashMap<>(5);
         ldapEnv.put(Context.INITIAL_CONTEXT_FACTORY, INITIAL_CONTEXT_FACTORY);
-        ldapEnv.put(Context.PROVIDER_URL, url + ":"+ port + "/" + baseDn);
+        ldapEnv.put(Context.PROVIDER_URL, url + ":" + port + "/" + baseDn);
         ldapEnv.put(Context.SECURITY_AUTHENTICATION, SECURITY_AUTHENTICATION);
         if (useSSL) {
             // Specify SSL
@@ -85,6 +85,12 @@ public class LdapUtil {
      */
     public static String getUserDn(LdapContext ldapContext, LdapDO ldap, String username) {
         Set<String> attributeSet = initAttributeSet(ldap);
+        if (attributeSet.contains("")) {
+            attributeSet.remove("");
+        }
+        if (attributeSet.contains(null)) {
+            attributeSet.remove(null);
+        }
         NamingEnumeration namingEnumeration = getNamingEnumeration(ldapContext, username, attributeSet);
         StringBuilder userDn = new StringBuilder();
         while (namingEnumeration != null && namingEnumeration.hasMoreElements()) {
@@ -156,6 +162,7 @@ public class LdapUtil {
 
     /**
      * 匿名用户根据objectClass来获取一个entry返回
+     *
      * @param ldap
      * @param ldapContext
      * @return
@@ -174,7 +181,7 @@ public class LdapUtil {
                     return attributes;
                 }
             }
-        }catch (NamingException e) {
+        } catch (NamingException e) {
             LOGGER.info("ldap search fail: {}", e);
         }
         return null;

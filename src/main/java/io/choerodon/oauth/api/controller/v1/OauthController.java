@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+import io.choerodon.oauth.infra.enums.LoginExceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -45,7 +46,6 @@ import io.choerodon.oauth.infra.dataobject.UserDO;
 @Controller
 public class OauthController {
     private static final String ATTRIBUTE_NAME = "SPRING_SECURITY_SAVED_REQUEST";
-    private static final String ERROR_1 = "usernameNotFoundOrPasswordIsWrong";
     private static final String INDEX_TEMPLATE_NAME = "index-default";
     private static final Logger LOGGER = LoggerFactory.getLogger(OauthController.class);
     private static Map<String, String> loginWayMap = new LinkedHashMap<>();
@@ -99,19 +99,10 @@ public class OauthController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(HttpServletRequest request, Model model, HttpSession session, @RequestParam(required = false) String device) {
-        List<String> loginWays = new ArrayList<>();
-        loginWays.add("用户名");
-        if (extraLoginWays != null && extraLoginWays.length > 0) {
-            for (String way : extraLoginWays) {
-                String hint = loginWayMap.get(way);
-                if (!StringUtils.isEmpty(hint)) {
-                    loginWays.add(hint);
-                }
-            }
-        }
+        List<String> loginWays = initLoginWay();
         String returnPage = INDEX_TEMPLATE_NAME;
         Map<String, String> error = new HashMap<>();
-        error.put(ERROR_1, null);
+        error.put(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(), null);
         // error.put("passwordWrong",null);
         model.addAttribute("title", loginTitle);
         model.addAttribute("loginWays", String.join("/", loginWays));
@@ -122,12 +113,12 @@ public class OauthController {
                 returnPage = "index-" + loginProfile;
             }
         }
-        if (device != null && device.equals("mobile")) {
+        if ("mobile".equals(device)) {
             returnPage = "index-mobile";
         }
         String username = (String) session.getAttribute("username");
         String errorCode = (String) session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION");
-        Object[] parmas = (Object[]) session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION_PARAMS");
+        Object[] params = (Object[]) session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION_PARAMS");
         session.removeAttribute("SPRING_SECURITY_LAST_EXCEPTION");
         session.removeAttribute("username");
         session.removeAttribute("SPRING_SECURITY_LAST_EXCEPTION_PARAMS");
@@ -136,11 +127,11 @@ public class OauthController {
         if (session.getAttribute(ATTRIBUTE_NAME) != null) {
             clients = ((DefaultSavedRequest) session.getAttribute(ATTRIBUTE_NAME)).getParameterValues("client_id");
         }
-        OrganizationDTO org = null;
+        OrganizationDTO organization = null;
         if (clients != null && clients.length != 0) {
             ClientE clientE = clientRepository.selectByName(clients[0]);
             if (clientE != null) {
-                org = organizationService.queryOrganizationById(clientE.getOrganizationId());
+                organization = organizationService.queryOrganizationById(clientE.getOrganizationId());
             }
         }
         if (username == null) {
@@ -148,31 +139,48 @@ public class OauthController {
         }
         UserDO userDO = iUserService.findUser(username);
         if (userDO != null) {
-            org = organizationService.queryOrganizationById(userDO.getOrganizationId());
+            organization = organizationService.queryOrganizationById(userDO.getOrganizationId());
         }
-        if (org != null) {
+        if (organization != null) {
             BaseUserDO baseUserDO = new BaseUserDO();
                 if (userDO != null) {
                     BeanUtils.copyProperties(userDO, baseUserDO);
-                    BasePasswordPolicyDO passwordPolicy = basePasswordPolicyMapper.findByOrgId(org.getId());
-                    model.addAttribute("isNeedCaptcha",
-                            passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUserDO));
+                    BasePasswordPolicyDO passwordPolicy = basePasswordPolicyMapper.findByOrgId(organization.getId());
+                    boolean showCaptcha = !userDO.getLocked() && passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUserDO);
+                    model.addAttribute("isNeedCaptcha",showCaptcha);
                 }
         }
         //数据库中无该用户
         if (userDO == null) {
-            error.put(ERROR_1, messageSource.getMessage(ERROR_1, null, "登录名不存在或登录名与密码错误", currentLocale));
+            error.put(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
+                    messageSource.getMessage(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
+                            null,
+                            "登录名不存在或登录名与密码错误", currentLocale));
             model.addAllAttributes(error);
             return returnPage;
         }
-        if (org == null) {
+        if (organization == null) {
             error.put("loginFailed", messageSource.getMessage("error.organization.not.exist", null,"用户或客户端所属组织不存在", currentLocale));
         }
         if (errorCode != null) {
-            error.put(errorCode, messageSource.getMessage(errorCode, parmas, "登录失败", currentLocale));
+            error.put(errorCode, messageSource.getMessage(errorCode, params, "登录失败", currentLocale));
         }
         model.addAllAttributes(error);
         return returnPage;
+    }
+
+    private List<String> initLoginWay() {
+        List<String> loginWays = new ArrayList<>();
+        loginWays.add("用户名");
+        if (extraLoginWays != null && extraLoginWays.length > 0) {
+            for (String way : extraLoginWays) {
+                String hint = loginWayMap.get(way);
+                if (!StringUtils.isEmpty(hint)) {
+                    loginWays.add(hint);
+                }
+            }
+        }
+        return loginWays;
     }
 
     @RequestMapping(value = "/public/captcha")
