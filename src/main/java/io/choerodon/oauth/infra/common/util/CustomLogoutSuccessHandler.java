@@ -1,6 +1,7 @@
 package io.choerodon.oauth.infra.common.util;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,13 +40,23 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             request.getSession().invalidate();
             String value = request.getHeader("Authorization");
             if (value != null) {
-                value = value.replace("Bearer ", "");
-                //TODO 清除oauth2.0 的 access_token
+                value = value.replace("Bearer", "").trim();
                 LOGGER.info("clear access token :{} ", value);
                 customTokenStore.removeAccessToken(value);
                 customTokenStore.removeRefreshToken(value);
             }
         }
+        String redirect = request.getHeader("Redirect") != null ? request.getHeader("Redirect").toLowerCase() : null;
+        if (redirect != null) {
+            response.setStatus(200);
+            if (redirect.equals("no redirect")) {
+                String data = "ok";
+                OutputStream stream = response.getOutputStream();
+                stream.write(data.getBytes("UTF-8"));
+                return;
+            }
+        }
+
         String referer = request.getHeader("Referer");
         if (referer != null) {
             response.sendRedirect(referer);
