@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.stereotype.Component;
 
 import io.choerodon.oauth.infra.config.OauthProperties;
@@ -32,11 +33,15 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     @Value("server.contextPath:")
     private String contentPath;
 
+    @Autowired
+    private RedisOperationsSessionRepository redisOperationsSessionRepository;
+
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
                                 Authentication authentication) throws IOException {
         LOGGER.info("Logout:{}", authentication != null ? authentication.getName() : "null");
         if (oauthProperties.isClearToken()) {
+            String sessionId = request.getSession().getId();
             request.getSession().invalidate();
             String value = request.getHeader("Authorization");
             if (value != null) {
@@ -44,6 +49,8 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
                 LOGGER.info("clear access token :{} ", value);
                 customTokenStore.removeAccessToken(value);
                 customTokenStore.removeRefreshToken(value);
+
+                redisOperationsSessionRepository.delete(sessionId);
             }
         }
         String redirect = request.getHeader("Redirect") != null ? request.getHeader("Redirect").toLowerCase() : null;

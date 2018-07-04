@@ -18,10 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,7 +34,6 @@ import io.choerodon.oauth.domain.oauth.entity.ClientE;
 import io.choerodon.oauth.domain.repository.ClientRepository;
 import io.choerodon.oauth.domain.service.IUserService;
 import io.choerodon.oauth.domain.service.TokenService;
-import io.choerodon.oauth.infra.common.util.CustomTokenStore;
 import io.choerodon.oauth.infra.dataobject.AccessTokenDO;
 import io.choerodon.oauth.infra.dataobject.UserDO;
 import io.choerodon.oauth.infra.enums.LoginExceptions;
@@ -75,7 +70,6 @@ public class OauthController {
     private PasswordPolicyManager passwordPolicyManager;
     private ClientRepository clientRepository;
     private TokenService tokenService;
-    private CustomTokenStore tokenStore;
 
     @Autowired
     private IUserService iUserService;
@@ -88,7 +82,6 @@ public class OauthController {
             OrganizationService organizationService,
             DefaultKaptcha captchaProducer,
             TokenService tokenService,
-            CustomTokenStore tokenStore,
             PasswordPolicyManager passwordPolicyManager,
             BasePasswordPolicyMapper basePasswordPolicyMapper,
             ClientRepository clientRepository) {
@@ -96,7 +89,6 @@ public class OauthController {
         this.organizationService = organizationService;
         this.captchaProducer = captchaProducer;
         this.tokenService = tokenService;
-        this.tokenStore = tokenStore;
         this.passwordPolicyManager = passwordPolicyManager;
         this.basePasswordPolicyMapper = basePasswordPolicyMapper;
         this.clientRepository = clientRepository;
@@ -221,18 +213,6 @@ public class OauthController {
                 }
             }
         }
-    }
-
-    @ResponseBody
-    @GetMapping("/api/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null) {
-            String tokenValue = authHeader.replace("Bearer", "").trim();
-            LOGGER.info("clear access token :{} ", tokenValue);
-            tokenStore.removeAccessToken(tokenValue);
-        }
-        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
     @ResponseBody
