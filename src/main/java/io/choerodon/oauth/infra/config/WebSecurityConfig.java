@@ -35,7 +35,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/login", "/public/**", "/password/**", "/static/**",
-                        "/forgetPassword/**", "/wechat/**", "/env")
+                        "/forgetPassword/**", "/wechat/**",
+                        "/env", "/autoconfig", "/beans", "/dump", "/health", "/info", "/metrics", "/mappings", "/trace")
                 // .antMatchers("/oauth/**")
                 .permitAll()
                 .anyRequest()
