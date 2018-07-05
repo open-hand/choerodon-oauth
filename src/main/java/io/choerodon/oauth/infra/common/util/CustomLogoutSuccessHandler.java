@@ -37,12 +37,11 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
         LOGGER.info("Logout:{}", authentication != null ? authentication.getName() : "null");
         if (oauthProperties.isClearToken()) {
             request.getSession().invalidate();
-            String value = request.getHeader("Authorization");
-            if (value != null) {
-                value = value.replace("Bearer", "").trim();
-                LOGGER.info("clear access token :{} ", value);
-                customTokenStore.removeAccessToken(value);
-                customTokenStore.removeRefreshToken(value);
+            String token = extractHeaderToken(request);
+            if (token != null) {
+                LOGGER.info("clear access token :{} ", token);
+                customTokenStore.removeAccessToken(token);
+                customTokenStore.removeRefreshToken(token);
             }
         }
 
@@ -54,4 +53,11 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
         }
     }
 
+    protected String extractHeaderToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null) {
+            return header.replace("Bearer", "").trim();
+        }
+        return request.getParameter("access_token");
+    }
 }
