@@ -18,6 +18,7 @@ import io.choerodon.oauth.infra.common.util.CustomClientDetailsService;
 import io.choerodon.oauth.infra.common.util.CustomTokenServices;
 import io.choerodon.oauth.infra.common.util.CustomTokenStore;
 import io.choerodon.oauth.infra.common.util.CustomUserDetailsServiceImpl;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 
 /**
@@ -72,4 +73,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         return customTokenServices;
     }
 
+    @Bean
+    public InternalResourceViewResolver internalResourceViewResolverBean() {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setPrefix("classpath:/templates/");
+        viewResolver.setSuffix(".html");
+        viewResolver.setRedirectHttp10Compatible(false);
+        return viewResolver;
+    }
 }
