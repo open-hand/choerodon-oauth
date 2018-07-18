@@ -28,8 +28,8 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     @Autowired
     private CustomTokenStore customTokenStore;
 
-    @Value("server.contextPath:")
-    private String contentPath;
+    @Value("${choerodon.oauth.loginPage.domain:/login}")
+    private String loginDomain;
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -49,7 +49,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
         if (referer != null) {
             response.sendRedirect(referer);
         } else {
-            response.sendRedirect(contentPath + "/login");
+            response.sendRedirect(loginDomain);
         }
     }
 

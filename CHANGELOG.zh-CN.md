@@ -1,6 +1,11 @@
 # Changelog
 
 这个项目的所有显著变化都将被记录在这个文件中。
+## [0.8.0] - 2018-07-19
+
+### 新增
+
+- 添加`choerodon.oauth.loginPage.domain` 配置，改配置可以指定`/login` 页面的地址，支持`https`。eg.:`https://api.example.com/oauth/login`
 
 ## [0.7.0] - 2018-06-22
 
