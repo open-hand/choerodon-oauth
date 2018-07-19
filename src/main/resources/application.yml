@@ -57,6 +57,7 @@ choerodon:
     loginPage:
       profile: theCustomLoginPageProfile
       title: Choerodon
+      domain: /login
   reset-password:
     check: true
   default:

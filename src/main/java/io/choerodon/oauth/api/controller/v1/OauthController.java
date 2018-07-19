@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-import io.choerodon.oauth.infra.enums.LoginExceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -37,6 +36,7 @@ import io.choerodon.oauth.domain.service.IUserService;
 import io.choerodon.oauth.domain.service.TokenService;
 import io.choerodon.oauth.infra.dataobject.AccessTokenDO;
 import io.choerodon.oauth.infra.dataobject.UserDO;
+import io.choerodon.oauth.infra.enums.LoginExceptions;
 
 
 /**
@@ -66,23 +66,25 @@ public class OauthController {
     private MessageSource messageSource;
     private OrganizationService organizationService;
     private DefaultKaptcha captchaProducer;
-
-    private TokenService tokenService;
-
     private BasePasswordPolicyMapper basePasswordPolicyMapper;
     private PasswordPolicyManager passwordPolicyManager;
     private ClientRepository clientRepository;
+    private TokenService tokenService;
+
     @Autowired
     private IUserService iUserService;
 
     @Value("${choerodon.default.redirect.url:/}")
     private String defaultUrl;
 
-    public OauthController(MessageSource messageSource, OrganizationService organizationService,
-                           DefaultKaptcha captchaProducer, TokenService tokenService,
-                           PasswordPolicyManager passwordPolicyManager,
-                           BasePasswordPolicyMapper basePasswordPolicyMapper,
-                           ClientRepository clientRepository) {
+    public OauthController(
+            MessageSource messageSource,
+            OrganizationService organizationService,
+            DefaultKaptcha captchaProducer,
+            TokenService tokenService,
+            PasswordPolicyManager passwordPolicyManager,
+            BasePasswordPolicyMapper basePasswordPolicyMapper,
+            ClientRepository clientRepository) {
         this.messageSource = messageSource;
         this.organizationService = organizationService;
         this.captchaProducer = captchaProducer;
@@ -143,12 +145,12 @@ public class OauthController {
         }
         if (organization != null) {
             BaseUserDO baseUserDO = new BaseUserDO();
-                if (userDO != null) {
-                    BeanUtils.copyProperties(userDO, baseUserDO);
-                    BasePasswordPolicyDO passwordPolicy = basePasswordPolicyMapper.findByOrgId(organization.getId());
-                    boolean showCaptcha = !userDO.getLocked() && passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUserDO);
-                    model.addAttribute("isNeedCaptcha",showCaptcha);
-                }
+            if (userDO != null) {
+                BeanUtils.copyProperties(userDO, baseUserDO);
+                BasePasswordPolicyDO passwordPolicy = basePasswordPolicyMapper.findByOrgId(organization.getId());
+                boolean showCaptcha = !userDO.getLocked() && passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUserDO);
+                model.addAttribute("isNeedCaptcha", showCaptcha);
+            }
         }
         //数据库中无该用户
         if (userDO == null) {
@@ -160,7 +162,7 @@ public class OauthController {
             return returnPage;
         }
         if (organization == null) {
-            error.put("loginFailed", messageSource.getMessage("error.organization.not.exist", null,"用户或客户端所属组织不存在", currentLocale));
+            error.put("loginFailed", messageSource.getMessage("error.organization.not.exist", null, "用户或客户端所属组织不存在", currentLocale));
         }
         if (errorCode != null) {
             error.put(errorCode, messageSource.getMessage(errorCode, params, "登录失败", currentLocale));

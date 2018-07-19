@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import io.choerodon.oauth.infra.enums.LoginExceptions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import io.choerodon.oauth.core.password.record.LoginRecord;
 import io.choerodon.oauth.domain.service.IUserService;
 import io.choerodon.oauth.infra.dataobject.UserDO;
+import io.choerodon.oauth.infra.enums.LoginExceptions;
 import io.choerodon.oauth.infra.exception.CustomAuthenticationException;
 
 /**
@@ -24,6 +25,8 @@ import io.choerodon.oauth.infra.exception.CustomAuthenticationException;
  */
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
+    @Value("${choerodon.oauth.loginPage.domain:/login}")
+    private String loginDomain;
     @Autowired
     private LoginRecord loginRecord;
     @Autowired
@@ -56,6 +59,6 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
             loginRecord.loginError(userDO.getId());
         }
         RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-        redirectStrategy.sendRedirect(request, response, "/login?username=" + username);
+        redirectStrategy.sendRedirect(request, response, loginDomain + "?username=" + username);
     }
 }

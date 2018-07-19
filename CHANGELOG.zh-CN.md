@@ -1,6 +1,22 @@
 # Changelog
 
 这个项目的所有显著变化都将被记录在这个文件中。
+## [0.8.0] - 2018-07-19
+
+### 新增
+
+- 添加`choerodon.oauth.loginPage.domain` 配置，改配置可以指定`/login` 页面的地址，支持`https`。eg.:`https://api.example.com/oauth/login`
+- 添加用户登出接口，并移除用户redis里的session
+- 添加https支持
+ 
+### 修改
+
+- 修改了移动端登陆页面
+- security放开管理端口url
+- 优化了点击登陆后密码位数变长的问题
+- 优化登陆页面为不使用缓存
+
+
 
 ## [0.7.0] - 2018-06-22
 

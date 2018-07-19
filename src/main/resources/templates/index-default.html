@@ -2,10 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <meta http-equiv="Expires" content="0"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Cache-control" content="no-cache"/>
+    <meta http-equiv="Cache" content="no-cache"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <link rel="shortcut icon" href="static/icon.ico" type="image/x-icon"/>
-    <script src="static/jquery.min.js"></script>
-    <script src="static/captcha.js"></script>
+    <script th:src="@{static/jquery.min.js(t=${new java.util.Date().getTime()})}"></script>
+    <script th:src="@{static/captcha.js(t=${new java.util.Date().getTime()})}"></script>
     <title th:text="${title}"></title>
     <style>
         html, body {
@@ -308,7 +312,7 @@
                 密码 </label>
             <div class="controls">
                 <div th:class="${usernameNotFoundOrPasswordIsWrong}? 'input-icon left inputError' : 'input-icon left inputNormal'">
-                    <input class="m-wrap " id="password" type="password" autocomplete="off" name="password"
+                    <input class="m-wrap " id="password" type="password" autocomplete="off"
                            placeholder="请输入密码"/>
                     <script type="text/javascript">
                         $('#password').on('focus', function () {
@@ -320,7 +324,8 @@
             <div th:text="${usernameNotFound}" class="alert alert-error"></div>
             <div th:text="${userNotActive}" class="alert alert-error"></div>
             <div th:text="${accountLocked}" class="alert alert-error"></div>
-            <div th:text="${usernameNotFoundOrPasswordIsWrong}" class="alert alert-error" id="usernameOrPasswordNotFoundMsg"></div>
+            <div th:text="${usernameNotFoundOrPasswordIsWrong}" class="alert alert-error"
+                 id="usernameOrPasswordNotFoundMsg"></div>
             <div th:text="${passwordExpire}" class="alert alert-error"></div>
             <div class="alert alert-error" id="usernameIsNullMsg" style="display: none">请输入登录账号</div>
             <div class="alert alert-error" id="passwordIsNullMsg" style="display: none">请输入密码</div>
@@ -348,6 +353,7 @@
             <div th:text="${captchaWrong}" class="alert alert-error"></div>
             <div th:text="${captchaNull}" class="alert alert-error"></div>
             <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
+            <input id="md5_password" type="hidden" name="password"/>
             <div class="form-actisons" style="margin-top: 40px">
                 <button type="button" class="btn">登录</button>
             </div>

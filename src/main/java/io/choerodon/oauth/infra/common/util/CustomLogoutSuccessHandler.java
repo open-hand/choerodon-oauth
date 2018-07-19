@@ -28,8 +28,8 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     @Autowired
     private CustomTokenStore customTokenStore;
 
-    @Value("server.contextPath:")
-    private String contentPath;
+    @Value("${choerodon.oauth.loginPage.domain:/login}")
+    private String loginDomain;
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -37,21 +37,27 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
         LOGGER.info("Logout:{}", authentication != null ? authentication.getName() : "null");
         if (oauthProperties.isClearToken()) {
             request.getSession().invalidate();
-            String value = request.getHeader("Authorization");
-            if (value != null) {
-                value = value.replace("Bearer ", "");
-                //TODO 清除oauth2.0 的 access_token
-                LOGGER.info("clear access token :{} ", value);
-                customTokenStore.removeAccessToken(value);
-                customTokenStore.removeRefreshToken(value);
+            String token = extractHeaderToken(request);
+            if (token != null) {
+                LOGGER.info("clear access token :{} ", token);
+                customTokenStore.removeAccessToken(token);
+                customTokenStore.removeRefreshToken(token);
             }
         }
+
         String referer = request.getHeader("Referer");
         if (referer != null) {
             response.sendRedirect(referer);
         } else {
-            response.sendRedirect(contentPath + "/login");
+            response.sendRedirect(loginDomain);
         }
     }
 
+    protected String extractHeaderToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null) {
+            return header.replace("Bearer", "").trim();
+        }
+        return request.getParameter("access_token");
+    }
 }
