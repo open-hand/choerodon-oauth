@@ -1,6 +1,13 @@
 # Changelog
 
 这个项目的所有显著变化都将被记录在这个文件中。
+
+## [0.8.1] - 2018-07-26
+
+### 修改
+
+- 修改`choerodon.oauth.loginPage.domain`为`choerodon.oauth.login.domain` 。
+
 ## [0.8.0] - 2018-07-19
 
 ### 新增

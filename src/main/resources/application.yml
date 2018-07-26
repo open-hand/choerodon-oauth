@@ -54,10 +54,10 @@ choerodon:
     access-token-validity-seconds: 86400
     login:
       field: mail,phone
+      domain: /login
     loginPage:
       profile: theCustomLoginPageProfile
       title: Choerodon
-      domain: /login
   reset-password:
     check: true
   default:

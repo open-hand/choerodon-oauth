@@ -25,7 +25,7 @@ import io.choerodon.oauth.infra.exception.CustomAuthenticationException;
  */
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
-    @Value("${choerodon.oauth.loginPage.domain:/login}")
+    @Value("${choerodon.oauth.login.domain:/login}")
     private String loginDomain;
     @Autowired
     private LoginRecord loginRecord;

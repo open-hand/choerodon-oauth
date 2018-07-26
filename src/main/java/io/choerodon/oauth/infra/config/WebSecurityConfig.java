@@ -17,7 +17,7 @@ import io.choerodon.oauth.infra.common.util.*;
 @Configuration
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Value("${choerodon.oauth.loginPage.domain:/login}")
+    @Value("${choerodon.oauth.login.domain:/login}")
     private String loginDomain;
 
     @Autowired

@@ -28,7 +28,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     @Autowired
     private CustomTokenStore customTokenStore;
 
-    @Value("${choerodon.oauth.loginPage.domain:/login}")
+    @Value("${choerodon.oauth.login.domain:/login}")
     private String loginDomain;
 
     @Override

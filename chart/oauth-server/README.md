@@ -80,4 +80,4 @@ env.open.SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES | zookeeper地址
 env.open.SPRING_REDIS_HOST | redis地址
 env.open.SPRING_REDIS_PORT | redis 端口
 env.open.CHOERODON_DEFAULT_REDIRECT_URL | 登录后默认跳转地址，应该为前台的域名地址
-env.open.CHOERODON_OAUTH_LOGINPAGH_DOMAIN: | 登录页面地址，可以带协议配置为https://api.example.com/oauth/login，默认为/login
+env.open.CHOERODON_OAUTH_LOGIN_DOMAIN: | 登录页面地址，可以带协议配置为https://api.example.com/oauth/login，默认为/login
