@@ -1,7 +1,6 @@
 package io.choerodon.oauth.infra.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -17,9 +16,6 @@ import io.choerodon.oauth.infra.common.util.*;
 @Configuration
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Value("${choerodon.oauth.login.domain:/login}")
-    private String loginDomain;
-
     @Autowired
     private CustomAuthenticationDetailSource detailSource;
     @Autowired
@@ -46,7 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 .and()
                 .formLogin()
-                .loginPage(loginDomain)
+                .loginPage("/login")
                 .authenticationDetailsSource(detailSource)
                 .failureHandler(customAuthenticationFailureHandler)
                 .successHandler(customAuthenticationSuccessHandler)
