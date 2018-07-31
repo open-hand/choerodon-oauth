@@ -2,11 +2,13 @@ package io.choerodon.oauth.infra.common.util;
 
 import java.io.IOException;
 import java.util.Date;
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -29,6 +31,14 @@ public class CustomAuthenticationSuccessHandler extends
 
     @Autowired
     private LoginRecord loginRecord;
+
+    @Value("${choerodon.default.redirect.url:/}")
+    private String defaultUrl;
+
+    @PostConstruct
+    private void init (){
+        this.setDefaultTargetUrl(defaultUrl);
+    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
