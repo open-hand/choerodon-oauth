@@ -56,7 +56,6 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         UserDO userDO = iUserService.findUser(username);
         if (userDO != null
                 && LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value().equalsIgnoreCase(message)) {
-            //TODO 在开启密码策略并且有错误次数时才记录
             loginRecord.loginError(userDO.getId());
         }
         RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();

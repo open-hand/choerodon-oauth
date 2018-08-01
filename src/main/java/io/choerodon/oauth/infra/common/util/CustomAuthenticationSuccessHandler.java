@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 
 import io.choerodon.oauth.core.password.record.LoginRecord;
@@ -65,10 +63,7 @@ public class CustomAuthenticationSuccessHandler extends
         HttpSession session = request.getSession(false);
         if (session != null) {
             saveRequest = (DefaultSavedRequest) session.getAttribute("SPRING_SECURITY_SAVED_REQUEST");
-            System.out.println("session is not null !!");
         }
-
-        SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
         try {
             if (saveRequest == null) {
                 super.onAuthenticationSuccess(request, response, authentication);
@@ -82,7 +77,7 @@ public class CustomAuthenticationSuccessHandler extends
                 portStringField.set(saveRequest, 443);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         super.onAuthenticationSuccess(request, response, authentication);
