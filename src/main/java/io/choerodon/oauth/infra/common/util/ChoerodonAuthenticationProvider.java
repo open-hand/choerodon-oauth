@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import io.choerodon.oauth.infra.enums.LoginExceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -31,6 +30,7 @@ import io.choerodon.oauth.infra.common.util.ldap.LdapUtil;
 import io.choerodon.oauth.infra.dataobject.LdapDO;
 import io.choerodon.oauth.infra.dataobject.OrganizationDO;
 import io.choerodon.oauth.infra.dataobject.UserDO;
+import io.choerodon.oauth.infra.enums.LoginExceptions;
 import io.choerodon.oauth.infra.exception.CustomAuthenticationException;
 
 /**
@@ -61,8 +61,9 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
     private IUserService userService;
 
     @Override
-    protected UserDetails retrieveUser(String username,
-                                       UsernamePasswordAuthenticationToken authentication) {
+    protected UserDetails retrieveUser(
+            String username,
+            UsernamePasswordAuthenticationToken authentication) {
         //获取当前登录用户信息
         UserDO userDO = userService.findUser(username);
         if (userDO == null) {

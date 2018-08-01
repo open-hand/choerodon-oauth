@@ -1,14 +1,15 @@
 package io.choerodon.oauth.infra.common.util;
 
-import io.choerodon.core.oauth.CustomUserDetails;
-import io.choerodon.oauth.domain.service.IUserService;
-import io.choerodon.oauth.infra.dataobject.UserDO;
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import io.choerodon.core.oauth.CustomUserDetails;
+import io.choerodon.oauth.domain.service.IUserService;
+import io.choerodon.oauth.infra.dataobject.UserDO;
 
 /**
  * @author wuguokai
@@ -29,8 +30,8 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) {
         UserDO userDO = userService.findUser(username);
-        CustomUserDetails details
-                = new CustomUserDetails(userDO.getLoginName(), userDO.getPassword(), Collections.emptyList());
+        CustomUserDetails details = new CustomUserDetails(
+                userDO.getLoginName(), userDO.getPassword(), Collections.emptyList());
         details.setUserId(userDO.getId());
         details.setLanguage(userDO.getLanguage());
         details.setTimeZone(userDO.getTimeZone());

@@ -17,8 +17,8 @@ import io.choerodon.oauth.infra.common.util.*;
 @Configuration
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Value("${choerodon.oauth.login.domain:/login}")
-    private String loginDomain;
+    @Value("${choerodon.oauth.login.path:/login}")
+    private String loginPath;
     @Autowired
     private CustomAuthenticationDetailSource detailSource;
     @Autowired
@@ -45,7 +45,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 .and()
                 .formLogin()
-                .loginPage(loginDomain)
+                .loginPage(loginPath)
                 .loginProcessingUrl("/login")
                 .authenticationDetailsSource(detailSource)
                 .failureHandler(customAuthenticationFailureHandler)

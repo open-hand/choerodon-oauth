@@ -2,6 +2,16 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
+## [0.8.2] - 2018-08-1
+
+### 新增
+
+- 添加`choerodon.oauth.login.ssl` 配置，该配置用于支持`choerodon.oauth.login.path` 协议为`https` 时的处理。默认为`false`。
+
+### 修改
+
+- 修改`choerodon.oauth.login.domain`为`choerodon.oauth.login.path` 。
+
 ## [0.8.1] - 2018-07-26
 
 ### 修改

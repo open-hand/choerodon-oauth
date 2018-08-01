@@ -49,10 +49,10 @@ public class CustomAuthenticationSuccessHandler extends
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        Authentication authentication)
-            throws IOException, ServletException {
+    public void onAuthenticationSuccess(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication) throws IOException, ServletException {
 
         String username = request.getParameter("username");
         UserDO userDO = userService.findUser(username);
@@ -70,10 +70,10 @@ public class CustomAuthenticationSuccessHandler extends
 
         SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
         try {
-            if(saveRequest == null) {
+            if (saveRequest == null) {
                 super.onAuthenticationSuccess(request, response, authentication);
             }
-            if(useSSL) {
+            if (useSSL) {
                 Field schemeField = DefaultSavedRequest.class.getDeclaredField("scheme");
                 schemeField.setAccessible(true);
                 schemeField.set(saveRequest, "https");
