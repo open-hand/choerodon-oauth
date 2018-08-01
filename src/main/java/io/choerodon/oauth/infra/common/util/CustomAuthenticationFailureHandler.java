@@ -25,17 +25,18 @@ import io.choerodon.oauth.infra.exception.CustomAuthenticationException;
  */
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
-    @Value("${choerodon.oauth.login.domain:/login}")
-    private String loginDomain;
+    @Value("${choerodon.oauth.login.path:/login}")
+    private String loginPath;
     @Autowired
     private LoginRecord loginRecord;
     @Autowired
     private IUserService iUserService;
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                                        AuthenticationException exception) throws IOException,
-            ServletException {
+    public void onAuthenticationFailure(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AuthenticationException exception) throws IOException, ServletException {
         String username = request.getParameter("username");
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -59,6 +60,6 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
             loginRecord.loginError(userDO.getId());
         }
         RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-        redirectStrategy.sendRedirect(request, response, loginDomain + "?username=" + username);
+        redirectStrategy.sendRedirect(request, response, loginPath + "?username=" + username);
     }
 }

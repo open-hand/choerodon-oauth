@@ -1,5 +1,9 @@
 package io.choerodon.oauth.api.controller.v1;
 
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -10,10 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.Map;
 
 import io.choerodon.oauth.api.dto.RegisterFormDTO;
 import io.choerodon.oauth.app.service.PasswordForgetService;
@@ -109,7 +109,7 @@ public class PasswordController {
      * @return 验证信息
      */
     @RequestMapping(value = "/password/reset", method = RequestMethod.POST)
-     @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<String> resetPassword(HttpServletRequest request) {
         HttpSession session = request.getSession();
         Long userId = (Long) session.getAttribute("userId");

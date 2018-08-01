@@ -13,12 +13,12 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import io.choerodon.oauth.infra.common.util.CustomClientDetailsService;
 import io.choerodon.oauth.infra.common.util.CustomTokenServices;
 import io.choerodon.oauth.infra.common.util.CustomTokenStore;
 import io.choerodon.oauth.infra.common.util.CustomUserDetailsServiceImpl;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 
 /**
@@ -34,12 +34,13 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private CustomTokenStore tokenStore;
     private OauthProperties choerodonOauthProperties;
 
-    public AuthorizationServerConfig(AuthenticationManager authenticationManager,
-                                     CustomClientDetailsService clientDetailsService,
-                                     CustomUserDetailsServiceImpl userDetailsService,
-                                     DataSource dataSource,
-                                     CustomTokenStore tokenStore,
-                                     OauthProperties choerodonOauthProperties) {
+    public AuthorizationServerConfig(
+            AuthenticationManager authenticationManager,
+            CustomClientDetailsService clientDetailsService,
+            CustomUserDetailsServiceImpl userDetailsService,
+            DataSource dataSource,
+            CustomTokenStore tokenStore,
+            OauthProperties choerodonOauthProperties) {
         this.authenticationManager = authenticationManager;
         this.clientDetailsService = clientDetailsService;
         this.userDetailsService = userDetailsService;

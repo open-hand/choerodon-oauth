@@ -28,12 +28,14 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     @Autowired
     private CustomTokenStore customTokenStore;
 
-    @Value("${choerodon.oauth.login.domain:/login}")
-    private String loginDomain;
+    @Value("${choerodon.oauth.login.path:/login}")
+    private String loginPath;
 
     @Override
-    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
-                                Authentication authentication) throws IOException {
+    public void onLogoutSuccess(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication) throws IOException {
         LOGGER.info("Logout:{}", authentication != null ? authentication.getName() : "null");
         if (oauthProperties.isClearToken()) {
             request.getSession().invalidate();
@@ -49,7 +51,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
         if (referer != null) {
             response.sendRedirect(referer);
         } else {
-            response.sendRedirect(loginDomain);
+            response.sendRedirect(loginPath);
         }
     }
 
