@@ -23,7 +23,7 @@ $(function() {
             $("#passwordIsNullMsg").css('display','block');
             return;
         }
-        $("#password").val(encode(password));
+        $("#md5_password").val(encode(password));
         $('.login-form').submit();
     })
     document.onkeydown = function(event) {
