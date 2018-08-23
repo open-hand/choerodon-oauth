@@ -16,9 +16,9 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Component;
 
+import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.core.password.record.LoginRecord;
-import io.choerodon.oauth.domain.service.IUserService;
-import io.choerodon.oauth.infra.dataobject.UserDO;
+import io.choerodon.oauth.domain.entity.UserE;
 
 
 /**
@@ -30,7 +30,7 @@ public class CustomAuthenticationSuccessHandler extends
         SavedRequestAwareAuthenticationSuccessHandler {
 
     @Autowired
-    private IUserService userService;
+    private UserService userService;
 
     @Autowired
     private LoginRecord loginRecord;
@@ -53,11 +53,11 @@ public class CustomAuthenticationSuccessHandler extends
             Authentication authentication) throws IOException, ServletException {
 
         String username = request.getParameter("username");
-        UserDO userDO = userService.findUser(username);
-        userDO.setLastLoginAt(new Date());
-        userDO.setPasswordAttempt(0);
-        userService.updateByPrimaryKeySelective(userDO);
-        loginRecord.loginSuccess(userDO.getId());
+        UserE user = userService.queryByLoginField(username);
+        user.setLastLoginAt(new Date());
+        user.setPasswordAttempt(0);
+        userService.updateSelective(user);
+        loginRecord.loginSuccess(user.getId());
 
         DefaultSavedRequest saveRequest = null;
         HttpSession session = request.getSession(false);

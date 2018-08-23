@@ -4,7 +4,6 @@ import java.util.*;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
@@ -13,8 +12,7 @@ import javax.naming.ldap.LdapContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.choerodon.oauth.infra.dataobject.LdapDO;
-import io.choerodon.oauth.infra.dataobject.UserDO;
+import io.choerodon.oauth.domain.entity.LdapE;
 
 /**
  * @author wuguokai
@@ -37,7 +35,7 @@ public class LdapUtil {
      * @param ldap     ldap配置
      * @return 返回认证结果
      */
-    public static LdapContext authenticate(String userName, String password, LdapDO ldap) {
+    public static LdapContext authenticate(String userName, String password, LdapE ldap) {
         String userDn;
         LdapContext ldapContext = ldapConnect(ldap.getServerAddress(), ldap.getBaseDn(), ldap.getPort(), ldap.getUseSSL());
         if (ldapContext == null) {
@@ -83,7 +81,7 @@ public class LdapUtil {
      * @param username    用户名
      * @return userDn
      */
-    public static String getUserDn(LdapContext ldapContext, LdapDO ldap, String username) {
+    public static String getUserDn(LdapContext ldapContext, LdapE ldap, String username) {
         Set<String> attributeSet = initAttributeSet(ldap);
         if (attributeSet.contains("")) {
             attributeSet.remove("");
@@ -104,7 +102,7 @@ public class LdapUtil {
         return userDn.toString();
     }
 
-    private static Set<String> initAttributeSet(LdapDO ldap) {
+    private static Set<String> initAttributeSet(LdapE ldap) {
         Set<String> attributeSet = new HashSet<>(Arrays.asList("employeeNumber", "mail", "mobile"));
         if (ldap.getLoginNameField() != null) {
             attributeSet.add(ldap.getLoginNameField());
@@ -158,71 +156,5 @@ public class LdapUtil {
             return false;
         }
         return true;
-    }
-
-    /**
-     * 匿名用户根据objectClass来获取一个entry返回
-     *
-     * @param ldap
-     * @param ldapContext
-     * @return
-     */
-    public static Attributes anonymousUserGetByObjectClass(LdapDO ldap, LdapContext ldapContext) {
-        SearchControls constraints = new SearchControls();
-        constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        NamingEnumeration namingEnumeration = null;
-        try {
-            namingEnumeration = ldapContext.search("", "objectClass=*", constraints);
-            while (namingEnumeration != null && namingEnumeration.hasMoreElements()) {
-                SearchResult searchResult = (SearchResult) namingEnumeration.nextElement();
-                Attributes attributes = searchResult.getAttributes();
-                if (attributes.get("objectClass") != null
-                        && attributes.get("objectClass").contains(ldap.getObjectClass())) {
-                    return attributes;
-                }
-            }
-        } catch (NamingException e) {
-            LOGGER.info("ldap search fail: {}", e);
-        }
-        return null;
-    }
-
-    //测试方法
-    public static UserDO getUserFromLdap(LdapContext ldapContext, String email) {
-        SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        String filter = "mail=" + email;
-        NamingEnumeration<SearchResult> namingEnumeration = null;
-        try {
-            if (ldapContext != null) {
-                namingEnumeration = ldapContext.search("", filter, searchControls);
-            }
-        } catch (NamingException e) {
-            LOGGER.info("ldap search fail: {}", e);
-        }
-        if (namingEnumeration != null && namingEnumeration.hasMoreElements()) {
-            SearchResult searchResult = namingEnumeration.nextElement();
-            Attributes attributes = searchResult.getAttributes();
-            System.out.println(attributes);
-            UserDO user = new UserDO();
-            user.setOrganizationId(1L);
-            try {
-                user.setLoginName(attributes.get("sn").get().toString());
-                user.setRealName(attributes.get("displayName").get().toString());
-                user.setEmail(attributes.get("mail").get().toString());
-                user.setPhone(attributes.get("mobile").get().toString());
-            } catch (NamingException e) {
-                LOGGER.info("user set fail: {}", e);
-
-            }
-
-            user.setEnabled(true);
-            user.setLanguage("zh_CN");
-            user.setTimeZone("CTT");
-            user.setPassword("unknown password");
-            user.setLocked(false);
-            return user;
-        }
-        return null;
     }
 }

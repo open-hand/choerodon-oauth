@@ -5,6 +5,8 @@ package io.choerodon.oauth.infra.enums;
  */
 public enum LoginExceptions {
 
+    USER_NAME_NOT_FOUND("usernameNotFound"),
+
     USER_IS_NOT_ACTIVATED("userNotActive"),
 
     ACCOUNT_IS_LOCKED("accountLocked"),
@@ -13,7 +15,11 @@ public enum LoginExceptions {
 
     CAPTCHA_IS_WRONG("captchaWrong"),
 
-    USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG("usernameNotFoundOrPasswordIsWrong");
+    USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG("usernameNotFoundOrPasswordIsWrong"),
+
+    ORGANIZATION_NOT_EXIST("organizationNotExist"),
+
+    ORGANIZATION_NOT_ENABLE("organizationNotEnable");
 
     private final String value;
 

@@ -14,9 +14,9 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
+import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.core.password.record.LoginRecord;
-import io.choerodon.oauth.domain.service.IUserService;
-import io.choerodon.oauth.infra.dataobject.UserDO;
+import io.choerodon.oauth.domain.entity.UserE;
 import io.choerodon.oauth.infra.enums.LoginExceptions;
 import io.choerodon.oauth.infra.exception.CustomAuthenticationException;
 
@@ -30,7 +30,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Autowired
     private LoginRecord loginRecord;
     @Autowired
-    private IUserService iUserService;
+    private UserService userService;
 
     @Override
     public void onAuthenticationFailure(
@@ -53,10 +53,10 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         if (exception != null) {
             message = exception.getMessage();
         }
-        UserDO userDO = iUserService.findUser(username);
-        if (userDO != null
+        UserE user = userService.queryByLoginField(username);
+        if (user != null
                 && LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value().equalsIgnoreCase(message)) {
-            loginRecord.loginError(userDO.getId());
+            loginRecord.loginError(user.getId());
         }
         RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
         redirectStrategy.sendRedirect(request, response, loginPath + "?username=" + username);

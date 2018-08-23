@@ -1,37 +1,42 @@
-package io.choerodon.oauth.api.dto;
+package io.choerodon.oauth.domain.entity;
 
-import javax.validation.constraints.NotNull;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import io.choerodon.mybatis.annotation.ModifyAudit;
+import io.choerodon.mybatis.annotation.VersionAudit;
+import io.choerodon.mybatis.domain.AuditDomain;
+
 
 /**
  * @author wuguokai
  */
-public class LdapDTO {
+@VersionAudit
+@ModifyAudit
+@Table(name = "oauth_ldap")
+public class LdapE extends AuditDomain {
+    @Id
+    @GeneratedValue
     private Long id;
-    @NotEmpty(message = "error.ldap.name.empty")
     private String name;
-    @NotNull(message = "error.ldap.organizationId.null")
     private Long organizationId;
-    @NotEmpty(message = "error.ldap.serverAddress.empty")
     private String serverAddress;
-    @NotEmpty(message = "error.ldap.port.empty")
     private String port;
-    @NotEmpty(message = "error.ldap.account.empty")
     private String account;
-    @NotEmpty(message = "error.ldap.password.empty")
     private String password;
+    @Column(name = "use_ssl")
     private Boolean useSSL;
+    @Column(name = "is_enabled")
     private Boolean enabled;
     private String baseDn;
     private String directoryType;
-    @NotEmpty(message = "error.ldap.objectClass.empty")
     private String objectClass;
     private String loginNameField;
     private String realNameField;
     private String emailField;
     private String phoneField;
-    private Long objectVersionNumber;
 
     public Long getId() {
         return id;
@@ -71,22 +76,6 @@ public class LdapDTO {
 
     public void setPort(String port) {
         this.port = port;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Boolean getUseSSL() {
@@ -153,12 +142,20 @@ public class LdapDTO {
         this.phoneField = phoneField;
     }
 
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
+    public String getAccount() {
+        return account;
     }
 
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getObjectClass() {

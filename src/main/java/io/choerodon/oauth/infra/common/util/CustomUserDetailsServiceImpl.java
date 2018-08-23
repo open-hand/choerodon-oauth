@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import io.choerodon.core.oauth.CustomUserDetails;
-import io.choerodon.oauth.domain.service.IUserService;
-import io.choerodon.oauth.infra.dataobject.UserDO;
+import io.choerodon.oauth.api.service.UserService;
+import io.choerodon.oauth.domain.entity.UserE;
 
 /**
  * @author wuguokai
@@ -19,7 +19,7 @@ import io.choerodon.oauth.infra.dataobject.UserDO;
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private IUserService userService;
+    private UserService userService;
 
     /**
      * 通过用户名加载用户对象
@@ -29,15 +29,15 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) {
-        UserDO userDO = userService.findUser(username);
+        UserE user = userService.queryByLoginField(username);
         CustomUserDetails details = new CustomUserDetails(
-                userDO.getLoginName(), userDO.getPassword(), Collections.emptyList());
-        details.setUserId(userDO.getId());
-        details.setLanguage(userDO.getLanguage());
-        details.setTimeZone(userDO.getTimeZone());
-        details.setEmail(userDO.getEmail());
-        details.setOrganizationId(userDO.getOrganizationId());
-        details.setAdmin(userDO.getAdmin());
+                user.getLoginName(), user.getPassword(), Collections.emptyList());
+        details.setUserId(user.getId());
+        details.setLanguage(user.getLanguage());
+        details.setTimeZone(user.getTimeZone());
+        details.setEmail(user.getEmail());
+        details.setOrganizationId(user.getOrganizationId());
+        details.setAdmin(user.getAdmin());
         return details;
     }
 }

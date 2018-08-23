@@ -56,13 +56,11 @@ choerodon:
       field: mail,phone
       path: /login
       ssl: false
-    loginPage:
-      profile: theCustomLoginPageProfile
-      title: Choerodon
+    loginPage.title: Choerodon
   reset-password:
     check: true
   default:
     redirect:
-      url: localhost:8080/manager/swagger-ui.html
+      url: http://localhost:8080/manager/swagger-ui.html
 hook:
   token: abc

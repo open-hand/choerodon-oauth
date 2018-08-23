@@ -55,14 +55,6 @@
             padding-right: 42px;
         }
 
-        .content1 {
-            padding-bottom: 50px;
-        }
-
-        .content2 {
-            padding-bottom: 0px;
-        }
-
         .login #content .form-title {
             font-weight: 300;
             margin-bottom: 25px;
@@ -93,24 +85,12 @@
             color: rgba(0, 0, 0, 0.87);
         }
 
-        .logoleftfont {
-            color: #0374dc;
-            font-size: 20px;
-            margin-left: 16.5px;
-        }
 
         .input-icon {
             border-width: 1px;
             border-style: solid;
         }
 
-        .inputNormal {
-            border-color: rgba(0, 0, 0, 0.26);
-        }
-
-        .inputError {
-            border-color: red;
-        }
 
         .input-icon.left i {
             color: #ccc;
@@ -212,29 +192,10 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        .fa-user:before {
-            content: "\f007";
-        }
-
-        .fa-user-md:before {
-            content: "\f0f0";
-        }
-
-        .fa-lock:before {
-            content: "\f023";
-        }
-
         .fa-refresh:before {
             content: "\f021";
         }
 
-        .fa-arrow-right:before {
-            content: "\f061";
-        }
-
-        .fa-align-justify:before {
-            content: "\f039";
-        }
 
         .arrow {
             float: right;
@@ -290,7 +251,6 @@
     </style>
 </head>
 <body class="login">
-<!-- <img src="static/logo3.jpg" class="logoleft" /> -->
 <div th:class="${isNeedCaptcha} ? 'content1' : 'content2'" id="content">
     <div style="display: flex;justify-content: center;margin-top: 50px">
         <img src="static/choerodon_logo_color.svg" class="pIcon"/>
@@ -324,6 +284,7 @@
             <div th:text="${usernameNotFound}" class="alert alert-error"></div>
             <div th:text="${userNotActive}" class="alert alert-error"></div>
             <div th:text="${accountLocked}" class="alert alert-error"></div>
+            <div th:text="${organizationNotEnable}" class="alert alert-error"></div>
             <div th:text="${usernameNotFoundOrPasswordIsWrong}" class="alert alert-error"
                  id="usernameOrPasswordNotFoundMsg"></div>
             <div th:text="${passwordExpire}" class="alert alert-error"></div>
