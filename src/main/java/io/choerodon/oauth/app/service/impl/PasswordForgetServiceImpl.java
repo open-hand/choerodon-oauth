@@ -18,20 +18,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.event.producer.execute.EventProducerTemplate;
 import io.choerodon.oauth.api.dto.MessageDTO;
+import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.app.service.PasswordForgetService;
 import io.choerodon.oauth.core.password.PasswordPolicyManager;
 import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO;
 import io.choerodon.oauth.core.password.domain.BaseUserDO;
 import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper;
 import io.choerodon.oauth.core.password.record.PasswordRecord;
-import io.choerodon.oauth.domain.iam.entity.UserE;
-import io.choerodon.oauth.domain.repository.UserRepository;
+import io.choerodon.oauth.domain.entity.UserE;
 import io.choerodon.oauth.infra.dataobject.NotifyToken;
-import io.choerodon.oauth.infra.dataobject.UserDO;
 import io.choerodon.oauth.infra.enums.SourceType;
 import io.choerodon.oauth.infra.enums.TokenType;
 import io.choerodon.oauth.infra.feign.NotificationFeign;
@@ -49,7 +47,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     private Boolean checkPassword;
     private EventProducerTemplate producerTemplate;
     private NotificationFeign notificationFeign;
-    private UserRepository userRepository;
+    private UserService userService;
     private BasePasswordPolicyMapper basePasswordPolicyMapper;
     private PasswordPolicyManager passwordPolicyManager;
     private PasswordRecord passwordRecord;
@@ -57,12 +55,16 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     private Locale currentLocale = LocaleContextHolder.getLocale();
 
 
-    public PasswordForgetServiceImpl(EventProducerTemplate producerTemplate, NotificationFeign notificationFeign, UserRepository userRepository,
-                                     BasePasswordPolicyMapper basePasswordPolicyMapper, PasswordPolicyManager passwordPolicyManager,
-                                     PasswordRecord passwordRecord, MessageSource messageSource) {
+    public PasswordForgetServiceImpl(
+            EventProducerTemplate producerTemplate,
+            NotificationFeign notificationFeign,
+            UserService userService,
+            BasePasswordPolicyMapper basePasswordPolicyMapper,
+            PasswordPolicyManager passwordPolicyManager,
+            PasswordRecord passwordRecord, MessageSource messageSource) {
         this.producerTemplate = producerTemplate;
         this.notificationFeign = notificationFeign;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.basePasswordPolicyMapper = basePasswordPolicyMapper;
         this.passwordPolicyManager = passwordPolicyManager;
         this.passwordRecord = passwordRecord;
@@ -85,7 +87,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         } else {
             //判断邮箱是否有
             if (emailAddress != null && !"".equals(emailAddress)) {
-                UserE user = userRepository.findUserByEmailAddressEnable(emailAddress);
+                UserE user = userService.queryByLoginField(emailAddress);
                 if (user != null) {
                     if (user.getLdap()) {
                         msg = "email.ldap";
@@ -142,7 +144,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     @Override
     public Boolean reset(Long userId, String password) {
         //DONE 重置密码
-        UserE userE = userRepository.selectByPrimaryKey(userId);
+        UserE userE = userService.queryByPrimaryKey(userId);
         if (userE == null) {
             return false;
         }
@@ -160,10 +162,9 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
                 return false;
             }
         }
-        UserDO userDO = ConvertHelper.convert(userE, UserDO.class);
-        userDO.setPassword(ENCODER.encode(password));
-        userDO.setLastPasswordUpdatedAt(new Date());
-        userE = userRepository.updateSelective(ConvertHelper.convert(userDO, UserE.class));
+        userE.setPassword(ENCODER.encode(password));
+        userE.setLastPasswordUpdatedAt(new Date());
+        userE = userService.updateSelective(userE);
         if (userE != null) {
             passwordRecord.updatePassword(userId, ENCODER.encode(password));
             return true;

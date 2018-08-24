@@ -1,13 +1,23 @@
-package io.choerodon.oauth.api.dto;
+package io.choerodon.oauth.domain.entity;
 
-import javax.validation.constraints.Size;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import io.choerodon.mybatis.annotation.ModifyAudit;
+import io.choerodon.mybatis.annotation.VersionAudit;
+import io.choerodon.mybatis.domain.AuditDomain;
 
 /**
  * @author wuguokai
  */
-public class ClientDTO {
+@ModifyAudit
+@VersionAudit
+@Table(name = "oauth_client")
+public class ClientE extends AuditDomain {
+    @Id
+    @GeneratedValue
     private Long id;
-    @Size(min = 1, max = 32, message = "error.name.size")
     private String name;
     private Long organizationId;
     private String resourceIds;
@@ -19,7 +29,6 @@ public class ClientDTO {
     private Long refreshTokenValidity;
     private String additionalInformation;
     private String autoApprove;
-    private Long objectVersionNumber;
 
     public Long getId() {
         return id;
@@ -115,13 +124,5 @@ public class ClientDTO {
 
     public void setAutoApprove(String autoApprove) {
         this.autoApprove = autoApprove;
-    }
-
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
-    }
-
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
     }
 }

@@ -1,4 +1,4 @@
-package io.choerodon.oauth.infra.common.util;
+package io.choerodon.oauth.domain.service;
 
 import java.util.Collections;
 import java.util.Map;
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import io.choerodon.core.oauth.CustomClientDetails;
-import io.choerodon.oauth.domain.oauth.entity.ClientE;
-import io.choerodon.oauth.domain.repository.ClientRepository;
+import io.choerodon.oauth.domain.entity.ClientE;
 import io.choerodon.oauth.infra.config.OauthProperties;
+import io.choerodon.oauth.infra.mapper.ClientMapper;
 
 /**
  * @author wuguokai
@@ -26,7 +26,8 @@ import io.choerodon.oauth.infra.config.OauthProperties;
 public class CustomClientDetailsService implements ClientDetailsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomClientDetailsService.class);
     @Autowired
-    private ClientRepository clientRepository;
+    private ClientMapper clientMapper;
+
     @Autowired
     private OauthProperties choerodonOauthProperties;
 
@@ -34,7 +35,7 @@ public class CustomClientDetailsService implements ClientDetailsService {
 
     @Override
     public ClientDetails loadClientByClientId(String name) {
-        ClientE clientE = clientRepository.selectByName(name);
+        ClientE clientE = this.selectByName(name);
         if (clientE == null) {
             throw new NoSuchClientException("No client found : " + name);
         }
@@ -64,5 +65,11 @@ public class CustomClientDetailsService implements ClientDetailsService {
         }
         clientDetails.setAutoApproveScopes(StringUtils.commaDelimitedListToSet(clientE.getAutoApprove()));
         return clientDetails;
+    }
+
+    private ClientE selectByName(String name) {
+        ClientE client = new ClientE();
+        client.setName(name);
+        return clientMapper.selectOne(client);
     }
 }
