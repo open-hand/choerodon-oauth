@@ -1,6 +1,5 @@
 package io.choerodon.oauth.api.service.impl;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import io.choerodon.oauth.api.service.OrganizationService;

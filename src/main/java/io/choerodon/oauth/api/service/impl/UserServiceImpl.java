@@ -2,14 +2,12 @@ package io.choerodon.oauth.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Service;
 
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.api.validator.UserValidator;
 import io.choerodon.oauth.domain.entity.UserE;
-import io.choerodon.oauth.infra.enums.LoginExceptions;
 import io.choerodon.oauth.infra.mapper.UserMapper;
 
 /**
