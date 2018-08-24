@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -20,7 +21,7 @@ import io.choerodon.oauth.infra.config.OauthProperties;
 @EnableRedisHttpSession
 @EnableFeignClients("io.choerodon")
 @EnableOAuth2Client
-//@EnableEurekaClient
+@EnableEurekaClient
 @SpringBootApplication
 @EnableConfigurationProperties(OauthProperties.class)
 @EntityScan("io.choerodon.oauth")
