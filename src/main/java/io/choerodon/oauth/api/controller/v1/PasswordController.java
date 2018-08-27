@@ -1,8 +1,7 @@
 package io.choerodon.oauth.api.controller.v1;
 
-import java.util.Map;
+import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -10,30 +9,33 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.choerodon.oauth.api.dto.RegisterFormDTO;
-import io.choerodon.oauth.app.service.PasswordForgetService;
-import io.choerodon.oauth.infra.dataobject.NotifyToken;
-import io.choerodon.oauth.infra.feign.NotificationFeign;
+import io.choerodon.oauth.api.service.PasswordForgetService;
+import io.choerodon.oauth.api.service.UserService;
+import io.choerodon.oauth.domain.entity.UserE;
+import io.choerodon.oauth.infra.enums.PasswordFindException;
 
 /**
  * @author wuguokai
  */
 @Controller
+@RequestMapping("/password")
 public class PasswordController {
 
+    private static String DEFAULT_PAGE = "password-find";
+    @Autowired
     private PasswordForgetService passwordForgetService;
-    private NotificationFeign notificationFeign;
+
+    @Autowired
+    private UserService userService;
     @Autowired
     private MessageSource messageSource;
 
-    public PasswordController(PasswordForgetService passwordForgetService, NotificationFeign notificationFeign) {
-        this.passwordForgetService = passwordForgetService;
-        this.notificationFeign = notificationFeign;
+    public PasswordController() {
     }
 
     /**
@@ -41,91 +43,68 @@ public class PasswordController {
      *
      * @return path
      */
-    @RequestMapping(value = "/forgetPassword", method = RequestMethod.GET)
-    public String find() {
-        return "password-find";
+    @RequestMapping(value = "/find", method = RequestMethod.GET)
+    public String find(HttpServletRequest request) {
+        request.getSession().removeAttribute("userId");
+        return DEFAULT_PAGE;
     }
 
-    /**
-     * 验证邮箱和页面验证码
-     *
-     * @param registerForm registerForm
-     * @param session      session
-     * @return map
-     */
-    @RequestMapping(value = "/password/email", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, String>> checkEmailAndCode(@ModelAttribute RegisterFormDTO registerForm, HttpSession session) {
-        String captchaCode = ((String) session.getAttribute("captchaCode")).toLowerCase();
-        String captcha = registerForm.getCaptcha().toLowerCase();
-        String emailAddress = registerForm.getEmailAddress();
-        return passwordForgetService.checkMailCode(session, emailAddress, captchaCode, captcha);
-    }
 
-    /**
-     * 发送验证码
-     *
-     * @param request request
-     * @return 是否成功
-     */
-    @RequestMapping(value = "/password/code", method = RequestMethod.POST)
-    public ResponseEntity<Boolean> sendNotifyToken(HttpServletRequest request) {
+    @PostMapping(value = "/send")
+    @ResponseBody
+    public ResponseEntity<Boolean> send(HttpServletRequest request) {
         String emailAddress = request.getParameter("emailAddress");
-        if (emailAddress != null) {
-            request.getSession().setAttribute("emailAddress", emailAddress);
+        UserE user = userService.checkUserByEmail(request, emailAddress);
+        if (null == user) {
+            return new ResponseEntity<>(false, HttpStatus.OK);
         }
-        return passwordForgetService.sendNotifyToken(request, emailAddress);
+        return new ResponseEntity<>(passwordForgetService.send(emailAddress, user.getLoginName()), HttpStatus.OK);
     }
 
-    /**
-     * 验证邮箱验证码
-     *
-     * @param verificationCode verificationCode
-     * @param request          request
-     * @return 验证信息
-     */
-    @RequestMapping(value = "/password/{verificationCode}", method = RequestMethod.GET)
-    public ResponseEntity<String> verificationCode(@PathVariable String
-                                                           verificationCode, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Long notifyTokenId = (Long) session.getAttribute("notifyTokenId");
-        if (notifyTokenId == null) {
-            String res = "验证码错误";
-            return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+    @PostMapping(value = "/check")
+    @ResponseBody
+    public ResponseEntity<Boolean> check(HttpServletRequest request) {
+        String emailAddress = request.getParameter("emailAddress");
+        String captcha = request.getParameter("captcha");
+        UserE user = userService.checkUserByEmail(request, emailAddress);
+        if (null == user) {
+            return new ResponseEntity<>(false, HttpStatus.OK);
         }
-        NotifyToken notifyToken = notificationFeign.findNotifyToken(notifyTokenId).getBody();
-        if (notifyToken != null && verificationCode.equalsIgnoreCase(notifyToken.getToken())) {
-            String res = "验证码正确";
-            return new ResponseEntity<>(res, HttpStatus.OK);
-        } else {
-            String res = "验证码错误";
-            return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
-        }
+        request.getSession().setAttribute("userId", user.getId());
+        return new ResponseEntity<>(passwordForgetService.check(emailAddress, captcha), HttpStatus.OK);
     }
 
-    /**
-     * 重置密码
-     *
-     * @param request request
-     * @return 验证信息
-     */
-    @RequestMapping(value = "/password/reset", method = RequestMethod.POST)
+    @PostMapping(value = "/reset")
+    @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<String> resetPassword(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Long userId = (Long) session.getAttribute("userId");
-        String password = request.getParameter("password");
-        Long notifyTokenId = (Long) session.getAttribute("notifyTokenId");
-        NotifyToken notifyToken = notificationFeign.findNotifyToken(notifyTokenId).getBody();
-        String msg = "reset.failed";
-        if (notifyToken == null) {
-            msg = "notifyToken.wrong";
-        } else {
-            Boolean isReset = passwordForgetService.reset(userId, password);
-            if (isReset) {
-                notificationFeign.deleteNotifyToken(notifyTokenId);
-                msg = "reset.success";
-            }
+    public ResponseEntity<Boolean> reset(HttpServletRequest request) {
+
+        String emailAddress = request.getParameter("emailAddress");
+        String captcha = request.getParameter("captcha");
+        Long userId = (Long) request.getSession().getAttribute("userId");
+        String pwd = request.getParameter("password");
+        String pwd1 = request.getParameter("password1");
+
+        if (!pwd.equals(pwd1)) {
+            request.getSession().setAttribute("errorCode", PasswordFindException.PASSWORD_NOT_EQUAL.value());
+            request.getSession().setAttribute("errorMsg", messageSource.getMessage(PasswordFindException.EMAIL_FORMAT_ILLEGAL.value(), null, Locale.ROOT));
+            return new ResponseEntity<>(false, HttpStatus.OK);
         }
-        return new ResponseEntity<>(msg, HttpStatus.OK);
+
+        UserE user = userService.checkUserByEmail(request, emailAddress);
+        if (null == user) {
+            return new ResponseEntity<>(false, HttpStatus.OK);
+        }
+        if (userId != user.getId()) {
+            request.getSession().setAttribute("errorCode", PasswordFindException.USER_IS_ILLEGAL.value());
+            request.getSession().setAttribute("errorMsg", messageSource.getMessage(PasswordFindException.USER_IS_ILLEGAL.value(), null, Locale.ROOT));
+            return new ResponseEntity<>(false, HttpStatus.OK);
+        }
+        if (!passwordForgetService.check(emailAddress, captcha)) {
+            request.getSession().setAttribute("errorCode", PasswordFindException.CAPTCHA_ERROR.value());
+            request.getSession().setAttribute("errorMsg", messageSource.getMessage(PasswordFindException.CAPTCHA_ERROR.value(), null, Locale.ROOT));
+            return new ResponseEntity<>(false, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(passwordForgetService.reset(user, captcha, pwd), HttpStatus.OK);
     }
 }

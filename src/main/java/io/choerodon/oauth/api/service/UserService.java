@@ -1,6 +1,8 @@
 package io.choerodon.oauth.api.service;
 
 
+import javax.servlet.http.HttpServletRequest;
+
 import io.choerodon.oauth.domain.entity.UserE;
 
 /**
@@ -9,7 +11,7 @@ import io.choerodon.oauth.domain.entity.UserE;
 public interface UserService {
     UserE queryByLoginField(String field);
 
-    UserE queryByPrimaryKey(Long id);
-
     UserE updateSelective(UserE userE);
+
+    UserE checkUserByEmail(HttpServletRequest request, String email);
 }
