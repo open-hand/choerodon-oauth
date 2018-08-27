@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.core.password.record.LoginRecord;
 import io.choerodon.oauth.domain.entity.UserE;
-import io.choerodon.oauth.infra.enums.LoginExceptions;
+import io.choerodon.oauth.infra.enums.LoginException;
 import io.choerodon.oauth.infra.exception.CustomAuthenticationException;
 
 /**
@@ -55,7 +55,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         }
         UserE user = userService.queryByLoginField(username);
         if (user != null
-                && LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value().equalsIgnoreCase(message)) {
+                && LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value().equalsIgnoreCase(message)) {
             loginRecord.loginError(user.getId());
         }
         RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();

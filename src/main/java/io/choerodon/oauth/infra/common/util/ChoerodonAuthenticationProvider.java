@@ -30,7 +30,7 @@ import io.choerodon.oauth.domain.entity.LdapE;
 import io.choerodon.oauth.domain.entity.OrganizationE;
 import io.choerodon.oauth.domain.entity.UserE;
 import io.choerodon.oauth.infra.common.util.ldap.LdapUtil;
-import io.choerodon.oauth.infra.enums.LoginExceptions;
+import io.choerodon.oauth.infra.enums.LoginException;
 import io.choerodon.oauth.infra.exception.CustomAuthenticationException;
 import io.choerodon.oauth.infra.mapper.OrganizationMapper;
 
@@ -72,7 +72,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         //获取当前登录用户信息
         UserE user = userService.queryByLoginField(username);
         if (user == null) {
-            throw new AuthenticationServiceException(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value());
+            throw new AuthenticationServiceException(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value());
         }
         checkOrganization(user.getOrganizationId());
 
@@ -94,7 +94,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
             user = userService.queryByLoginField(username);
         }
         if (!user.getEnabled()) {
-            throw new AuthenticationServiceException(LoginExceptions.USER_IS_NOT_ACTIVATED.value());
+            throw new AuthenticationServiceException(LoginException.USER_IS_NOT_ACTIVATED.value());
         }
         //判断用户是否被锁
         long nowTime = System.currentTimeMillis();
@@ -104,7 +104,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
                 Long lockUntilTime = lockDate.getTime();
                 if (lockUntilTime > nowTime) {
                     //账号处于被锁期间,返回登录页面
-                    throw new CustomAuthenticationException(LoginExceptions.ACCOUNT_IS_LOCKED.value(),
+                    throw new CustomAuthenticationException(LoginException.ACCOUNT_IS_LOCKED.value(),
                             new SimpleDateFormat(DATA_FORMAT).format(lockDate));
                 } else {
                     //给用户解锁
@@ -135,9 +135,9 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
             BeanUtils.copyProperties(user, baseUserDO);
             if (passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUserDO)) {
                 if (captchaCode == null || captcha == null || "".equals(captcha)) {
-                    throw new AuthenticationServiceException(LoginExceptions.CAPTCHA_IS_NULL.value());
+                    throw new AuthenticationServiceException(LoginException.CAPTCHA_IS_NULL.value());
                 } else if (!captchaCode.equalsIgnoreCase(captcha)) {
-                    throw new AuthenticationServiceException(LoginExceptions.CAPTCHA_IS_WRONG.value());
+                    throw new AuthenticationServiceException(LoginException.CAPTCHA_IS_WRONG.value());
                 }
             }
         }
@@ -162,17 +162,17 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         if (isPass) {
             return;
         }
-        throw new AuthenticationServiceException(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value());
+        throw new AuthenticationServiceException(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value());
     }
 
 
     private void checkOrganization(Long orgId) {
         OrganizationE organization = organizationService.queryOrganizationById(orgId);
         if (null == organization) {
-            throw new AuthenticationServiceException(LoginExceptions.ORGANIZATION_NOT_EXIST.value());
+            throw new AuthenticationServiceException(LoginException.ORGANIZATION_NOT_EXIST.value());
         }
         if (false == organization.getEnabled()) {
-            throw new AuthenticationServiceException(LoginExceptions.ORGANIZATION_NOT_ENABLE.value());
+            throw new AuthenticationServiceException(LoginException.ORGANIZATION_NOT_ENABLE.value());
         }
     }
 }

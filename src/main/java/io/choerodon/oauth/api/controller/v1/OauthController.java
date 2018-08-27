@@ -33,7 +33,7 @@ import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO;
 import io.choerodon.oauth.core.password.domain.BaseUserDO;
 import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper;
 import io.choerodon.oauth.domain.entity.UserE;
-import io.choerodon.oauth.infra.enums.LoginExceptions;
+import io.choerodon.oauth.infra.enums.LoginException;
 
 
 /**
@@ -88,7 +88,7 @@ public class OauthController {
         String returnPage = "mobile".equals(device) ? INDEX_MOBILE : INDEX_DEFAULT;
 
         Map<String, String> error = new HashMap<>();
-        error.put(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(), null);
+        error.put(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(), null);
         model.addAttribute("title", loginTitle);
 
         if (!"default".equals(loginProfile)) {
@@ -113,8 +113,8 @@ public class OauthController {
         UserE user = userService.queryByLoginField(username);
         //数据库中无该用户
         if (user == null) {
-            error.put(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
-                    messageSource.getMessage(LoginExceptions.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
+            error.put(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
+                    messageSource.getMessage(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
                             null, currentLocale));
 
             model.addAllAttributes(error);

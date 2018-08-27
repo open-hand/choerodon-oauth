@@ -3,7 +3,7 @@ package io.choerodon.oauth.infra.enums;
 /**
  * @author superlee
  */
-public enum LoginExceptions {
+public enum LoginException {
 
     USER_NAME_NOT_FOUND("usernameNotFound"),
 
@@ -23,7 +23,7 @@ public enum LoginExceptions {
 
     private final String value;
 
-    LoginExceptions(String value) {
+    LoginException(String value) {
         this.value = value;
     }
 
