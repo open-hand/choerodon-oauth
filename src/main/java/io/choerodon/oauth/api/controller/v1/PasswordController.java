@@ -46,6 +46,7 @@ public class PasswordController {
     @RequestMapping(value = "/find", method = RequestMethod.GET)
     public String find(HttpServletRequest request) {
         request.getSession().removeAttribute("userId");
+        request.getSession().removeAttribute("userName");
         return DEFAULT_PAGE;
     }
 
@@ -105,6 +106,7 @@ public class PasswordController {
             request.getSession().setAttribute("errorMsg", messageSource.getMessage(PasswordFindException.CAPTCHA_ERROR.value(), null, Locale.ROOT));
             return new ResponseEntity<>(false, HttpStatus.OK);
         }
+        request.getSession().setAttribute("userName", user.getLoginName());
         return new ResponseEntity<>(passwordForgetService.reset(user, captcha, pwd), HttpStatus.OK);
     }
 }
