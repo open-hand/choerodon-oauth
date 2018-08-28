@@ -15,258 +15,261 @@
     <script src="static/babel.min.js"></script>
     <script src="static/moment.min.js"></script>
     <script src="static/choerodon-ui.min.js"></script>
-    <script th:src="@{static/captcha.js(t=${new java.util.Date().getTime()})}"></script>
     <title th:text="${title}"></title>
     <style>
-        html, body {
-            padding: 0px;
-            margin: 0px;
-            overflow: hidden;
-            font-family: 'Microsoft YaHei', arial;
-            font-size: 13px;
-            line-height: 20px;
-            direction: ltr;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-image: url('static/bg.svg');
-            background-size: cover;
-        }
+  html, body {
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+    font-family: 'Microsoft YaHei', arial;
+    font-size: 13px;
+    line-height: 20px;
+    direction: ltr;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('static/bg.svg');
+    background-size: cover;
+  }
 
-        .logoleft {
-            width: 85%;
-            height: 100%;
-            position: absolute;
-        }
+  .logoleft {
+    width: 85%;
+    height: 100%;
+    position: absolute;
+  }
 
-        .login .logo {
-            font-size: 30px;
-            width: 279px;
-            margin: 50px auto;
-            padding: 15px;
-            text-align: start;
-            position: relative;
-            color: #0366D6;
-            word-break: break-all;
-        }
+  .login .logo {
+    font-size: 30px;
+    width: 279px;
+    margin: 50px auto;
+    padding: 15px;
+    text-align: start;
+    position: relative;
+    color: #0366D6;
+    word-break: break-all;
+  }
 
-        .login #content {
-            padding-left: 42px;
-            background-color: #fff;
-            width: 454px;
-            min-height: 434px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.20);
-            padding-right: 42px;
-            border-radius: 2px;
-        }
+  .login #content {
+    padding-left: 42px;
+    background-color: #fff;
+    width: 454px;
+    min-height: 434px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.20);
+    padding-right: 42px;
+    border-radius: 2px;
+  }
 
-        .login #content .form-title {
-            font-weight: 300;
-            margin-bottom: 25px;
-            font-size: 24.5px;
-        }
+  .login #content .form-title {
+    font-weight: 300;
+    margin-bottom: 25px;
+    font-size: 24.5px;
+  }
 
-        .login #content .login-form {
-            padding: 0px;
-            margin: 0px;
-        }
+  .login #content .login-form {
+    padding: 0px;
+    margin: 0px;
+  }
 
-        .alert-error {
-            color: #f92e2d;
-            position: inherit;
-        }
+  .alert-error {
+    color: #f92e2d;
+    position: inherit;
+  }
 
-        .login #content .control-group {
-            margin-top: 30px;
-        }
+  .login #content .control-group {
+    margin-top: 30px;
+  }
 
-        .control-label {
-            margin-top: 2px;
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            font-weight: normal;
-            line-height: 20px;
-            color: rgba(0, 0, 0, 0.87);
-        }
-
-
-        .input-icon {
-            border-width: 0px;
-            border-style: solid;
-        }
+  .control-label {
+    margin-top: 2px;
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+    color: rgba(0, 0, 0, 0.87);
+  }
 
 
-        .input-icon.left i {
-            color: #ccc;
-            display: block !important;
-            position: absolute !important;
-            z-index: 1;
-            margin: 9px 2px 4px 10px;
-            width: 16px;
-            height: 16px;
-            font-size: 16px;
-            text-align: center;
-        }
-
-        .login #content .input-icon .m-wrap {
-            margin: 0px !important;
-            position: relative;
-            left: 10px;
-        }
-
-        .login #content .m-wrap {
-            width: calc(100% - 10px);
-        }
-
-        select {
-            width: 220px;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            height: 30px;
-            line-height: 30px;
-        }
-
-        input.m-wrap {
-            border: 0;
-        }
-
-        input[type="text"].m-wrap, input[type="password"].m-wrap {
-            -webkit-appearance: none !important;
-            outline: 0;
-            padding: 6px 0px !important;
-            line-height: 20px;
-            font-size: 14px;
-            font-weight: normal;
-            vertical-align: top;
-            background-color: #ffffff;
-            background-image: none !important;
-            filter: none !important;
-            -webkit-box-shadow: none !important;
-            -moz-box-shadow: none !important;
-            box-shadow: none !important;
-            -webkit-border-radius: 0px;
-            -moz-border-radius: 0px;
-            border-radius: 0px;
-            background: transparent;
-        }
-
-        .login #content .form-actions {
-            clear: both;
-            margin-top: 20px;
-        }
-
-        input.error {
-            background: #fff0f0 !important;
-            border-color: #A90329;
-        }
-
-        .btn {
-            background-color: #3F51B5;
-            background-image: none;
-            filter: none;
-            border: 0;
-            padding: 10px 14px;
-            text-shadow: none;
-            font-size: 14px;
-            color: #ffffff;
-            cursor: pointer;
-            outline: none;
-            -webkit-box-shadow: none !important;
-            -moz-box-shadow: none !important;
-            -webkit-border-radius: 0 !important;
-            -moz-border-radius: 0 !important;
-            box-shadow: 0 3px 1px -2px rgba(0,0,0,0.20), 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12)!important;
-            border-radius: 2px!important;
-            width: 100%;
-            height: 48px;
-        }
-        .ant-btn-flat.ant-btn-loading span{
-            color: #000;
-        }
-
-        @font-face {
-            font-family: 'FontAwesome';
-            src: url("static/fontawesome-webfont.woff2") format('woff2');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        .fa {
-            display: inline-block;
-            font: normal normal normal 14px/1 FontAwesome;
-            font-size: inherit;
-            text-rendering: auto;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .fa-refresh:before {
-            content: "\f021";
-        }
+  .input-icon {
+    border-width: 0px;
+    border-style: solid;
+  }
 
 
-        .arrow {
-            float: right;
-            font-size: 1.6rem;
-        }
+  .input-icon.left i {
+    color: #ccc;
+    display: block !important;
+    position: absolute !important;
+    z-index: 1;
+    margin: 9px 2px 4px 10px;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    text-align: center;
+  }
 
-        #list {
-            float: right;
-            margin-top: 10px;
-            margin-right: 10px;
-            font-size: 2rem;
-        }
+  .login #content .input-icon .m-wrap {
+    margin: 0px !important;
+    position: relative;
+    left: 10px;
+  }
 
-        .remember {
-            text-align: right;
-        }
+  .login #content .m-wrap {
+    width: calc(100% - 10px);
+  }
 
-        .resigter {
-            text-decoration: none;
-            margin-right: 10px;
-            font-size: 13px;
-            color: #999;
-        }
+  select {
+    width: 220px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    height: 30px;
+    line-height: 30px;
+  }
 
-        .forget {
-            text-decoration: none;
-            margin-left: 10px;
-            font-size: 13px;
-            color: #999;
-        }
-        .forget-passwd {
-            font-size: 10px;
-            color: #3F51B5;
-            margin-top: 16px;
-            margin-left: 320px;
-            display: block;
-        }
+  input.m-wrap {
+    border: 0;
+  }
 
-        .pIcon {
-            color: #3F51B5;
-            height: 30px;
-        }
+  input[type="text"].m-wrap, input[type="password"].m-wrap {
+    -webkit-appearance: none !important;
+    outline: 0;
+    padding: 6px 0px !important;
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: normal;
+    vertical-align: top;
+    background-color: #ffffff;
+    background-image: none !important;
+    filter: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    box-shadow: none !important;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    background: transparent;
+  }
 
-        .loginSpan {
-            font-size: 20px;
-            text-align: center;
-            display: block;
+  .login #content .form-actions {
+    clear: both;
+    margin-top: 20px;
+  }
 
-        .login #content .form-actions a {
-            color: #3F51B5;
-        }
+  input.error {
+    background: #fff0f0 !important;
+    border-color: #A90329;
+  }
 
-        input:-webkit-autofill {
-            -webkit-box-shadow: 0 0 0px 1000px white inset;
-            border: 1px solid #CCC !important;
-        }
+  .btn {
+    background-color: #3F51B5;
+    background-image: none;
+    filter: none;
+    border: 0;
+    text-shadow: none;
+    font-size: 14px;
+    color: #ffffff;
+    cursor: pointer;
+    outline: none;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    box-shadow: 0 3px 1px -2px rgba(0,0,0,0.20), 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12)!important;
+    border-radius: 2px!important;
+    width: 100%;
+    height: 38px;
+  }
 
-    </style>
+  .ant-btn-flat.ant-btn-loading span{
+    color: #000;
+  }
+
+  @font-face {
+    font-family: 'FontAwesome';
+    src: url("static/fontawesome-webfont.woff2") format('woff2');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  .fa {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .fa-refresh:before {
+    content: "\f021";
+  }
+
+
+  .arrow {
+    float: right;
+    font-size: 1.6rem;
+  }
+
+  #list {
+    float: right;
+    margin-top: 10px;
+    margin-right: 10px;
+    font-size: 2rem;
+  }
+
+  .remember {
+    text-align: right;
+  }
+
+  .resigter {
+    text-decoration: none;
+    margin-right: 10px;
+    font-size: 13px;
+    color: #999;
+  }
+
+  .forget {
+    text-decoration: none;
+    margin-left: 10px;
+    font-size: 13px;
+    color: #999;
+  }
+  .forget-passwd {
+    font-size: 10px;
+    color: #3F51B5;
+    margin-top: 16px;
+    margin-left: 310px;
+    display: block;
+  }
+
+  .pIcon {
+    color: #3F51B5;
+    height: 30px;
+  }
+
+  .loginSpan {
+    font-size: 20px;
+    text-align: center;
+    display: block;
+    margin-top: 22px;
+    color: rgba(0,0,0,0.65);
+  }
+
+  .login #content .form-actions a {
+    color: #3F51B5;
+  }
+
+  input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+    border: 1px solid #CCC !important;
+  }
+
+</style>
 </head>
 <body class="login">
+<script th:src="@{static/captcha.js(t=${new java.util.Date().getTime()})}"></script>
 <div th:class="${isNeedCaptcha} ? 'content1' : 'content2'" id="content">
     <div style="display: flex;justify-content: center;margin-top: 50px">
         <img src="static/choerodon_logo_color.svg" class="pIcon"/>
@@ -283,7 +286,8 @@
             <div class="controls">
                 <div th:class="${usernameNotFoundOrPasswordIsWrong}? 'input-icon left inputError' : 'input-icon left inputNormal'">
                     <div id="passwordInupt"></div>
-                    <a class="forget-passwd" href="#">忘记密码</a>
+                    <!--<a class="forget-passwd" href="./password/find">忘记密码？</a>-->
+                  <a class="forget-passwd" href="#">忘记密码？</a>
                 </div>
             </div>
             <div th:text="${usernameNotFound}" class="alert alert-error"></div>
