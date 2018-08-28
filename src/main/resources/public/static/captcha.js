@@ -16,23 +16,6 @@ $(function () {
     if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
         window.location.href = "/oauth/login?device=mobile";
     }
-    $('.btn').click(function () {
-        $("#usernameIsNullMsg").css('display', 'none');
-        $("#passwordIsNullMsg").css('display', 'none');
-        $("#usernameOrPasswordNotFoundMsg").html("");
-        var username = $.trim($("#username").val());
-        var password = $.trim($("#password").val());
-        if (username == '') {
-            $("#usernameIsNullMsg").css('display', 'block');
-            return;
-        }
-        if (password == '') {
-            $("#passwordIsNullMsg").css('display', 'block');
-            return;
-        }
-        $("#md5_password").val(encode(password));
-        $('.login-form').submit();
-    })
     document.onkeydown = function (event) {
         var e = event || window.event;
         if (e && e.keyCode == 13) {
