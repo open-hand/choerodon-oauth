@@ -1,15 +1,16 @@
 package io.choerodon.oauth.api.service;
 
-import io.choerodon.oauth.domain.entity.UserE;
+import io.choerodon.oauth.api.dto.PasswordForgetDTO;
 
 /**
  * @author wuguokai
  */
 public interface PasswordForgetService {
+    PasswordForgetDTO checkUserByEmail(String email);
 
-    Boolean send(String email, String loginName);
+    PasswordForgetDTO send(PasswordForgetDTO passwordForgetDTO);
 
-    Boolean check(String email, String captcha);
+    PasswordForgetDTO check(PasswordForgetDTO passwordForgetDTO, String captcha);
 
-    Boolean reset(UserE user, String captcha, String password);
+    PasswordForgetDTO reset(PasswordForgetDTO passwordForgetDTO, String captcha, String password);
 }
