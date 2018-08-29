@@ -26,7 +26,7 @@ import io.choerodon.oauth.infra.enums.PasswordFindException;
 @RequestMapping("/password")
 public class PasswordController {
 
-    private static String DEFAULT_PAGE = "password-find";
+    private static final String DEFAULT_PAGE = "password-find";
     @Autowired
     private PasswordForgetService passwordForgetService;
 
@@ -34,9 +34,6 @@ public class PasswordController {
     private UserService userService;
     @Autowired
     private MessageSource messageSource;
-
-    public PasswordController() {
-    }
 
     /**
      * 进入找回密码页面
