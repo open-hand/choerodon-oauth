@@ -1,4 +1,4 @@
-image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.5.0
+image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.6.0
 
 stages:
   - mvn-package
@@ -47,9 +47,8 @@ docker-build:
     - /^hotfix-.*$/
 
 .auto_devops: &auto_devops |
-    curl -o .auto_devops.sh \
-        "${CHOERODON_URL}/devops/ci?token=${Token}&type=microservice"
-    if [ $? -ne 0 ];then
+    http_status_code=`curl -o .auto_devops.sh -s -m 10 --connect-timeout 10 -w %{http_code} "${CHOERODON_URL}/devops/ci?token=${Token}&type=microservice"`
+    if [ "$http_status_code" != "200" ]; then
       cat .auto_devops.sh
       exit 1
     fi
