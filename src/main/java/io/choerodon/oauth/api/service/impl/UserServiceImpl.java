@@ -30,9 +30,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private MessageSource messageSource;
 
-    public UserServiceImpl() {
-    }
-
     @Override
     public UserE queryByLoginField(String field) {
         if (field == null) {
@@ -83,11 +80,13 @@ public class UserServiceImpl implements UserService {
         if (null == user) {
             request.getSession().setAttribute("errorCode", PasswordFindException.ACCOUNT_NOT_EXIST.value());
             request.getSession().setAttribute("errorMsg", messageSource.getMessage(PasswordFindException.ACCOUNT_NOT_EXIST.value(), null, Locale.ROOT));
+            return null;
         }
 
         if (user.getLdap()) {
             request.getSession().setAttribute("errorCode", PasswordFindException.LDAP_CANNOT_CHANGE_PASSWORD.value());
             request.getSession().setAttribute("errorMsg", messageSource.getMessage(PasswordFindException.LDAP_CANNOT_CHANGE_PASSWORD.value(), null, Locale.ROOT));
+            return null;
         }
 
         return user;
