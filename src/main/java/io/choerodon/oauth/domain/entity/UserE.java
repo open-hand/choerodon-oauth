@@ -14,9 +14,6 @@ import io.choerodon.mybatis.domain.AuditDomain;
 @VersionAudit
 @Table(name = "iam_user")
 public class UserE extends AuditDomain {
-    public static final String EMAIL_REGULAR_EXPRESSION = "[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[\\w](?:[\\w-]*[\\w])?";
-
-
     @Id
     @GeneratedValue
     private Long id;

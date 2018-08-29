@@ -14,4 +14,6 @@ public interface UserService {
     UserE updateSelective(UserE userE);
 
     UserE checkUserByEmail(HttpServletRequest request, String email);
+
+    UserE queryByEmail(String email);
 }

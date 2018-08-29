@@ -91,4 +91,11 @@ public class UserServiceImpl implements UserService {
 
         return user;
     }
+
+    @Override
+    public UserE queryByEmail(String email) {
+        UserE user = new UserE();
+        user.setEmail(email);
+        return userMapper.selectOne(user);
+    }
 }

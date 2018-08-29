@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import io.choerodon.oauth.api.dto.PasswordForgetDTO;
 import io.choerodon.oauth.api.service.PasswordForgetService;
 import io.choerodon.oauth.api.service.UserService;
-import io.choerodon.oauth.domain.entity.UserE;
 import io.choerodon.oauth.infra.enums.PasswordFindException;
 
 /**
@@ -50,60 +50,62 @@ public class PasswordController {
 
     @PostMapping(value = "/send")
     @ResponseBody
-    public ResponseEntity<Boolean> send(HttpServletRequest request) {
+    public ResponseEntity<PasswordForgetDTO> send(HttpServletRequest request) {
         String emailAddress = request.getParameter("emailAddress");
-        UserE user = userService.checkUserByEmail(request, emailAddress);
-        if (null == user) {
-            return new ResponseEntity<>(false, HttpStatus.OK);
+        PasswordForgetDTO passwordForgetDTO = passwordForgetService.checkUserByEmail(emailAddress);
+        if (!passwordForgetDTO.getSuccess()) {
+            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
-        return new ResponseEntity<>(passwordForgetService.send(emailAddress, user.getLoginName()), HttpStatus.OK);
+        return new ResponseEntity<>(passwordForgetService.send(passwordForgetDTO), HttpStatus.OK);
     }
 
     @PostMapping(value = "/check")
     @ResponseBody
-    public ResponseEntity<Boolean> check(HttpServletRequest request) {
+    public ResponseEntity<PasswordForgetDTO> check(HttpServletRequest request) {
         String emailAddress = request.getParameter("emailAddress");
         String captcha = request.getParameter("captcha");
-        UserE user = userService.checkUserByEmail(request, emailAddress);
-        if (null == user) {
-            return new ResponseEntity<>(false, HttpStatus.OK);
+
+        PasswordForgetDTO passwordForgetDTO = passwordForgetService.checkUserByEmail(emailAddress);
+        if (!passwordForgetDTO.getSuccess()) {
+            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
-        request.getSession().setAttribute("userId", user.getId());
-        return new ResponseEntity<>(passwordForgetService.check(emailAddress, captcha), HttpStatus.OK);
+        return new ResponseEntity<>(passwordForgetService.check(passwordForgetDTO, captcha), HttpStatus.OK);
     }
 
     @PostMapping(value = "/reset")
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<Boolean> reset(HttpServletRequest request) {
+    public ResponseEntity<PasswordForgetDTO> reset(HttpServletRequest request) {
 
         String emailAddress = request.getParameter("emailAddress");
         String captcha = request.getParameter("captcha");
-        Long userId = (Long) request.getSession().getAttribute("userId");
+        Long userId = Long.valueOf(request.getParameter("userId"));
+
         String pwd = request.getParameter("password");
         String pwd1 = request.getParameter("password1");
-
+        PasswordForgetDTO passwordForgetDTO;
         if (!pwd.equals(pwd1)) {
-            request.getSession().setAttribute("errorCode", PasswordFindException.PASSWORD_NOT_EQUAL.value());
-            request.getSession().setAttribute("errorMsg", messageSource.getMessage(PasswordFindException.EMAIL_FORMAT_ILLEGAL.value(), null, Locale.ROOT));
-            return new ResponseEntity<>(false, HttpStatus.OK);
+            passwordForgetDTO = new PasswordForgetDTO(false);
+
+            passwordForgetDTO.setCode(PasswordFindException.PASSWORD_NOT_EQUAL.value());
+            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.PASSWORD_NOT_EQUAL.value(), null, Locale.ROOT));
+            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
 
-        UserE user = userService.checkUserByEmail(request, emailAddress);
-        if (null == user) {
-            return new ResponseEntity<>(false, HttpStatus.OK);
+        passwordForgetDTO = passwordForgetService.checkUserByEmail(emailAddress);
+        if (!passwordForgetDTO.getSuccess()) {
+            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
-        if (userId != user.getId()) {
-            request.getSession().setAttribute("errorCode", PasswordFindException.USER_IS_ILLEGAL.value());
-            request.getSession().setAttribute("errorMsg", messageSource.getMessage(PasswordFindException.USER_IS_ILLEGAL.value(), null, Locale.ROOT));
-            return new ResponseEntity<>(false, HttpStatus.OK);
+        if (!userId.equals(passwordForgetDTO.getUser().getId())) {
+            passwordForgetDTO = new PasswordForgetDTO(false);
+            passwordForgetDTO.setCode(PasswordFindException.USER_IS_ILLEGAL.value());
+            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.USER_IS_ILLEGAL.value(), null, Locale.ROOT));
+            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
-        if (!passwordForgetService.check(emailAddress, captcha)) {
-            request.getSession().setAttribute("errorCode", PasswordFindException.CAPTCHA_ERROR.value());
-            request.getSession().setAttribute("errorMsg", messageSource.getMessage(PasswordFindException.CAPTCHA_ERROR.value(), null, Locale.ROOT));
-            return new ResponseEntity<>(false, HttpStatus.OK);
+        passwordForgetDTO = passwordForgetService.check(passwordForgetDTO, captcha);
+        if (!passwordForgetDTO.getSuccess()) {
+            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
-        request.getSession().setAttribute("userName", user.getLoginName());
-        return new ResponseEntity<>(passwordForgetService.reset(user, captcha, pwd), HttpStatus.OK);
+        return new ResponseEntity<>(passwordForgetService.reset(passwordForgetDTO, captcha, pwd), HttpStatus.OK);
     }
 }
