@@ -1,18 +1,12 @@
 package io.choerodon.oauth.api.service.impl;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,24 +34,20 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     private BasePasswordPolicyMapper basePasswordPolicyMapper;
     private PasswordPolicyManager passwordPolicyManager;
     private PasswordRecord passwordRecord;
-    private MessageSource messageSource;
     @Autowired
     private NotifyFeignClient notifyFeignClient;
     @Autowired
     private RedisTokenUtil redisTokenUtil;
-    private Locale currentLocale = LocaleContextHolder.getLocale();
-
 
     public PasswordForgetServiceImpl(
             UserService userService,
             BasePasswordPolicyMapper basePasswordPolicyMapper,
             PasswordPolicyManager passwordPolicyManager,
-            PasswordRecord passwordRecord, MessageSource messageSource) {
+            PasswordRecord passwordRecord) {
         this.userService = userService;
         this.basePasswordPolicyMapper = basePasswordPolicyMapper;
         this.passwordPolicyManager = passwordPolicyManager;
         this.passwordRecord = passwordRecord;
-        this.messageSource = messageSource;
     }
 
     @Override
@@ -81,51 +71,6 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     @Override
     public Boolean check(String email, String captcha) {
         return redisTokenUtil.check(RedisTokenUtil.SHORT_CODE, email, captcha);
-    }
-
-    public ResponseEntity<Map<String, String>> checkMailCode(HttpSession session, String emailAddress, String captchaCode, String captcha) {
-        String msg;
-        if (captcha == null) {
-            msg = "captcha.null";
-            Map<String, String> map = new HashMap<>();
-            map.put("code", messageSource.getMessage(msg, null, currentLocale));
-            return new ResponseEntity(map, HttpStatus.BAD_REQUEST);
-        } else if (!captcha.equals(captchaCode)) {
-            msg = "captcha.wrong";
-            Map<String, String> map = new HashMap<>();
-            map.put("code", messageSource.getMessage(msg, null, currentLocale));
-            return new ResponseEntity(map, HttpStatus.BAD_REQUEST);
-        } else {
-            //判断邮箱是否有
-            if (emailAddress != null && !"".equals(emailAddress)) {
-                UserE user = userService.queryByLoginField(emailAddress);
-                if (user != null) {
-                    if (user.getLdap()) {
-                        msg = "email.ldap";
-                        Map<String, String> map = new HashMap<>();
-                        map.put("email", messageSource.getMessage(msg, null, currentLocale));
-                        return new ResponseEntity(map, HttpStatus.BAD_REQUEST);
-                    } else {
-                        //跳转到第二个页面
-                        Map<String, String> map = new HashMap<>();
-                        map.put("emailAddress", emailAddress);
-                        session.setAttribute("userId", user.getId());
-                        session.removeAttribute("captchaCode");
-                        return new ResponseEntity(map, HttpStatus.OK);
-                    }
-                } else {
-                    msg = "email.unexist";
-                    Map<String, String> map = new HashMap<>();
-                    map.put("email", messageSource.getMessage(msg, null, currentLocale));
-                    return new ResponseEntity(map, HttpStatus.BAD_REQUEST);
-                }
-            } else {
-                msg = "email.null";
-                Map<String, String> map = new HashMap<>();
-                map.put("email", messageSource.getMessage(msg, null, currentLocale));
-                return new ResponseEntity(map, HttpStatus.BAD_REQUEST);
-            }
-        }
     }
 
     @Override
