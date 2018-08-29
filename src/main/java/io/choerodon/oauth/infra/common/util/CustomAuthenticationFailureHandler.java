@@ -45,7 +45,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
             session.setAttribute("SPRING_SECURITY_LAST_EXCEPTION", exception.getMessage());
             if (exception instanceof CustomAuthenticationException) {
                 session.setAttribute("SPRING_SECURITY_LAST_EXCEPTION_PARAMS",
-                        ((CustomAuthenticationException) exception).getParameters());
+                        ((CustomAuthenticationException) exception).getValue());
             }
 
         }

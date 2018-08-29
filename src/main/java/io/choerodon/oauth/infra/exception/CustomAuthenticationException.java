@@ -6,19 +6,19 @@ import org.springframework.security.core.AuthenticationException;
  * @author dongfan117@gmail.com
  */
 public class CustomAuthenticationException extends AuthenticationException {
-    private final transient Object[] parameters;
+    private final String value;
 
-    public CustomAuthenticationException(String msg, Throwable t, Object... parameters) {
+    public CustomAuthenticationException(String msg, Throwable t, String value) {
         super(msg, t);
-        this.parameters = parameters;
+        this.value = value;
     }
 
-    public CustomAuthenticationException(String msg, Object... parameters) {
+    public CustomAuthenticationException(String msg, String value) {
         super(msg);
-        this.parameters = parameters;
+        this.value = value;
     }
 
-    public Object[] getParameters() {
-        return parameters;
+    public String getValue() {
+        return value;
     }
 }
