@@ -198,7 +198,7 @@ class App extends window.React.Component {
                 message: '请输入邮箱',
               }],
             })(
-              <Input autoFocus autoComplete="off" label="登陆账号" name="username" id="username"
+              <Input autoFocus autoComplete="off" label="登录账号" name="username" id="username"
                      onChange={e => this.handleValueChange(e)} placeholder="登录名/邮箱" value={this.state.currentUsername}
               />
             )}
@@ -277,7 +277,7 @@ class App extends window.React.Component {
         <div className="congratulation"><Icon type="done" style={{ fontSize: 30, color: '#3F51B5', marginRight: '23.8px'}}/>恭喜</div>
         <div className="change-password-success">{`您的账号“${currentUsername}”重置密码成功`}</div>
         <Button className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
-                style={{paddingTop: '4px', marginTop: '80px'}}><span>直接登陆</span></Button>
+                style={{paddingTop: '4px', marginTop: '80px'}}><span>直接登录</span></Button>
       </div>
     )
   }
