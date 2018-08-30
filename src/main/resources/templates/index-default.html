@@ -193,11 +193,6 @@
       font-style: normal;
     }
 
-    .ant-input-label {
-      -webkit-transform: scale(.75) translateY(-20px) translateZ(.001px);
-      transform: scale(.75) translateY(-20px) translateZ(.001px);
-      color: rgba(0,0,0,.6);
-    }
 
     .fa {
       display: inline-block;
@@ -270,6 +265,15 @@
     input:-webkit-autofill {
       -webkit-box-shadow: 0 0 0px 1000px white inset;
       border: 0px solid #CCC !important;
+    }
+
+    input:-webkit-autofill + .ant-input-label {
+      -webkit-transform: scale(.75) translateY(-20px) translateZ(.001px);
+      transform: scale(.75) translateY(-20px) translateZ(.001px);
+    }
+
+    .ant-btn-flat:hover {
+      background: #3F51B5;
     }
 
   </style>

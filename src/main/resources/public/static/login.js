@@ -75,7 +75,7 @@ class LoginButton extends window.React.Component {
   render() {
     return (
       <Button className="btn" onClick={this.handleButtonClickTest} loading={this.state.loading}
-              htmlStyle="padding-top:4px"><span>{this.state.loading ? '登陆中' : '登陆'}</span></Button>
+              htmlStyle="padding-top:4px"><span>{this.state.loading ? '登录中' : '登录'}</span></Button>
     )
   }
 }
@@ -93,6 +93,10 @@ class UsernameInupt extends window.React.Component {
     this.setState({
       currentUsername: this.getUrlParams('username'),
     })
+    let elem = document.createElement("div");
+    elem.className = 'ant-input-label';
+    elem.innerHTML = '登录账号*';
+    document.getElementById('username').parentNode.appendChild(elem);
   }
 
   getUrlParams = (name) => {
@@ -103,17 +107,15 @@ class UsernameInupt extends window.React.Component {
   }
   onValueChange = (e) => {
     this.setState({
-      currentUsername: e.target.value
+      currentUsername: e.target.value,
     })
   }
 
   render() {
     return (
-      <div>
-        <Input autoFocus autoComplete="off" label="登陆账号*" name="username" id="username"
-               onChange={e => this.onValueChange(e)} placeholder="登录名/邮箱" defaultValue=" "
-               value={this.state.currentUsername}/>
-      </div>
+      <Input autoFocus autoComplete="off" name="username" id="username"
+             onChange={e => this.onValueChange(e)} label=" " placeholder="登录名/邮箱" defaultValue=" "
+             value={this.state.currentUsername}/>
     )
   }
 }
@@ -125,7 +127,7 @@ class PasswordInput extends window.React.Component {
 
   onValueChange = (e) => {
     this.setState({
-      currentPassword: e.target.value
+      currentPassword: e.target.value,
     })
   }
   state = {
@@ -136,11 +138,15 @@ class PasswordInput extends window.React.Component {
     this.setState({
       currentPassword: ''
     })
+    let elem = document.createElement("div");
+    elem.className = 'ant-input-label';
+    elem.innerHTML = '密码*';
+    document.getElementById('password').parentNode.appendChild(elem);
   }
 
   render() {
     return (
-      <Input type="password" onChange={e => this.onValueChange(e)} autoComplete="off" label="密码*" id="password"
+      <Input type="password" onChange={e => this.onValueChange(e)} autoComplete="off" label=" " id="password"
              placeholder="请输入密码" defaultValue=""/>
     )
   }
