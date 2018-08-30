@@ -10,7 +10,8 @@ public enum PasswordFindException {
     EMAIL_FORMAT_ILLEGAL("emailFormatIllegal"),
     LDAP_CANNOT_CHANGE_PASSWORD("ldapCannotChangePassword"),
     PASSWORD_NOT_EQUAL("passwordNotEqual"),
-    CAPTCHA_ERROR("captchaError");
+    CAPTCHA_ERROR("captchaError"),
+    DISABLE_SEND("disableSend");
 
     private final String value;
 

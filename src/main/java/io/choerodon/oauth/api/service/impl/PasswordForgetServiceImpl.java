@@ -90,12 +90,16 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
     @Override
     public PasswordForgetDTO send(PasswordForgetDTO passwordForgetDTO) {
-
+        PasswordForgetDTO passwordForgetDTO1 = this.checkDisable(passwordForgetDTO.getUser().getEmail());
+        if (!passwordForgetDTO1.getSuccess()) {
+            return passwordForgetDTO1;
+        }
         String token = redisTokenUtil.createShortToken();
         Map<String, Object> variables = new HashMap<>();
 
         variables.put("userName", passwordForgetDTO.getUser().getLoginName());
         variables.put("verifyCode", redisTokenUtil.store(RedisTokenUtil.SHORT_CODE, passwordForgetDTO.getUser().getEmail(), token));
+        redisTokenUtil.setDisableTime(passwordForgetDTO.getUser().getEmail());
         EmailSendDTO emailSendDTO = new EmailSendDTO("forgetPassword", passwordForgetDTO.getUser().getEmail(), variables);
         try {
             notifyFeignClient.postEmail(emailSendDTO);
@@ -142,5 +146,20 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         }
 
         return new PasswordForgetDTO(false);
+    }
+
+    @Override
+    public PasswordForgetDTO checkDisable(String email) {
+        Long time = this.redisTokenUtil.getDisableTime(email);
+
+        PasswordForgetDTO passwordForgetDTO = new PasswordForgetDTO();
+
+        if (time != null) {
+            passwordForgetDTO.setSuccess(false);
+            passwordForgetDTO.setDisableTime(time);
+            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.DISABLE_SEND.value(), null, Locale.ROOT));
+            passwordForgetDTO.setCode(PasswordFindException.DISABLE_SEND.value());
+        }
+        return passwordForgetDTO;
     }
 }
