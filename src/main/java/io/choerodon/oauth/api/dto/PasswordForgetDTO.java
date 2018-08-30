@@ -8,6 +8,7 @@ public class PasswordForgetDTO {
     private String msg;
     private String code;
     private UserDTO user;
+    private Long disableTime;
 
     public PasswordForgetDTO() {
         this.success = true;
@@ -54,5 +55,13 @@ public class PasswordForgetDTO {
 
     public void setUser(UserDTO user) {
         this.user = user;
+    }
+
+    public Long getDisableTime() {
+        return disableTime;
+    }
+
+    public void setDisableTime(Long disableTime) {
+        this.disableTime = disableTime;
     }
 }

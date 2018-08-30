@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.choerodon.oauth.api.dto.PasswordForgetDTO;
 import io.choerodon.oauth.api.service.PasswordForgetService;
-import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.infra.enums.PasswordFindException;
 
 /**
@@ -30,8 +29,6 @@ public class PasswordController {
     @Autowired
     private PasswordForgetService passwordForgetService;
 
-    @Autowired
-    private UserService userService;
     @Autowired
     private MessageSource messageSource;
 
@@ -107,5 +104,13 @@ public class PasswordController {
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(passwordForgetService.reset(passwordForgetDTO, captcha, pwd), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/check_disable")
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity<PasswordForgetDTO> checkDisable(HttpServletRequest request) {
+        String emailAddress = request.getParameter("emailAddress");
+        return new ResponseEntity<>(passwordForgetService.checkDisable(emailAddress), HttpStatus.OK);
     }
 }
