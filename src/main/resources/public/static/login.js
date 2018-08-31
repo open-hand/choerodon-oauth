@@ -164,3 +164,6 @@ ReactDOM.render(
 ReactDOM.render(
   <LoginButton/>,
   document.getElementById('loginButton'));
+ReactDOM.render(
+  <Input label="验证码" type="text" style={{width: '200px'}} name="captcha"/>,
+  document.getElementById('captchaInupt'));

@@ -182,6 +182,7 @@
       border-radius: 2px !important;
       width: 100%;
       height: 38px;
+      margin-bottom: 52px;
     }
 
 
@@ -308,7 +309,7 @@
         <div
           th:class="${usernameNotFoundOrPasswordIsWrong}? 'input-icon left inputError' : 'input-icon left inputNormal'">
           <div id="passwordInupt"></div>
-          <a class="forget-passwd" href="./password/find">忘记密码？</a>
+          <a class="forget-passwd" href="./password/find" th:test="${isNeedCaptcha}">忘记密码？</a>
           <!--<a class="forget-passwd" href="#">忘记密码？</a>-->
         </div>
       </div>
@@ -324,16 +325,16 @@
       <!-- 是否开启验证码-->
       <div th:if="${isNeedCaptcha}" class="control-group">
         <label class="control-label ">
-          验证码
+
         </label>
         <div class="controls">
-          <div style="display: flex; justify-content: space-between">
+          <div style="display: flex; justify-content: space-between; margin-top: 42px;">
             <div style="border-color: rgba(0,0,0,0.26)" class="input-icon left">
-              <!--<div id="captchaInupt"></div>-->
-              <input class="m-wrap " type="text" style="width: 200px" name="captcha"/>
+              <div id="captchaInupt"></div>
+              <!--<input class="m-wrap " type="text" style="width: 200px; border: 1px solid #ccc;" name="captcha"/>-->
             </div>
 
-            <div style="display: flex; align-items: center;">
+            <div style="display: flex; align-items: center; margin-left: 52px;">
               <img id="imgObj" src="public/captcha"
                    style="border: 1px solid #ccc; float: right ; width: 88px;height: 32px;"
                    onclick="changeImg()"/>
