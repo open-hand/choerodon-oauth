@@ -1,6 +1,6 @@
 const {Input, Button, Form, Icon} = window['choerodon-ui'];
 
-// const server = 'http://api.staging.saas.hand-china.com'; //本地测试的时候打开此注释
+//const server = 'http://api.staging.saas.hand-china.com'; //本地测试的时候打开此注释
 const server = '';
 const keyStr = "ABCDEFGHIJKLMNOP" + "QRSTUVWXYZabcdef" + "ghijklmnopqrstuv"
   + "wxyz0123456789+/" + "=";
@@ -24,6 +24,7 @@ class App extends window.React.Component {
     currentVCode: '',
     vCode: {},
     confirmDirty: false,
+    captchaCD: 0,
   };
 
   componentDidMount() {
@@ -33,8 +34,10 @@ class App extends window.React.Component {
     })
   }
 
+
   handleCaptchaButtonClick = () => {
-    const {currentUsername} = this.state;
+    const {currentUsername, captchaCD} = this.state;
+
     if (currentUsername === '') {
       this.setState({
         account: {
@@ -43,13 +46,42 @@ class App extends window.React.Component {
       });
       return;
     }
-    $.post(`${server}/oauth/password/send?emailAddress=${currentUsername}`, (results) => {
+    $.post(`${server}/oauth/password/check_disable?emailAddress=${currentUsername}`, (results) => {
       this.setState({
         account: {
           ...this.validateAccount(results),
         },
       });
+      if (results.success === true) {
+        $.post(`${server}/oauth/password/send?emailAddress=${currentUsername}`, (results2) => {
+          this.setState({
+            account: {
+              ...this.validateAccount(results2),
+            },
+          });
+        });
+      } else if (results.disableTime !== null){
+        this.setState({
+          captchaCD: results.disableTime - Math.round(new Date() / 1000),
+        },() => {
+          const timer = setInterval(() => {
+            this.setState({
+              captchaCD: this.state.captchaCD - 1,
+            }, () => {
+              if(this.state.captchaCD <=0 )
+                this.clearTimer(timer)
+            });
+          }, 1000)
+        });
+      }
     });
+  }
+
+  clearTimer = (timer) => {
+    this.setState({
+      captchaCD: 0,
+    })
+    clearInterval(timer)
   }
 
   handleValueChange = (e) => {
@@ -64,14 +96,31 @@ class App extends window.React.Component {
     })
   }
 
+  componentDidUpdate() {
+
+  }
+
   validateAccount = (results) => {
+    const { captchaCD : CD } = this.state;
     if (!results) {
       return {
         validateStatus: 'error',
         errorMsg: '请输入用户邮箱',
       };
     }
-    if (results.success) {
+    if (results.success && results.user) {
+      this.setState({
+        captchaCD: 60,
+      },() => {
+        const timer = setInterval(() => {
+          this.setState({
+            captchaCD: this.state.captchaCD - 1,
+          }, () => {
+            if(this.state.captchaCD <=0 )
+              this.clearTimer(timer)
+          });
+        }, 1000)
+      });
       return {
         validateStatus: 'success',
         errorMsg: '验证码发送成功',
@@ -133,7 +182,7 @@ class App extends window.React.Component {
       // const { password, currentUsername } = this.state;
       // const encodePasswd = this.encode(password);
       // $.post(`${server}/oauth/login?username=${currentUsername}&password=${encodePasswd}`)
-      window.location.href='/oauth/login';
+      window.location.href = '/oauth/login';
     }
 
   }
@@ -181,7 +230,7 @@ class App extends window.React.Component {
 
   renderStep1 = () => {
     const {form} = this.props;
-    const {account, vCode} = this.state;
+    const {account, vCode, captchaCD} = this.state;
     const {getFieldDecorator} = form;
     return (
       <div>
@@ -198,8 +247,8 @@ class App extends window.React.Component {
                 message: '请输入邮箱',
               }],
             })(
-              <Input autoFocus autoComplete="off" label="登录账号" name="username" id="username"
-                     onChange={e => this.handleValueChange(e)} placeholder="登录名/邮箱" value={this.state.currentUsername}
+              <Input autoFocus autoComplete="off" label="登录邮箱" name="username" id="username"
+                     onChange={e => this.handleValueChange(e)} placeholder="请输入邮箱" value={this.state.currentUsername}
               />
             )}
           </FormItem>
@@ -215,11 +264,11 @@ class App extends window.React.Component {
               }],
             })(
               <div>
-                <Input type="text" style={{width: '241px'}} autoComplete="off" label="验证码" id="captchaInput"
+                <Input type="text" style={{width: '237px'}} autoComplete="off" label="验证码" id="captchaInput"
                        onChange={e => this.handleCodeChange(e)} placeholder="请输入验证码" value={this.state.currentVCode}
                 />
-                <Button funcType="raised" onClick={this.handleCaptchaButtonClick}
-                        style={{marginLeft: '33px'}}>发送验证码</Button>
+                <Button funcType="raised" onClick={this.handleCaptchaButtonClick} loading={captchaCD > 0}
+                        style={{float: 'right'}}>{captchaCD === 0 ? '发送验证码' : `${captchaCD}秒后重试`}</Button>
               </div>
             )}
           </FormItem>
@@ -271,10 +320,12 @@ class App extends window.React.Component {
   }
 
   renderStep3 = () => {
-    const { currentUsername } = this.state;
+    const {currentUsername} = this.state;
     return (
       <div>
-        <div className="congratulation"><Icon type="done" style={{ fontSize: 30, color: '#3F51B5', marginRight: '23.8px'}}/>恭喜</div>
+        <div className="congratulation"><Icon type="done"
+                                              style={{fontSize: 30, color: '#3F51B5', marginRight: '23.8px'}}/>恭喜
+        </div>
         <div className="change-password-success">{`您的账号“${currentUsername}”重置密码成功`}</div>
         <Button className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
                 style={{paddingTop: '4px', marginTop: '80px'}}><span>直接登录</span></Button>

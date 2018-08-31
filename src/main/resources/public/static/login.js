@@ -74,7 +74,7 @@ class LoginButton extends window.React.Component {
 
   render() {
     return (
-      <Button className="btn" onClick={this.handleButtonClickTest} loading={this.state.loading}
+      <Button className="btn" onClick={this.handleButtonClickTest} funcType="raised" loading={this.state.loading}
               htmlStyle="padding-top:4px"><span>{this.state.loading ? '登录中' : '登录'}</span></Button>
     )
   }
