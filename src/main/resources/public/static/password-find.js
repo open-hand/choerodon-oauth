@@ -1,7 +1,7 @@
 const {Input, Button, Form, Icon} = window['choerodon-ui'];
 
-//const server = 'http://api.staging.saas.hand-china.com'; //本地测试的时候打开此注释
-const server = '';
+const server = 'http://api.staging.saas.hand-china.com'; //本地测试的时候打开此注释
+//const server = '';
 const keyStr = "ABCDEFGHIJKLMNOP" + "QRSTUVWXYZabcdef" + "ghijklmnopqrstuv"
   + "wxyz0123456789+/" + "=";
 const formItemLayout = {
@@ -164,6 +164,7 @@ class App extends window.React.Component {
             ...this.validateCode(results),
           },
           userId: results.user.id,
+          loginName: results.user.loginName,
         });
       });
     }
@@ -179,10 +180,10 @@ class App extends window.React.Component {
     }
 
     if (step === 3) {
-      // const { password, currentUsername } = this.state;
+      const { loginName } = this.state;
       // const encodePasswd = this.encode(password);
       // $.post(`${server}/oauth/login?username=${currentUsername}&password=${encodePasswd}`)
-      window.location.href = '/oauth/login';
+      window.location.href = `/oauth/login?username=${loginName}`;
     }
 
   }
@@ -320,13 +321,13 @@ class App extends window.React.Component {
   }
 
   renderStep3 = () => {
-    const {currentUsername} = this.state;
+    const { loginName } = this.state;
     return (
       <div>
         <div className="congratulation"><Icon type="done"
                                               style={{fontSize: 30, color: '#3F51B5', marginRight: '23.8px'}}/>恭喜
         </div>
-        <div className="change-password-success">{`您的账号“${currentUsername}”重置密码成功`}</div>
+        <div className="change-password-success">{`您的账号“${loginName}”重置密码成功`}</div>
         <Button className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
                 style={{paddingTop: '4px', marginTop: '80px'}}><span>直接登录</span></Button>
       </div>
