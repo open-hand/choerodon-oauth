@@ -1,7 +1,7 @@
 const {Input, Button, Form, Icon} = window['choerodon-ui'];
 
-const server = 'http://api.staging.saas.hand-china.com'; //本地测试的时候打开此注释
-//const server = '';
+//const server = 'http://api.staging.saas.hand-china.com'; //本地测试的时候打开此注释
+const server = '';
 const keyStr = "ABCDEFGHIJKLMNOP" + "QRSTUVWXYZabcdef" + "ghijklmnopqrstuv"
   + "wxyz0123456789+/" + "=";
 const formItemLayout = {
