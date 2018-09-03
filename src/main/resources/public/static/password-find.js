@@ -223,6 +223,14 @@ class App extends window.React.Component {
     }
   }
 
+  validateToNextPassword = (rule, value, callback) => {
+    const form = this.props.form;
+    if (value && this.state.confirmDirty) {
+      form.validateFields(['password1'], {force: true});
+    }
+    callback();
+  }
+
   handleConfirmBlur = (e) => {
     const value = e.target.value;
     this.setState({confirmDirty: this.state.confirmDirty || !!value});
@@ -294,9 +302,11 @@ class App extends window.React.Component {
             {getFieldDecorator('password', {
               rules: [{
                 required: true, message: '请输入密码',
+              },{
+                validator: this.validateToNextPassword,
               }],
             })(
-              <Input label="新密码" type="password"/>
+              <Input showPasswordEye label="新密码" type="password"/>
             )}
           </FormItem>
           <FormItem
@@ -310,7 +320,7 @@ class App extends window.React.Component {
                 validator: this.compareToFirstPassword,
               }],
             })(
-              <Input label="确认新密码" type="password" onBlur={this.handleConfirmBlur}/>
+              <Input showPasswordEye label="确认新密码" type="password" onBlur={this.handleConfirmBlur}/>
             )}
           </FormItem>
           <Button className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
