@@ -146,8 +146,10 @@ class PasswordInput extends window.React.Component {
 
   render() {
     return (
+      <div>
       <Input type="password" onChange={e => this.onValueChange(e)} autoComplete="off" label=" " id="password"
-             placeholder="请输入密码" defaultValue=""/>
+             placeholder="请输入密码" defaultValue="" showPasswordEye/>
+      </div>
     )
   }
 }
