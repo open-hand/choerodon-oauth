@@ -9,9 +9,9 @@ public class UserDTO {
     private String email;
 
     public UserDTO(Long id, String loginName, String email) {
-        this.id = id;
-        this.loginName = loginName;
-        this.email = email;
+        this.setId(id);
+        this.setLoginName(loginName);
+        this.setEmail(email);
     }
 
     public Long getId() {

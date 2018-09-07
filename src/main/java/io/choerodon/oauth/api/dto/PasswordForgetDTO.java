@@ -11,17 +11,11 @@ public class PasswordForgetDTO {
     private Long disableTime;
 
     public PasswordForgetDTO() {
-        this.success = true;
+        this.setSuccess(true);
     }
 
     public PasswordForgetDTO(Boolean success) {
-        this.success = success;
-    }
-
-    public PasswordForgetDTO(String msg, String code) {
-        this.success = false;
-        this.msg = msg;
-        this.code = code;
+        this.setSuccess(success);
     }
 
     public Boolean getSuccess() {

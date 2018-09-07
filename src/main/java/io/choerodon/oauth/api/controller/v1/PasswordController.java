@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import io.choerodon.oauth.api.dto.PasswordForgetDTO;
 import io.choerodon.oauth.api.service.PasswordForgetService;
@@ -37,7 +34,7 @@ public class PasswordController {
      *
      * @return path
      */
-    @RequestMapping(value = "/find", method = RequestMethod.GET)
+    @GetMapping(value = "/find")
     public String find(HttpServletRequest request) {
         request.getSession().removeAttribute("userId");
         request.getSession().removeAttribute("userName");

@@ -66,33 +66,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserE checkUserByEmail(HttpServletRequest request, String email) {
-        if (!userValidator.emailValidator(email)) {
-            request.getSession().setAttribute("errorCode", PasswordFindException.EMAIL_FORMAT_ILLEGAL.value());
-            request.getSession().setAttribute("errorMsg", messageSource.getMessage(PasswordFindException.EMAIL_FORMAT_ILLEGAL.value(), null, Locale.ROOT));
-            return null;
-        }
-
-        UserE user = new UserE();
-        user.setEmail(email);
-        user = userMapper.selectOne(user);
-
-        if (null == user) {
-            request.getSession().setAttribute("errorCode", PasswordFindException.ACCOUNT_NOT_EXIST.value());
-            request.getSession().setAttribute("errorMsg", messageSource.getMessage(PasswordFindException.ACCOUNT_NOT_EXIST.value(), null, Locale.ROOT));
-            return null;
-        }
-
-        if (user.getLdap()) {
-            request.getSession().setAttribute("errorCode", PasswordFindException.LDAP_CANNOT_CHANGE_PASSWORD.value());
-            request.getSession().setAttribute("errorMsg", messageSource.getMessage(PasswordFindException.LDAP_CANNOT_CHANGE_PASSWORD.value(), null, Locale.ROOT));
-            return null;
-        }
-
-        return user;
-    }
-
-    @Override
     public UserE queryByEmail(String email) {
         UserE user = new UserE();
         user.setEmail(email);
