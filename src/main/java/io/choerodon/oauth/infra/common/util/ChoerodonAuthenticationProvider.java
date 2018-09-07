@@ -46,8 +46,6 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
     private String serviceName;
     @Autowired
     private CustomUserDetailsServiceImpl userDetailsService;
-    @Autowired
-    private OrganizationMapper organizationMapper;
 
     @Autowired
     private OrganizationService organizationService;
