@@ -17,10 +17,10 @@ public class EmailSendDTO {
     }
 
     public EmailSendDTO(String code, String destinationEmail, Map<String, Object> variables) {
-        this.code = code;
-        this.destinationEmail = destinationEmail;
-        this.variables = variables;
-    }
+        this.setCode(code);
+        this.setDestinationEmail(destinationEmail);
+        this.setVariables(variables);
+        }
 
     public String getCode() {
         return code;

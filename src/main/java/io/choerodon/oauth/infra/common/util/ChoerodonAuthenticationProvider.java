@@ -41,7 +41,7 @@ import io.choerodon.oauth.infra.mapper.OrganizationMapper;
 public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     private static final String DATA_FORMAT = "MM月dd日 HH:mm";
-    private static final Logger logger = LoggerFactory.getLogger(ChoerodonAuthenticationProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractUserDetailsAuthenticationProvider.class);
     @Value("${spring.application.name:oauth-server}")
     private String serviceName;
     @Autowired
@@ -171,7 +171,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         if (null == organization) {
             throw new AuthenticationServiceException(LoginException.ORGANIZATION_NOT_EXIST.value());
         }
-        if (false == organization.getEnabled()) {
+        if (!organization.getEnabled()) {
             throw new AuthenticationServiceException(LoginException.ORGANIZATION_NOT_ENABLE.value());
         }
     }
