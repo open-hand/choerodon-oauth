@@ -41,13 +41,11 @@ import io.choerodon.oauth.infra.mapper.OrganizationMapper;
 public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     private static final String DATA_FORMAT = "MM月dd日 HH:mm";
-    private static final Logger logger = LoggerFactory.getLogger(AbstractUserDetailsAuthenticationProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChoerodonAuthenticationProvider.class);
     @Value("${spring.application.name:oauth-server}")
     private String serviceName;
     @Autowired
     private CustomUserDetailsServiceImpl userDetailsService;
-    @Autowired
-    private OrganizationMapper organizationMapper;
 
     @Autowired
     private OrganizationService organizationService;
@@ -89,7 +87,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
                 && (user.getLocked() == null || (user.getLocked() != null && !user.getLocked()))) {
             //DONE 锁定用户
             Integer lockExpireTime = passwordPolicy.getLockedExpireTime();
-            logger.info("begin lock user, userId is: {} ", baseUserDO.getId());
+            LOGGER.info("begin lock user, userId is: {} ", baseUserDO.getId());
             baseUserService.lockUser(baseUserDO.getId(), lockExpireTime);
             user = userService.queryByLoginField(username);
         }
