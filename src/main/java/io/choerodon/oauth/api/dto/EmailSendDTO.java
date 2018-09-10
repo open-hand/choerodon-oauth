@@ -20,7 +20,7 @@ public class EmailSendDTO {
         this.setCode(code);
         this.setDestinationEmail(destinationEmail);
         this.setVariables(variables);
-        }
+    }
 
     public String getCode() {
         return code;

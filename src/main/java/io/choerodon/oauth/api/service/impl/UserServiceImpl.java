@@ -1,8 +1,5 @@
 package io.choerodon.oauth.api.service.impl;
 
-import java.util.Locale;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -12,7 +9,6 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.api.validator.UserValidator;
 import io.choerodon.oauth.domain.entity.UserE;
-import io.choerodon.oauth.infra.enums.PasswordFindException;
 import io.choerodon.oauth.infra.mapper.UserMapper;
 
 /**

@@ -32,7 +32,6 @@ import io.choerodon.oauth.domain.entity.UserE;
 import io.choerodon.oauth.infra.common.util.ldap.LdapUtil;
 import io.choerodon.oauth.infra.enums.LoginException;
 import io.choerodon.oauth.infra.exception.CustomAuthenticationException;
-import io.choerodon.oauth.infra.mapper.OrganizationMapper;
 
 /**
  * @author wuguokai

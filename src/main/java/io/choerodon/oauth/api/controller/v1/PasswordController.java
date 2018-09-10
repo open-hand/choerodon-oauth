@@ -44,8 +44,7 @@ public class PasswordController {
 
     @PostMapping(value = "/send")
     @ResponseBody
-    public ResponseEntity<PasswordForgetDTO> send(HttpServletRequest request) {
-        String emailAddress = request.getParameter("emailAddress");
+    public ResponseEntity<PasswordForgetDTO> send(@RequestParam("emailAddress") String emailAddress) {
         PasswordForgetDTO passwordForgetDTO = passwordForgetService.checkUserByEmail(emailAddress);
         if (!passwordForgetDTO.getSuccess()) {
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
@@ -55,10 +54,9 @@ public class PasswordController {
 
     @PostMapping(value = "/check")
     @ResponseBody
-    public ResponseEntity<PasswordForgetDTO> check(HttpServletRequest request) {
-        String emailAddress = request.getParameter("emailAddress");
-        String captcha = request.getParameter("captcha");
-
+    public ResponseEntity<PasswordForgetDTO> check(
+            @RequestParam("emailAddress") String emailAddress,
+            @RequestParam("captcha") String captcha) {
         PasswordForgetDTO passwordForgetDTO = passwordForgetService.checkUserByEmail(emailAddress);
         if (!passwordForgetDTO.getSuccess()) {
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
@@ -69,14 +67,12 @@ public class PasswordController {
     @PostMapping(value = "/reset")
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<PasswordForgetDTO> reset(HttpServletRequest request) {
-
-        String emailAddress = request.getParameter("emailAddress");
-        String captcha = request.getParameter("captcha");
-        Long userId = Long.valueOf(request.getParameter("userId"));
-
-        String pwd = request.getParameter("password");
-        String pwd1 = request.getParameter("password1");
+    public ResponseEntity<PasswordForgetDTO> reset(
+            @RequestParam("emailAddress") String emailAddress,
+            @RequestParam("captcha") String captcha,
+            @RequestParam("userId") Long userId,
+            @RequestParam("password") String pwd,
+            @RequestParam("password1") String pwd1) {
         PasswordForgetDTO passwordForgetDTO;
         if (!pwd.equals(pwd1)) {
             passwordForgetDTO = new PasswordForgetDTO(false);
@@ -106,8 +102,7 @@ public class PasswordController {
     @PostMapping(value = "/check_disable")
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<PasswordForgetDTO> checkDisable(HttpServletRequest request) {
-        String emailAddress = request.getParameter("emailAddress");
+    public ResponseEntity<PasswordForgetDTO> checkDisable(@RequestParam("emailAddress") String emailAddress) {
         return new ResponseEntity<>(passwordForgetService.checkDisable(emailAddress), HttpStatus.OK);
     }
 }
