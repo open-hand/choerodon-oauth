@@ -15,16 +15,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class RedisTokenUtil {
 
-    @Value("${choerodon.password.reset.invalidSecond:600}")
-    private Long invalidSecond;
-
-    @Value("${choerodon.password.reset.disableSecond:60}")
-    private Long disableSecond;
-
     public static final String SHORT_CODE = "short";
     public static final String LONG_CODE = "uuid";
     public static final String NAME_SPACE = "choerodon:token";
-
+    @Value("${choerodon.password.reset.invalidSecond:600}")
+    private Long invalidSecond;
+    @Value("${choerodon.password.reset.disableSecond:60}")
+    private Long disableSecond;
     @Autowired
     private StringRedisTemplate redisTemplate;
 
