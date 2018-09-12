@@ -236,6 +236,10 @@ class App extends window.React.Component {
     this.setState({confirmDirty: this.state.confirmDirty || !!value});
   }
 
+  backLogin = () => {
+    window.location.href = `/oauth/login`;
+  }
+
 
   renderStep1 = () => {
     const {form} = this.props;
@@ -281,8 +285,11 @@ class App extends window.React.Component {
               </div>
             )}
           </FormItem>
-          <Button className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
-                  style={{paddingTop: '4px', marginTop: '38px'}}><span>下一步</span></Button>
+          <FormItem style={{marginTop: '60px'}}>
+            <a className="back-to-login" href="/oauth/login" style={{float: 'left'}}>返回登陆</a>
+            <Button className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
+                    style={{width: '120px',float: 'right', paddingTop: '4px'}}><span>下一步</span></Button>
+          </FormItem>
         </Form>
       </div>
     )
