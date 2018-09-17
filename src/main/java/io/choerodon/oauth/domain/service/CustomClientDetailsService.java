@@ -15,7 +15,6 @@ import org.springframework.util.StringUtils;
 
 import io.choerodon.core.oauth.CustomClientDetails;
 import io.choerodon.oauth.domain.entity.ClientE;
-import io.choerodon.oauth.infra.config.OauthProperties;
 import io.choerodon.oauth.infra.mapper.ClientMapper;
 
 /**
@@ -27,9 +26,6 @@ public class CustomClientDetailsService implements ClientDetailsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomClientDetailsService.class);
     @Autowired
     private ClientMapper clientMapper;
-
-    @Autowired
-    private OauthProperties choerodonOauthProperties;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -49,10 +45,10 @@ public class CustomClientDetailsService implements ClientDetailsService {
         clientDetails.setRegisteredRedirectUri(StringUtils
                 .commaDelimitedListToSet(clientE.getWebServerRedirectUri()));
         clientDetails.setAuthorities(Collections.emptyList());
-        clientDetails.setAccessTokenValiditySeconds(choerodonOauthProperties.getAccessTokenValiditySeconds());
-        if (clientE.getRefreshTokenValidity() != null) {
-            clientDetails.setRefreshTokenValiditySeconds(clientE.getRefreshTokenValidity().intValue());
-        }
+        int accessTokenValidity = clientE.getAccessTokenValidity() != null ? clientE.getAccessTokenValidity().intValue() : 3600;
+        clientDetails.setAccessTokenValiditySeconds(accessTokenValidity);
+        int refreshTokenValidity = clientE.getRefreshTokenValidity() != null ? clientE.getRefreshTokenValidity().intValue() : 3600;
+        clientDetails.setRefreshTokenValiditySeconds(refreshTokenValidity);
         clientDetails.setOrganizationId(1L);
         String json = clientE.getAdditionalInformation();
         if (json != null) {

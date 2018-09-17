@@ -27,11 +27,11 @@ public class CustomTokenStore extends JdbcTokenStore {
     private AccessTokenMapper accessTokenMapper;
 
     @Autowired
-    private ChoerodonDAuthenticationKeyGenerator authenticationKeyGenerator;
+    private ChoerodonAuthenticationKeyGenerator authenticationKeyGenerator;
 
     @Autowired
     public CustomTokenStore(DataSource dataSource,
-                            ChoerodonDAuthenticationKeyGenerator authenticationKeyGenerator) {
+                            ChoerodonAuthenticationKeyGenerator authenticationKeyGenerator) {
         super(dataSource);
         setAuthenticationKeyGenerator(authenticationKeyGenerator);
     }

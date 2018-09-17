@@ -22,7 +22,7 @@ import org.springframework.util.StringUtils;
  * @author zhipeng.zuo
  */
 @Service
-public class ChoerodonDAuthenticationKeyGenerator implements AuthenticationKeyGenerator {
+public class ChoerodonAuthenticationKeyGenerator implements AuthenticationKeyGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationKeyGenerator.class);
 
