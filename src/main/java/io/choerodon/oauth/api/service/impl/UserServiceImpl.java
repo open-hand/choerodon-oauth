@@ -2,7 +2,6 @@ package io.choerodon.oauth.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import io.choerodon.core.exception.CommonException;
@@ -23,8 +22,6 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Autowired
     private UserValidator userValidator;
-    @Autowired
-    private MessageSource messageSource;
 
     @Override
     public UserE queryByLoginField(String field) {
