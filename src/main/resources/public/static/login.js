@@ -21,13 +21,7 @@ class LoginButton extends window.React.Component {
 
   handleButtonClickTest = (e) => {
     this.setState({loading: true})
-    const promise = new Promise((resolve, reject) => {
-      setTimeout(resolve, 2000)
-    });
-
-    promise.then(() => {
-      this.setState({loading: false})
-    })
+  
     $("#usernameIsNullMsg").css('display', 'none');
     $("#passwordIsNullMsg").css('display', 'none');
     $("#usernameOrPasswordNotFoundMsg").html("");
