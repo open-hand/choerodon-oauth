@@ -12,6 +12,7 @@ import javax.naming.ldap.LdapContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.domain.entity.LdapE;
 
 /**
@@ -152,8 +153,7 @@ public class LdapUtil {
             ldapContext.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
             ldapContext.reconnect(null);
         } catch (NamingException e) {
-            LOGGER.info("ldap authenticate fail: {}", e);
-            return false;
+            throw new CommonException("ldap authenticate fail", e);
         }
         return true;
     }
