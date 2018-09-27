@@ -153,7 +153,8 @@ public class LdapUtil {
             ldapContext.addToEnvironment(Context.SECURITY_CREDENTIALS, password);
             ldapContext.reconnect(null);
         } catch (NamingException e) {
-            throw new CommonException("ldap authenticate fail", e);
+            LOGGER.info("ldap authenticate fail: {}", e);
+            return false;
         }
         return true;
     }
