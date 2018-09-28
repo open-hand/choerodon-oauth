@@ -29,10 +29,12 @@ class LoginButton extends window.React.Component {
     var password = $.trim($("#password").val());
     if (username == '') {
       $("#usernameIsNullMsg").css('display', 'block');
+      this.setState({loading: false})
       return;
     }
     if (password == '') {
       $("#passwordIsNullMsg").css('display', 'block');
+      this.setState({loading: false})
       return;
     }
     $("#md5_password").val(this.encode(password));
