@@ -17,6 +17,8 @@ public enum LoginException {
 
     USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG("usernameNotFoundOrPasswordIsWrong"),
 
+    LDAP_IS_DISABLE("ldapIsDisable"),
+
     ORGANIZATION_NOT_EXIST("organizationNotExist"),
 
     ORGANIZATION_NOT_ENABLE("organizationNotEnable");

@@ -150,7 +150,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
             if (ldap != null && ldap.getEnabled()) {
                 isPass = LdapUtil.authenticate(loginName, credentials, ldap) != null;
             } else {
-                isPass = false;
+                throw new AuthenticationServiceException(LoginException.LDAP_IS_DISABLE.value());
             }
         } else {
             BCryptPasswordEncoder encode = new BCryptPasswordEncoder();
