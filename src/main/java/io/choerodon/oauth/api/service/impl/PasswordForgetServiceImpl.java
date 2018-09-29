@@ -169,7 +169,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
     private void sendSiteMsg(Long userId, String userName) {
         WsSendDTO wsSendDTO = new WsSendDTO();
-        wsSendDTO.setCode("site-msg");
+        wsSendDTO.setCode("modifyPassword");
         wsSendDTO.setId(userId);
         wsSendDTO.setTemplateCode("modifyPassword-preset");
         Map<String, Object> paramsMap = new HashMap<>();
