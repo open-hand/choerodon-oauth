@@ -12,6 +12,7 @@ import javax.naming.ldap.LdapContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.domain.entity.LdapE;
 
 /**

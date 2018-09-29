@@ -16,6 +16,7 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.api.dto.EmailSendDTO;
 import io.choerodon.oauth.api.dto.PasswordForgetDTO;
 import io.choerodon.oauth.api.dto.UserDTO;
+import io.choerodon.oauth.api.dto.WsSendDTO;
 import io.choerodon.oauth.api.service.PasswordForgetService;
 import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.api.validator.UserValidator;
@@ -106,6 +107,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             return passwordForgetDTO;
         } catch (CommonException e) {
             passwordForgetDTO.setSuccess(false);
+            LOGGER.warn("The mail send error. {} {}", e.getCode(), e);
             return passwordForgetDTO;
         }
 
@@ -142,6 +144,8 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             passwordRecord.updatePassword(user.getId(), ENCODER.encode(password));
             passwordForgetDTO.setSuccess(true);
             passwordForgetDTO.setUser(new UserDTO(userE.getId(), userE.getLoginName(), user.getEmail()));
+
+            this.sendSiteMsg(user.getId(), user.getRealName());
             return passwordForgetDTO;
         }
 
@@ -161,5 +165,20 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             passwordForgetDTO.setCode(PasswordFindException.DISABLE_SEND.value());
         }
         return passwordForgetDTO;
+    }
+
+    private void sendSiteMsg(Long userId, String userName) {
+        WsSendDTO wsSendDTO = new WsSendDTO();
+        wsSendDTO.setCode("modifyPassword");
+        wsSendDTO.setId(userId);
+        wsSendDTO.setTemplateCode("modifyPassword-preset");
+        Map<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put("userName", userName);
+        wsSendDTO.setParams(paramsMap);
+        try {
+            notifyFeignClient.postPm(wsSendDTO);
+        } catch (CommonException e) {
+            LOGGER.warn("The site msg send error. {} {}", e.getCode(), e);
+        }
     }
 }
