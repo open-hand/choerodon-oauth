@@ -10,15 +10,12 @@ spring:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=Mysql;TRACE_LEVEL_SYSTEM_OUT=2;
     username: sa
   autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+    exclude: org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration,org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
   h2:
     console:
       enabled: true
-  redis:
-    pool:
-      max-active: 5000
-      max-idle: 100
-      max-wait: 10000
+  session:
+    store-type: hash_map
 hystrix:
   stream:
     queue:
@@ -28,4 +25,6 @@ data:
 eureka:
   client:
     enabled: false
-
+choerodon:
+  redisHttpSession:
+    enabled: false

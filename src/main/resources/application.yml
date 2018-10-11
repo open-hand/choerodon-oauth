@@ -49,6 +49,8 @@ ribbon:
   ReadTimeout: 10000
   ConnectTimeout: 10000
 choerodon:
+  redisHttpSession:
+    enabled: true
   oauth:
     clear-token: true
     enabled-single-login: false
