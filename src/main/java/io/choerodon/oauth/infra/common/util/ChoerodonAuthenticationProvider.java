@@ -62,6 +62,38 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
     @Autowired
     private UserService userService;
 
+    public void setUserDetailsService(CustomUserDetailsServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    public void setOrganizationService(OrganizationService organizationService) {
+        this.organizationService = organizationService;
+    }
+
+    public void setBasePasswordPolicyMapper(BasePasswordPolicyMapper basePasswordPolicyMapper) {
+        this.basePasswordPolicyMapper = basePasswordPolicyMapper;
+    }
+
+    public void setBaseUserService(BaseUserService baseUserService) {
+        this.baseUserService = baseUserService;
+    }
+
+    public void setPasswordRecord(PasswordRecord passwordRecord) {
+        this.passwordRecord = passwordRecord;
+    }
+
+    public void setPasswordPolicyManager(PasswordPolicyManager passwordPolicyManager) {
+        this.passwordPolicyManager = passwordPolicyManager;
+    }
+
+    public void setLdapService(LdapService ldapService) {
+        this.ldapService = ldapService;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
     @Override
     protected UserDetails retrieveUser(
             String username,

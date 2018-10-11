@@ -36,6 +36,17 @@ public class CustomTokenStore extends JdbcTokenStore {
         setAuthenticationKeyGenerator(authenticationKeyGenerator);
     }
 
+    public void setOauthProperties(OauthProperties oauthProperties) {
+        this.oauthProperties = oauthProperties;
+    }
+
+    public void setAccessTokenMapper(AccessTokenMapper accessTokenMapper) {
+        this.accessTokenMapper = accessTokenMapper;
+    }
+
+    public void setAuthenticationKeyGenerator(ChoerodonAuthenticationKeyGenerator authenticationKeyGenerator) {
+        this.authenticationKeyGenerator = authenticationKeyGenerator;
+    }
 
     @Override
     public OAuth2AccessToken getAccessToken(OAuth2Authentication authentication) {

@@ -25,6 +25,10 @@ public class RedisTokenUtil {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+    public void setRedisTemplate(StringRedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
     public String createLongToken() {
         return UUID.randomUUID().toString();
     }

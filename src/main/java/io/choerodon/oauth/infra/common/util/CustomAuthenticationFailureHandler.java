@@ -32,6 +32,14 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Autowired
     private UserService userService;
 
+    public void setLoginRecord(LoginRecord loginRecord) {
+        this.loginRecord = loginRecord;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
     @Override
     public void onAuthenticationFailure(
             HttpServletRequest request,

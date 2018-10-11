@@ -61,6 +61,21 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         this.passwordRecord = passwordRecord;
     }
 
+    public void setNotifyFeignClient(NotifyFeignClient notifyFeignClient) {
+        this.notifyFeignClient = notifyFeignClient;
+    }
+
+    public void setRedisTokenUtil(RedisTokenUtil redisTokenUtil) {
+        this.redisTokenUtil = redisTokenUtil;
+    }
+
+    public void setUserValidator(UserValidator userValidator) {
+        this.userValidator = userValidator;
+    }
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @Override
     public PasswordForgetDTO checkUserByEmail(String email) {

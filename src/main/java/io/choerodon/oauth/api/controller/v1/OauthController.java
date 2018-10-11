@@ -78,6 +78,30 @@ public class OauthController {
         this.basePasswordPolicyMapper = basePasswordPolicyMapper;
     }
 
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    public void setCaptchaProducer(DefaultKaptcha captchaProducer) {
+        this.captchaProducer = captchaProducer;
+    }
+
+    public void setBasePasswordPolicyMapper(BasePasswordPolicyMapper basePasswordPolicyMapper) {
+        this.basePasswordPolicyMapper = basePasswordPolicyMapper;
+    }
+
+    public void setPasswordPolicyManager(PasswordPolicyManager passwordPolicyManager) {
+        this.passwordPolicyManager = passwordPolicyManager;
+    }
+
+    public void setLoginProfile(String loginProfile) {
+        this.loginProfile = loginProfile;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
     @GetMapping(value = "/")
     public String index() {
         return "redirect:" + defaultUrl;
@@ -161,7 +185,7 @@ public class OauthController {
     }
 
     @ResponseBody
-    @RequestMapping("/api/user")
+    @RequestMapping("/api/user" )
     public Principal user(Principal principal) {
         return principal;
     }

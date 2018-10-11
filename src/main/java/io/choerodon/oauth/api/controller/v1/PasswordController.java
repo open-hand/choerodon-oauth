@@ -29,6 +29,14 @@ public class PasswordController {
     @Autowired
     private MessageSource messageSource;
 
+    public void setPasswordForgetService(PasswordForgetService passwordForgetService) {
+        this.passwordForgetService = passwordForgetService;
+    }
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
     /**
      * 进入找回密码页面
      *
