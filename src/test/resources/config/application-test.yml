@@ -18,9 +18,11 @@ hystrix:
   stream:
     queue:
       enabled: false
-data:
-  dir: src/test/resources
+#data:
+#  dir: src/test/resources
 eureka:
   client:
     enabled: false
+redis:
+  enabled: false
 
