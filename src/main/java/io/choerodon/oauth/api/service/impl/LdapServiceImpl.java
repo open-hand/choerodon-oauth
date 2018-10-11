@@ -16,6 +16,10 @@ public class LdapServiceImpl implements LdapService {
     @Autowired
     private LdapMapper ldapMapper;
 
+    public void setLdapMapper(LdapMapper ldapMapper) {
+        this.ldapMapper = ldapMapper;
+    }
+
     @Override
     public LdapE queryByOrgId(Long orgId) {
         LdapE ldapE = new LdapE();

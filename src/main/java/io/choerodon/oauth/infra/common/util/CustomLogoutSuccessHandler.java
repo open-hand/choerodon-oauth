@@ -31,6 +31,14 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     @Value("${choerodon.oauth.login.path:/login}")
     private String loginPath;
 
+    public void setOauthProperties(OauthProperties oauthProperties) {
+        this.oauthProperties = oauthProperties;
+    }
+
+    public void setCustomTokenStore(CustomTokenStore customTokenStore) {
+        this.customTokenStore = customTokenStore;
+    }
+
     @Override
     public void onLogoutSuccess(
             HttpServletRequest request,

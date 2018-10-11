@@ -21,6 +21,10 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserService userService;
 
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
     /**
      * 通过用户名加载用户对象
      *

@@ -46,6 +46,18 @@ public class CustomAuthenticationSuccessHandler extends
         this.setDefaultTargetUrl(defaultUrl);
     }
 
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    public void setLoginRecord(LoginRecord loginRecord) {
+        this.loginRecord = loginRecord;
+    }
+
+    public void setUseSSL(boolean useSSL) {
+        this.useSSL = useSSL;
+    }
+
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,

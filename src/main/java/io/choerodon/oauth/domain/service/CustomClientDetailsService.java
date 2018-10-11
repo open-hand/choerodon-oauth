@@ -27,6 +27,10 @@ public class CustomClientDetailsService implements ClientDetailsService {
     @Autowired
     private ClientMapper clientMapper;
 
+    public void setClientMapper(ClientMapper clientMapper) {
+        this.clientMapper = clientMapper;
+    }
+
     private ObjectMapper mapper = new ObjectMapper();
 
     @Override
