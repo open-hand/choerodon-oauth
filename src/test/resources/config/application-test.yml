@@ -15,7 +15,10 @@ spring:
     console:
       enabled: true
   redis:
-    enabled: false
+    pool:
+      max-active: 5000
+      max-idle: 100
+      max-wait: 10000
 hystrix:
   stream:
     queue:
