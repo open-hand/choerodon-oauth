@@ -17,6 +17,7 @@ maven-test-branches:
     - develop
     - /^release-.*$/
     - /^hotfix-.*$/
+    - /^feature-.*$/
 
 maven-test-build:
   stage: mvn-package
@@ -32,6 +33,7 @@ maven-test-build:
     - develop
     - /^release-.*$/
     - /^hotfix-.*$/
+    - /^feature-.*$/
 
 docker-build:
   stage: docker-build

@@ -14,6 +14,8 @@ spring:
   h2:
     console:
       enabled: true
+  redis:
+    enabled: false
 hystrix:
   stream:
     queue:
