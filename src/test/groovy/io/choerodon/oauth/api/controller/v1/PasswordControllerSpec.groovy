@@ -56,23 +56,23 @@ class PasswordControllerSpec extends Specification {
     }
 
 
-    def "Check"() {
-        given: "准备参数"
-        def emailAddress = "test@test.com"
-        def captcha = "captcha"
-        and: "mock校验结果"
-        mockPasswordForgetService.checkUserByEmail(emailAddress) >> { return checkResult }
-        when: '向check接口发送post请求'
-        def codesEntity = testRestTemplate.postForEntity("/password/check?emailAddress={emailAddress}&captcha={captcha}", null, PasswordForgetDTO, emailAddress, captcha)
-        then: '结果分析'
-        noExceptionThrown()
-        codesEntity.statusCode.is2xxSuccessful()
-        num * mockPasswordForgetService.check(_, _)
-        where: "根据checkUser结果进行分支覆盖"
-        checkResult                           || num
-        new PasswordForgetDTO(success: false) || 0
-        new PasswordForgetDTO(success: true)  || 1
-    }
+//    def "Check"() {
+//        given: "准备参数"
+//        def emailAddress = "test@test.com"
+//        def captcha = "captcha"
+//        and: "mock校验结果"
+//        mockPasswordForgetService.checkUserByEmail(emailAddress) >> { return checkResult }
+//        when: '向check接口发送post请求'
+//        def codesEntity = testRestTemplate.postForEntity("/password/check?emailAddress={emailAddress}&captcha={captcha}", null, PasswordForgetDTO, emailAddress, captcha)
+//        then: '结果分析'
+//        noExceptionThrown()
+//        codesEntity.statusCode.is2xxSuccessful()
+//        num * mockPasswordForgetService.check(_, _)
+//        where: "根据checkUser结果进行分支覆盖"
+//        checkResult                           || num
+//        new PasswordForgetDTO(success: false) || 0
+//        new PasswordForgetDTO(success: true)  || 1
+//    }
 
     def "Reset"() {
         given: "准备参数"

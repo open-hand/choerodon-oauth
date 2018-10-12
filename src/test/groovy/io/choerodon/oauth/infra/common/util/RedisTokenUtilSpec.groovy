@@ -15,7 +15,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class RedisTokenUtilSpec extends Specification {
     @Autowired
     private RedisTokenUtil redisTokenUtil
-    private StringRedisTemplate mockRedisTemplate = Mock(StringRedisTemplate)
+    @Autowired
+    private StringRedisTemplate mockRedisTemplate
 
     void setup() {
         redisTokenUtil.setRedisTemplate(mockRedisTemplate)

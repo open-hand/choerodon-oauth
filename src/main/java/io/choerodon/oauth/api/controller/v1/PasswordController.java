@@ -11,8 +11,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import io.choerodon.oauth.api.dto.CaptchaCheckDTO;
 import io.choerodon.oauth.api.dto.PasswordForgetDTO;
 import io.choerodon.oauth.api.service.PasswordForgetService;
+import io.choerodon.oauth.api.service.PasswordPolicyService;
+import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.infra.enums.PasswordFindException;
 
 /**
@@ -25,7 +28,10 @@ public class PasswordController {
     private static final String DEFAULT_PAGE = "password-find";
     @Autowired
     private PasswordForgetService passwordForgetService;
-
+    @Autowired
+    private PasswordPolicyService passwordPolicyService;
+    @Autowired
+    private UserService userService;
     @Autowired
     private MessageSource messageSource;
 
@@ -62,14 +68,22 @@ public class PasswordController {
 
     @PostMapping(value = "/check")
     @ResponseBody
-    public ResponseEntity<PasswordForgetDTO> check(
+    public ResponseEntity<CaptchaCheckDTO> check(
             @RequestParam("emailAddress") String emailAddress,
             @RequestParam("captcha") String captcha) {
+        CaptchaCheckDTO check;
         PasswordForgetDTO passwordForgetDTO = passwordForgetService.checkUserByEmail(emailAddress);
         if (!passwordForgetDTO.getSuccess()) {
-            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
+            check = new CaptchaCheckDTO(passwordForgetDTO, null);
+            return new ResponseEntity<>(check, HttpStatus.OK);
         }
-        return new ResponseEntity<>(passwordForgetService.check(passwordForgetDTO, captcha), HttpStatus.OK);
+        PasswordForgetDTO passwordForgetCheck = passwordForgetService.check(passwordForgetDTO, captcha);
+        if(!passwordForgetCheck.getSuccess()){
+            check = new CaptchaCheckDTO(passwordForgetCheck, null);
+            return new ResponseEntity<>(check, HttpStatus.OK);
+        }
+        check = new CaptchaCheckDTO(passwordForgetCheck, passwordPolicyService.queryByOrgId(userService.queryByEmail(emailAddress).getOrganizationId()));
+        return new ResponseEntity<>(check, HttpStatus.OK);
     }
 
     @PostMapping(value = "/reset")

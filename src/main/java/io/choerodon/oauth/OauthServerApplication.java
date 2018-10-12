@@ -9,9 +9,9 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import io.choerodon.oauth.infra.config.OauthProperties;
+import io.choerodon.oauth.infra.redis.EnableRedisHttpSession;
 
 /**
  * @author wuguokai
@@ -41,4 +41,5 @@ public class OauthServerApplication {
         messageBundle.setDefaultEncoding("UTF-8");
         return messageBundle;
     }
+
 }
