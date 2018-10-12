@@ -4,6 +4,9 @@ import io.choerodon.oauth.IntegrationTestConfiguration
 import io.choerodon.oauth.api.dto.PasswordForgetDTO
 import io.choerodon.oauth.api.dto.UserDTO
 import io.choerodon.oauth.api.service.PasswordForgetService
+import io.choerodon.oauth.api.service.PasswordPolicyService
+import io.choerodon.oauth.api.service.UserService
+import io.choerodon.oauth.domain.entity.UserE
 import io.choerodon.oauth.infra.enums.PasswordFindException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -23,10 +26,14 @@ class PasswordControllerSpec extends Specification {
     PasswordController passwordController
     private PasswordForgetService mockPasswordForgetService = Mock(PasswordForgetService)
     private MessageSource mockMessageSource = Mock(MessageSource)
+    private PasswordPolicyService mockPasswordPolicyService = Mock(PasswordPolicyService)
+    private UserService mockUserService = Mock(UserService)
 
     void setup() {
         passwordController.setPasswordForgetService(mockPasswordForgetService)
         passwordController.setMessageSource(mockMessageSource)
+        passwordController.setUserService(mockUserService)
+        passwordController.setPasswordPolicyService(mockPasswordPolicyService)
     }
 
     def "Find"() {
@@ -56,23 +63,26 @@ class PasswordControllerSpec extends Specification {
     }
 
 
-//    def "Check"() {
-//        given: "准备参数"
-//        def emailAddress = "test@test.com"
-//        def captcha = "captcha"
-//        and: "mock校验结果"
-//        mockPasswordForgetService.checkUserByEmail(emailAddress) >> { return checkResult }
-//        when: '向check接口发送post请求'
-//        def codesEntity = testRestTemplate.postForEntity("/password/check?emailAddress={emailAddress}&captcha={captcha}", null, PasswordForgetDTO, emailAddress, captcha)
-//        then: '结果分析'
-//        noExceptionThrown()
-//        codesEntity.statusCode.is2xxSuccessful()
-//        num * mockPasswordForgetService.check(_, _)
-//        where: "根据checkUser结果进行分支覆盖"
-//        checkResult                           || num
-//        new PasswordForgetDTO(success: false) || 0
-//        new PasswordForgetDTO(success: true)  || 1
-//    }
+    def "Check"() {
+        given: "准备参数"
+        def emailAddress = "test@test.com"
+        def captcha = "captcha"
+        and: "mock校验结果"
+        mockPasswordForgetService.checkUserByEmail(emailAddress) >> { return checkResult1 }
+        mockPasswordForgetService.check(_, _) >> { return checkResult2 }
+        mockUserService.queryByEmail(emailAddress) >> { return new UserE(organizationId: 1L) }
+        when: '向check接口发送post请求'
+        def codesEntity = testRestTemplate.postForEntity("/password/check?emailAddress={emailAddress}&captcha={captcha}", null, PasswordForgetDTO, emailAddress, captcha)
+        then: '结果分析'
+        noExceptionThrown()
+        codesEntity.statusCode.is2xxSuccessful()
+        where: "根据checkUser结果进行分支覆盖"
+        checkResult1                          || checkResult2
+        new PasswordForgetDTO(success: false) || new PasswordForgetDTO(success: false)
+        new PasswordForgetDTO(success: true)  || new PasswordForgetDTO(success: false)
+        new PasswordForgetDTO(success: true)  || new PasswordForgetDTO(success: true)
+
+    }
 
     def "Reset"() {
         given: "准备参数"
@@ -95,9 +105,9 @@ class PasswordControllerSpec extends Specification {
         num3 * mockPasswordForgetService.reset(_, _, _)
 
         where: "分支覆盖"
-        pwd1   | checkResult                                                                                | success || num1 | num2 | num3
-        "pwd1" | new PasswordForgetDTO(success: false)                                                      | false   || 1    | 0    | 0
-        "pwd"  | new PasswordForgetDTO(success: false)                                                      | false   || 0    | 0    | 0
+        pwd1   | checkResult                                                                               | success || num1 | num2 | num3
+        "pwd1" | new PasswordForgetDTO(success: false)                                                     | false   || 1    | 0    | 0
+        "pwd"  | new PasswordForgetDTO(success: false)                                                     | false   || 0    | 0    | 0
         "pwd"  | new PasswordForgetDTO(success: true, user: new UserDTO(2L, "loginName", "test@test.com")) | false   || 0    | 1    | 0
         "pwd"  | new PasswordForgetDTO(success: true, user: new UserDTO(1L, "loginName", "test@test.com")) | false   || 0    | 0    | 0
         "pwd"  | new PasswordForgetDTO(success: true, user: new UserDTO(1L, "loginName", "test@test.com")) | true    || 0    | 0    | 1

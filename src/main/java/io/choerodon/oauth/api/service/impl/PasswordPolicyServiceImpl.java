@@ -15,6 +15,10 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
     @Autowired
     private PasswordPolicyMapper passwordPolicyMapper;
 
+    public void setPasswordPolicyMapper(PasswordPolicyMapper passwordPolicyMapper) {
+        this.passwordPolicyMapper = passwordPolicyMapper;
+    }
+
     /**
      * @param orgId
      * @return 目标组织的密码策略

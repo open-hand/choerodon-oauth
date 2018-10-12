@@ -44,6 +44,14 @@ public class PasswordController {
         this.messageSource = messageSource;
     }
 
+    public void setPasswordPolicyService(PasswordPolicyService passwordPolicyService) {
+        this.passwordPolicyService = passwordPolicyService;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
     /**
      * 进入找回密码页面
      *
