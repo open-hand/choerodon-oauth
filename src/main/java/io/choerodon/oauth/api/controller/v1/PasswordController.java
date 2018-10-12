@@ -16,6 +16,7 @@ import io.choerodon.oauth.api.dto.PasswordForgetDTO;
 import io.choerodon.oauth.api.service.PasswordForgetService;
 import io.choerodon.oauth.api.service.PasswordPolicyService;
 import io.choerodon.oauth.api.service.UserService;
+import io.choerodon.oauth.infra.dataobject.PasswordPolicyDO;
 import io.choerodon.oauth.infra.enums.PasswordFindException;
 
 /**
@@ -78,11 +79,12 @@ public class PasswordController {
             return new ResponseEntity<>(check, HttpStatus.OK);
         }
         PasswordForgetDTO passwordForgetCheck = passwordForgetService.check(passwordForgetDTO, captcha);
-        if(!passwordForgetCheck.getSuccess()){
+        if (!passwordForgetCheck.getSuccess()) {
             check = new CaptchaCheckDTO(passwordForgetCheck, null);
             return new ResponseEntity<>(check, HttpStatus.OK);
         }
-        check = new CaptchaCheckDTO(passwordForgetCheck, passwordPolicyService.queryByOrgId(userService.queryByEmail(emailAddress).getOrganizationId()));
+        PasswordPolicyDO passwordPolicyDO = passwordPolicyService.queryByOrgId(userService.queryByEmail(emailAddress).getOrganizationId());
+        check = new CaptchaCheckDTO(passwordForgetCheck, passwordPolicyDO);
         return new ResponseEntity<>(check, HttpStatus.OK);
     }
 

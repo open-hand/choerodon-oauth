@@ -1,11 +1,11 @@
 package io.choerodon.oauth.api.service;
 
 
-import io.choerodon.oauth.api.dto.PasswordPolicyDTO;
+import io.choerodon.oauth.infra.dataobject.PasswordPolicyDO;
 
 /**
  * @author Eugen
  */
 public interface PasswordPolicyService {
-    PasswordPolicyDTO queryByOrgId(Long orgId);
+    PasswordPolicyDO queryByOrgId(Long orgId);
 }
