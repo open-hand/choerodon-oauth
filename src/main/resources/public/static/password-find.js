@@ -1,7 +1,7 @@
 const {Input, Button, Form, Icon} = window['choerodon-ui'];
 
-// const server = 'http://api.staging.saas.hand-china.com'; //本地测试的时候打开此注释
-const server = '';
+const server = 'http://api.staging.saas.hand-china.com'; //本地测试的时候打开此注释
+// const server = '';
 const keyStr = "ABCDEFGHIJKLMNOP" + "QRSTUVWXYZabcdef" + "ghijklmnopqrstuv"
   + "wxyz0123456789+/" + "=";
 const formItemLayout = {
@@ -185,6 +185,7 @@ class App extends window.React.Component {
           rs += value.substr(i, 1).replace(pattern, '');
           sp = value.length - rs.length;
         }
+        debugger;
         if (/[A-Z]/i.test(value)) {
           const ups = value.match(/[A-Z]/g);
           up = ups ? ups.length : 0;
@@ -237,6 +238,7 @@ class App extends window.React.Component {
         });
       });
     }
+    debugger;
     if (step === 2 && form.getFieldValue('password') === form.getFieldValue('password1') && policyPassed) {
       $.post(`${server}/oauth/password/reset?userId=${userId}&emailAddress=${currentUsername}&captcha=${currentVCode}&password=${form.getFieldValue('password')}&password1=${form.getFieldValue('password1')}`, (results) => {
         if (results && results.success === true) {
@@ -299,7 +301,11 @@ class App extends window.React.Component {
     if (value && this.state.confirmDirty) {
       form.validateFields(['password1'], {force: true});
     }
+    debugger;
     if(checkPasswdMsg) {
+      this.setState({
+          policyPassed: false,
+      });
       callback(checkPasswdMsg);
     }
     else {
