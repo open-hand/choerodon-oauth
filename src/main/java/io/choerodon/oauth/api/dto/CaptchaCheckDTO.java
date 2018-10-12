@@ -1,23 +1,25 @@
 package io.choerodon.oauth.api.dto;
 
+import io.choerodon.oauth.infra.dataobject.PasswordPolicyDO;
+
 public class CaptchaCheckDTO {
     private Boolean success;
     private String msg;
     private String code;
     private UserDTO user;
     private Long disableTime;
-    private PasswordPolicyDTO passwordPolicyDTO;
+    private PasswordPolicyDO passwordPolicyDO;
 
     public CaptchaCheckDTO() {
     }
 
-    public CaptchaCheckDTO(PasswordForgetDTO passwordForgetDTO, PasswordPolicyDTO passwordPolicyDTO) {
+    public CaptchaCheckDTO(PasswordForgetDTO passwordForgetDTO, PasswordPolicyDO passwordPolicyDO) {
         this.success = passwordForgetDTO.getSuccess();
         this.msg = passwordForgetDTO.getMsg();
         this.code = passwordForgetDTO.getCode();
         this.user = passwordForgetDTO.getUser();
         this.disableTime = passwordForgetDTO.getDisableTime();
-        this.passwordPolicyDTO = passwordPolicyDTO;
+        this.passwordPolicyDO = passwordPolicyDO;
     }
 
     public Boolean getSuccess() {
@@ -60,11 +62,11 @@ public class CaptchaCheckDTO {
         this.disableTime = disableTime;
     }
 
-    public PasswordPolicyDTO getPasswordPolicyDTO() {
-        return passwordPolicyDTO;
+    public PasswordPolicyDO getPasswordPolicyDO() {
+        return passwordPolicyDO;
     }
 
-    public void setPasswordPolicyDTO(PasswordPolicyDTO passwordPolicyDTO) {
-        this.passwordPolicyDTO = passwordPolicyDTO;
+    public void setPasswordPolicyDO(PasswordPolicyDO passwordPolicyDO) {
+        this.passwordPolicyDO = passwordPolicyDO;
     }
 }
