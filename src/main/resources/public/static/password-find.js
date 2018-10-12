@@ -1,6 +1,6 @@
 const {Input, Button, Form, Icon} = window['choerodon-ui'];
 
-//const server = 'http://api.staging.saas.hand-china.com'; //本地测试的时候打开此注释
+// const server = 'http://api.staging.saas.hand-china.com'; //本地测试的时候打开此注释
 const server = '';
 const keyStr = "ABCDEFGHIJKLMNOP" + "QRSTUVWXYZabcdef" + "ghijklmnopqrstuv"
   + "wxyz0123456789+/" + "=";
@@ -18,12 +18,16 @@ const FormItem = Form.Item;
 
 class App extends window.React.Component {
   state = {
+    // 邮箱名
     currentUsername: '',
     step: 1,
     account: {},
     currentVCode: '',
     vCode: {},
     confirmDirty: false,
+    passwdPolicy: {},
+    policyPassed: false,
+    passwdCheckedResult: '',
     captchaCD: 0,
   };
 
@@ -153,22 +157,87 @@ class App extends window.React.Component {
       errorMsg: '验证码错误',
     };
   }
+  checkPassword = (passwordPolicy, value, userName) => {
+    let compareResult = '';
+    if (passwordPolicy) {
+      const {
+        enablePassword: check, minLength, maxLength,
+        uppercaseCount: upcount, specialCharCount: spcount,
+        lowercaseCount: lowcount, notUsername: notEqualsUsername,
+        regularExpression: regexCheck,
+      } = passwordPolicy;
+      if (value && (check)) {
+        let len = 0;
+        let rs = '';
+        let sp;
+        let up = 0;
+        let low = 0;
+        for (let i = 0; i < value.length; i += 1) {
+          const a = value.charAt(i);
+          if (a.match(/[^\x00-\xff]/ig) != null) {
+          len += 2;
+          } else {
+            len += 1;
+          }
+        }
+        const pattern = new RegExp('[-~`@#$%^&*_=+|/()<>,.;:!]');
+        for (let i = 0; i < value.length; i += 1) {
+          rs += value.substr(i, 1).replace(pattern, '');
+          sp = value.length - rs.length;
+        }
+        if (/[A-Z]/i.test(value)) {
+          const ups = value.match(/[A-Z]/g);
+          up = ups ? ups.length : 0;
+        }
+        if (/[a-z]/i.test(value)) {
+          const lows = value.match(/[a-z]/g);
+          low = lows ? lows.length : 0;
+        }
+        if (minLength && (len < minLength)) {
+          compareResult = `密码长度至少为${minLength}`;
+        }
+        else if (maxLength && (len > maxLength)) {
+          compareResult = `密码长度最多为${maxLength}`;
+        }
+        else if (upcount && (up < upcount)) {
+          compareResult = `大写字母至少为${upcount}`;
+        }
+        else if (lowcount && (low < lowcount)) {
+          compareResult = `小写字母至少为${lowcount}`;
+        }
+        else if (notEqualsUsername && value === userName) {
+          compareResult = '密码不能与账号相同';
+        }
+        else if (regexCheck) {
+          const regex = new RegExp(regexCheck);
+          if (!regex.test(value)) {
+            compareResult = '正则不匹配';
+          }
+        }
+        else if (spcount && (sp < spcount)) {
+          compareResult = `特殊字符至少为${spcount}`;
+        }
+      }
+    }
+    return compareResult;
+  };
 
   handleButtonClick = () => {
     const {form} = this.props;
-    const {step, currentUsername, currentVCode, userId} = this.state;
+    const {step, currentUsername, currentVCode, userId, policyPassed} = this.state;
     if (step === 1) {
       $.post(`${server}/oauth/password/check?emailAddress=${currentUsername}&captcha=${currentVCode}`, (results) => {
         this.setState({
           vCode: {
             ...this.validateCode(results),
           },
+          passwdPolicy: results.passwordPolicyDO,
           userId: results.user.id,
           loginName: results.user.loginName,
         });
       });
     }
-    if (step === 2 && form.getFieldValue('password') === form.getFieldValue('password1')) {
+    if (step === 2 && form.getFieldValue('password') === form.getFieldValue('password1') && policyPassed) {
       $.post(`${server}/oauth/password/reset?userId=${userId}&emailAddress=${currentUsername}&captcha=${currentVCode}&password=${form.getFieldValue('password')}&password1=${form.getFieldValue('password1')}`, (results) => {
         if (results && results.success === true) {
           this.setState({
@@ -221,23 +290,29 @@ class App extends window.React.Component {
     } else {
       callback();
     }
-  }
+  };
 
   validateToNextPassword = (rule, value, callback) => {
     const form = this.props.form;
+    const { passwdPolicy, currentUsername } = this.state;
+    let checkPasswdMsg = this.checkPassword(passwdPolicy, value, currentUsername);
     if (value && this.state.confirmDirty) {
       form.validateFields(['password1'], {force: true});
     }
-    callback();
+    if(checkPasswdMsg) {
+      callback(checkPasswdMsg);
+    }
+    else {
+      this.setState({
+          policyPassed: true,
+      });
+      callback();
+    }
   }
 
   handleConfirmBlur = (e) => {
     const value = e.target.value;
     this.setState({confirmDirty: this.state.confirmDirty || !!value});
-  }
-
-  backLogin = () => {
-    window.location.href = `/oauth/login`;
   }
 
 
