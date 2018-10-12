@@ -37,6 +37,21 @@ class CustomClientDetailsServiceSpec extends Specification {
         then: "结果分析"
         noExceptionThrown()
     }
+    def "LoadClientByClientId[parser addition info error]"() {
+        given: "参数准备"
+        def name = "name"
+        and: "mock"
+        mockClientMapper.selectOne(_) >> {
+            return new ClientE(authorizedGrantTypes: "type1,type2", name: "name", secret: "secret", resourceIds: "1,2",
+                    scope: "scope1,scope2", webServerRedirectUri: "uri1,uri2",
+                    accessTokenValidity: null, refreshTokenValidity: null,
+                    additionalInformation: '{"namevalue"}', autoApprove: "approve1,approve2")
+        }
+        when: "方法调用"
+        customClientDetailsService.loadClientByClientId(name)
+        then: "结果分析"
+        noExceptionThrown()
+    }
 
     def "LoadClientByClientId[Exception]"() {
         given: "参数准备"
