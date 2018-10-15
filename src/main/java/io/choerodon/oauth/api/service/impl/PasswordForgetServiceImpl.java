@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.api.dto.EmailSendDTO;
@@ -138,7 +139,6 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
     @Override
     public PasswordForgetDTO reset(PasswordForgetDTO passwordForgetDTO, String captcha, String password) {
-
         UserE user = userService.queryByEmail(passwordForgetDTO.getUser().getEmail());
         this.redisTokenUtil.expire(user.getEmail(), captcha);
         try {
@@ -151,6 +151,8 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         } catch (CommonException e) {
             LOGGER.error(e.getMessage());
             passwordForgetDTO.setSuccess(false);
+            passwordForgetDTO.setMsg(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return passwordForgetDTO;
         }
         user.setPassword(ENCODER.encode(password));
