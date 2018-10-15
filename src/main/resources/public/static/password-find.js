@@ -28,6 +28,8 @@ class App extends window.React.Component {
     passwdPolicy: {},
     policyPassed: false,
     passwdCheckedResult: '',
+    errorMsg: '',
+    errorState: false,
     captchaCD: 0,
   };
 
@@ -164,7 +166,7 @@ class App extends window.React.Component {
         enablePassword: check, minLength, maxLength,
         uppercaseCount: upcount, specialCharCount: spcount,
         lowercaseCount: lowcount, notUsername: notEqualsUsername,
-        regularExpression: regexCheck,
+        regularExpression: regexCheck, digitsCount
       } = passwordPolicy;
       if (value && (check)) {
         let len = 0;
@@ -172,6 +174,7 @@ class App extends window.React.Component {
         let sp;
         let up = 0;
         let low = 0;
+        let numLen = 0;
         for (let i = 0; i < value.length; i += 1) {
           const a = value.charAt(i);
           if (a.match(/[^\x00-\xff]/ig) != null) {
@@ -184,6 +187,10 @@ class App extends window.React.Component {
         for (let i = 0; i < value.length; i += 1) {
           rs += value.substr(i, 1).replace(pattern, '');
           sp = value.length - rs.length;
+        }
+        if(/[\d]/.test(value)) {
+          const num = value.match(/\d/g);
+          numLen = num ? num.length : 0;
         }
         if (/[A-Z]/i.test(value)) {
           const ups = value.match(/[A-Z]/g);
@@ -207,6 +214,9 @@ class App extends window.React.Component {
         }
         else if (notEqualsUsername && value === userName) {
           compareResult = '密码不能与账号相同';
+        }
+        else if (digitsCount && (numLen < digitsCount)) {
+          compareResult = `数字至少为${digitsCount}个`;
         }
         else if (regexCheck) {
           const regex = new RegExp(regexCheck);
@@ -244,6 +254,13 @@ class App extends window.React.Component {
             step: 3,
             password: form.getFieldValue('password'),
           });
+        }
+        else if(results.success === false && results.msg === 'error.password.policy.notRecent') {
+          this.setState({
+            errorMsg: '与近期密码相同',
+            errorState: true
+          });
+          form.validateFields(['password'], {force: true});
         }
       });
     }
@@ -294,20 +311,21 @@ class App extends window.React.Component {
 
   validateToNextPassword = (rule, value, callback) => {
     const form = this.props.form;
-    const { passwdPolicy, currentUsername } = this.state;
+    const { passwdPolicy, currentUsername, errorState, errorMsg } = this.state;
     let checkPasswdMsg = this.checkPassword(passwdPolicy, value, currentUsername);
     if (value && this.state.confirmDirty) {
       form.validateFields(['password1'], {force: true});
     }
-    if(checkPasswdMsg) {
+    if(checkPasswdMsg || errorState) {
       this.setState({
-          policyPassed: false,
+        policyPassed: false,
+        errorState: false,
       });
-      callback(checkPasswdMsg);
+      callback(checkPasswdMsg ? checkPasswdMsg : errorMsg);
     }
     else {
       this.setState({
-          policyPassed: true,
+        policyPassed: true,
       });
       callback();
     }
