@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+import io.choerodon.oauth.api.service.SystemSettingService;
+import io.choerodon.oauth.infra.dataobject.SystemSettingDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -64,6 +66,9 @@ public class OauthController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private SystemSettingService systemSettingService;
+
     @Value("${choerodon.default.redirect.url:/}")
     private String defaultUrl;
 
@@ -110,10 +115,15 @@ public class OauthController {
     @GetMapping(value = "/login")
     public String login(HttpServletRequest request, Model model, HttpSession session, @RequestParam(required = false) String device) {
         String returnPage = "mobile".equals(device) ? INDEX_MOBILE : INDEX_DEFAULT;
+        SystemSettingDO systemSettingDO = systemSettingService.getSetting();
 
         Map<String, String> error = new HashMap<>();
         error.put(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(), null);
-        model.addAttribute("title", loginTitle);
+
+        model.addAttribute("systemName", systemSettingDO.getSystemName());
+        model.addAttribute("systemLogo", systemSettingDO.getSystemLogo());
+        model.addAttribute("systemTitle", systemSettingDO.getSystemTitle());
+        model.addAttribute("favicon", systemSettingDO.getFavicon());
 
         if (!"default".equals(loginProfile)) {
             URL url = this.getClass().getResource("/templates/index-" + loginProfile + ".html");
@@ -185,7 +195,7 @@ public class OauthController {
     }
 
     @ResponseBody
-    @RequestMapping("/api/user" )
+    @RequestMapping("/api/user")
     public Principal user(Principal principal) {
         return principal;
     }
