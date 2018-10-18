@@ -3,12 +3,15 @@ package io.choerodon.oauth.api.controller.v1;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
+import io.choerodon.oauth.api.service.SystemSettingService;
+import io.choerodon.oauth.infra.dataobject.SystemSettingDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import io.choerodon.oauth.api.dto.CaptchaCheckDTO;
@@ -35,6 +38,9 @@ public class PasswordController {
     private UserService userService;
     @Autowired
     private MessageSource messageSource;
+    @Autowired
+    private SystemSettingService systemSettingService;
+
 
     public void setPasswordForgetService(PasswordForgetService passwordForgetService) {
         this.passwordForgetService = passwordForgetService;
@@ -58,9 +64,15 @@ public class PasswordController {
      * @return path
      */
     @GetMapping(value = "/find")
-    public String find(HttpServletRequest request) {
+    public String find(HttpServletRequest request, Model model) {
         request.getSession().removeAttribute("userId");
         request.getSession().removeAttribute("userName");
+        SystemSettingDO systemSettingDO = systemSettingService.getSetting();
+
+        model.addAttribute("systemName", systemSettingDO.getSystemName());
+        model.addAttribute("systemLogo", systemSettingDO.getSystemLogo());
+        model.addAttribute("systemTitle", systemSettingDO.getSystemTitle());
+        model.addAttribute("favicon", systemSettingDO.getFavicon());
         return DEFAULT_PAGE;
     }
 

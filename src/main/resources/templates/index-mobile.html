@@ -9,11 +9,12 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <link rel="shortcut icon" href="static/icon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" th:if="${favicon}" th:href="${favicon}"  type="image/x-icon"/>
+    <link rel="shortcut icon" th:unless="${favicon}" th:href="${'static/icon.ico'}"  type="image/x-icon"/>
     <script src="static/jquery.min.js"></script>
     <script th:src="@{static/mobile.js(t=${new java.util.Date().getTime()})}"></script>
-    <title th:text="${title}"></title>
-    <title>Choerodon</title>
+    <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
+    <title th:if="!${systemTitle}" th:text="Choerodon"></title>
     <style>
         html, body {
             padding: 0px;
@@ -125,7 +126,17 @@
             border-radius: 0px;
             background: transparent;
         }
-
+        .pIcon {
+            color: #3F51B5;
+            height: 30px;
+        }
+        .pText {
+            line-height: 48px;
+            height: 48px;
+            margin-left: 8px;
+            font-size: 24px;
+            color: #rgba(0, 0, 0, 0.65);
+        }
         .login #content .form-actions {
             clear: both;
             padding: 10px 0 10px 0;
@@ -212,7 +223,10 @@
 <div class="logoleft">
     <div id="content">
         <div style="display: flex;justify-content: center">
-            <img src="static/choerodon_logo_color.svg" class="pIcon"/>
+            <img th:if="${systemLogo}" th:src="${systemLogo}" style="height: 48px;"/>
+            <span th:if="${systemName}" th:text="${systemName}" class="pText" />
+            <span th:if="!${systemName}" th:text="Choerodon" class="pText" />
+            <img th:if="${systemLogo}==null and ${systemName}==null" src="../static/choerodon_logo_color.svg" class="pIcon"/>
         </div>
 
         <div style="display: flex;justify-content: center;margin-top: 1.25rem;">
