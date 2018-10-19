@@ -299,7 +299,7 @@
           <img th:unless="${systemLogo != ''}" src="static/icon.ico" class="pIcon"/>
           <span th:text="${systemName}" class="pText" ></span>
       </div>
-      <img th:unless="${systemName != null}" src="static/choerodon_logo_color.svg" class="pIcon"/>
+      <img th:unless="${systemName != null}" src="static/choerodon_logo_color.svg" style="height: 30px;"/>
   </div>
   <span class="loginSpan">登录</span>
   <form class="form-vertical login-form" action="login" method="post" autocomplete="off">
