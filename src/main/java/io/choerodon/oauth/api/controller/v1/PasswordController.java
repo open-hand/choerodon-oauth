@@ -68,7 +68,9 @@ public class PasswordController {
         request.getSession().removeAttribute("userId");
         request.getSession().removeAttribute("userName");
         SystemSettingDO systemSettingDO = systemSettingService.getSetting();
-
+        if (systemSettingDO == null) {
+            systemSettingDO = new SystemSettingDO();
+        }
         model.addAttribute("systemName", systemSettingDO.getSystemName());
         model.addAttribute("systemLogo", systemSettingDO.getSystemLogo());
         model.addAttribute("systemTitle", systemSettingDO.getSystemTitle());
