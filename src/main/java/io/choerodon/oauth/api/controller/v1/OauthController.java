@@ -117,6 +117,10 @@ public class OauthController {
         String returnPage = "mobile".equals(device) ? INDEX_MOBILE : INDEX_DEFAULT;
         SystemSettingDO systemSettingDO = systemSettingService.getSetting();
 
+        if (systemSettingDO == null) {
+            systemSettingDO = new SystemSettingDO();
+        }
+
         Map<String, String> error = new HashMap<>();
         error.put(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(), null);
 
