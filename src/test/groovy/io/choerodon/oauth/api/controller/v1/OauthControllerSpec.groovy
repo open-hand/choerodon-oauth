@@ -2,6 +2,7 @@ package io.choerodon.oauth.api.controller.v1
 
 import com.google.code.kaptcha.impl.DefaultKaptcha
 import io.choerodon.oauth.IntegrationTestConfiguration
+import io.choerodon.oauth.api.service.SystemSettingService
 import io.choerodon.oauth.api.service.UserService
 import io.choerodon.oauth.core.password.PasswordPolicyManager
 import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO
@@ -34,6 +35,9 @@ class OauthControllerSpec extends Specification {
     private PasswordPolicyManager mockPasswordPolicyManager = Mock(PasswordPolicyManager)
     private UserService mockUserService = Mock(UserService)
 
+    @Autowired
+    private SystemSettingService systemSettingService
+
     void setup() {
         oauthController.setMessageSource(mockMessageSource)
         oauthController.setPasswordPolicyManager(mockPasswordPolicyManager)
@@ -61,6 +65,7 @@ class OauthControllerSpec extends Specification {
         then: '结果分析'
         entity.statusCode.is2xxSuccessful()
         noExceptionThrown()
+        1 * systemSettingService.getSetting() >> { null }
     }
 
     def "Login-2"() {
@@ -80,6 +85,7 @@ class OauthControllerSpec extends Specification {
         then: '结果分析'
         noExceptionThrown()
         login == returnPage
+        1 * systemSettingService.getSetting() >> { null }
         where: "比对"
         user                                                 || returnPage
         null                                                 || "index-mobile"

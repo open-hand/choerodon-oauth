@@ -15,6 +15,8 @@ import io.choerodon.oauth.infra.feign.NotifyFeignClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.MessageSource
 import org.springframework.context.annotation.Import
+import org.springframework.transaction.NoTransactionException
+import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -120,6 +122,7 @@ class PasswordForgetServiceSpec extends Specification {
         1 * mockRedisTokenUtil.check(_, _, _)
     }
 
+    @Transactional
     def "Reset"() {
         given: "参数准备"
         def passwordForgetDTO = new PasswordForgetDTO(user: new UserDTO(1, "loginName", "test@test.com"))
@@ -150,6 +153,7 @@ class PasswordForgetServiceSpec extends Specification {
         new UserE(id: 1L, realName: "realName", email: "test@test.com") | 1
     }
 
+    @Transactional
     def "Reset[Exception]"() {
         given: "参数准备"
         def passwordForgetDTO = new PasswordForgetDTO(user: new UserDTO(1, "loginName", "test@test.com"))
@@ -166,7 +170,7 @@ class PasswordForgetServiceSpec extends Specification {
         passwordForgetService.reset(passwordForgetDTO, captcha, password)
 
         then: "无异常抛出，方法调用如下"
-        noExceptionThrown()
+        thrown(NoTransactionException)
         1 * mockRedisTokenUtil.expire(_, _)
         1 * mockBasePasswordPolicyMapper.selectByPrimaryKey(_)
         1 * mockBasePasswordPolicyMapper.findByOrgId(_)
