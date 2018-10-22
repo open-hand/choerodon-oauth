@@ -294,12 +294,15 @@
 <script th:src="@{static/captcha.js(t=${new java.util.Date().getTime()})}"></script>
 <div th:class="${isNeedCaptcha} ? 'content1' : 'content2'" id="content">
   <div style="display: flex;justify-content: center;margin-top: 50px">
-      <div th:if="${systemName != null}" style="display: flex;">
-          <img th:if="${systemLogo != ''}" th:src="${systemLogo}" class="pIcon"/>
-          <img th:unless="${systemLogo != ''}" src="static/icon.ico" class="pIcon"/>
-          <span th:text="${systemName}" class="pText" ></span>
-      </div>
-      <img th:unless="${systemName != null}" src="static/choerodon_logo_color.svg" style="height: 30px;"/>
+    <!--systemLogo != '' && systemName != null-->
+    <div th:if="${systemLogo != ''}" style="display: flex;">
+      <img th:src="${systemLogo}" class="pIcon"/>
+      <span th:text="${systemName}" class="pText" ></span>
+    </div>
+    <!--!(systemLogo != '' && systemName != null)-->
+    <div th:unless="${systemLogo != ''}">
+      <img src="static/choerodon_logo_color.svg" style="height: 30px;"/>
+    </div>
   </div>
   <span class="loginSpan">登录</span>
   <form class="form-vertical login-form" action="login" method="post" autocomplete="off">
