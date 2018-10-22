@@ -7,8 +7,8 @@
   <meta http-equiv="Cache-control" content="no-cache"/>
   <meta http-equiv="Cache" content="no-cache"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-  <link rel="shortcut icon" th:if="${favicon}" th:href="${favicon}"  type="image/x-icon"/>
-  <link rel="shortcut icon" th:unless="${favicon}" th:href="${'static/icon.ico'}"  type="image/x-icon"/>
+  <link rel="shortcut icon" th:if="${favicon != null}" th:href="${favicon}"  type="image/x-icon"/>
+  <link rel="shortcut icon" th:unless="${favicon != null}" th:href="${'static/icon.ico'}"  type="image/x-icon"/>
   <link href="static/choerodon-ui.min.css" rel="stylesheet"/>
   <script src="static/polyfill.min.js"></script>
   <script src="static/jquery.min.js"></script>
@@ -294,15 +294,11 @@
 <script th:src="@{static/captcha.js(t=${new java.util.Date().getTime()})}"></script>
 <div th:class="${isNeedCaptcha} ? 'content1' : 'content2'" id="content">
   <div style="display: flex;justify-content: center;margin-top: 50px">
-    <!--systemLogo != '' && systemName != null-->
-    <div th:if="${systemLogo != ''}" style="display: flex;">
+    <div th:if="${systemLogo != null}" style="display: flex;">
       <img th:src="${systemLogo}" class="pIcon"/>
       <span th:text="${systemName}" class="pText" ></span>
     </div>
-    <!--!(systemLogo != '' && systemName != null)-->
-    <div th:unless="${systemLogo != ''}">
-      <img src="static/choerodon_logo_color.svg" style="height: 30px;"/>
-    </div>
+    <img th:unless="${systemLogo != null}" src="static/choerodon_logo_color.svg" style="height: 30px;"/>
   </div>
   <span class="loginSpan">登录</span>
   <form class="form-vertical login-form" action="login" method="post" autocomplete="off">

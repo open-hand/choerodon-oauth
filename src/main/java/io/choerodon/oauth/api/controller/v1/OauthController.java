@@ -125,9 +125,12 @@ public class OauthController {
         error.put(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(), null);
 
         model.addAttribute("systemName", systemSettingDO.getSystemName());
-        model.addAttribute("systemLogo", systemSettingDO.getSystemLogo());
+
+        if (systemSettingDO.getSystemLogo() != null)
+            model.addAttribute("systemLogo", systemSettingDO.getSystemLogo().equals(new String("")) ? null : systemSettingDO.getSystemLogo()); // 为模版引擎统一数据
         model.addAttribute("systemTitle", systemSettingDO.getSystemTitle());
-        model.addAttribute("favicon", systemSettingDO.getFavicon());
+        if(systemSettingDO.getFavicon() != null)
+            model.addAttribute("favicon", systemSettingDO.getFavicon().equals(new String("")) ? null : systemSettingDO.getFavicon()); // 为模版引擎统一数据
 
         if (!"default".equals(loginProfile)) {
             URL url = this.getClass().getResource("/templates/index-" + loginProfile + ".html");
