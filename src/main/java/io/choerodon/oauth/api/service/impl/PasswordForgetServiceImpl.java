@@ -1,9 +1,8 @@
 package io.choerodon.oauth.api.service.impl;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
+import io.choerodon.core.notify.NoticeSendDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -14,10 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.oauth.api.dto.EmailSendDTO;
 import io.choerodon.oauth.api.dto.PasswordForgetDTO;
 import io.choerodon.oauth.api.dto.UserDTO;
-import io.choerodon.oauth.api.dto.WsSendDTO;
 import io.choerodon.oauth.api.service.PasswordForgetService;
 import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.api.validator.UserValidator;
@@ -117,9 +114,16 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         variables.put("userName", passwordForgetDTO.getUser().getLoginName());
         variables.put("verifyCode", redisTokenUtil.store(RedisTokenUtil.SHORT_CODE, passwordForgetDTO.getUser().getEmail(), token));
         redisTokenUtil.setDisableTime(passwordForgetDTO.getUser().getEmail());
-        EmailSendDTO emailSendDTO = new EmailSendDTO("forgetPassword", passwordForgetDTO.getUser().getEmail(), variables);
+        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
+        NoticeSendDTO.User user = new NoticeSendDTO.User();
+        user.setEmail(passwordForgetDTO.getUser().getEmail());
+        List<NoticeSendDTO.User> users = new ArrayList<>();
+        users.add(user);
+        noticeSendDTO.setCode("forgetPassword");
+        noticeSendDTO.setTargetUsers(users);
+        noticeSendDTO.setParams(variables);
         try {
-            notifyFeignClient.postEmail(emailSendDTO);
+            notifyFeignClient.postNotice(noticeSendDTO);
             return passwordForgetDTO;
         } catch (CommonException e) {
             passwordForgetDTO.setSuccess(false);
@@ -185,15 +189,18 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     }
 
     private void sendSiteMsg(Long userId, String userName) {
-        WsSendDTO wsSendDTO = new WsSendDTO();
-        wsSendDTO.setCode("modifyPassword");
-        wsSendDTO.setId(userId);
-        wsSendDTO.setTemplateCode("modifyPassword-preset");
         Map<String, Object> paramsMap = new HashMap<>();
         paramsMap.put("userName", userName);
-        wsSendDTO.setParams(paramsMap);
+        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
+        NoticeSendDTO.User user = new NoticeSendDTO.User();
+        user.setId(userId);
+        List<NoticeSendDTO.User> users = new ArrayList<>();
+        users.add(user);
+        noticeSendDTO.setCode("modifyPassword");
+        noticeSendDTO.setTargetUsers(users);
+        noticeSendDTO.setParams(paramsMap);
         try {
-            notifyFeignClient.postPm(wsSendDTO);
+            notifyFeignClient.postNotice(noticeSendDTO);
         } catch (CommonException e) {
             LOGGER.warn("The site msg send error. {} {}", e.getCode(), e);
         }

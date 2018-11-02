@@ -81,7 +81,7 @@ class PasswordForgetServiceSpec extends Specification {
         num1 * mockRedisTokenUtil.createShortToken()
         num2 * mockRedisTokenUtil.store(_, _, _)
         num3 * mockMessageSource.getMessage(_, _, _)
-        num4 * mockNotifyFeignClient.postEmail(_)
+        num4 * mockNotifyFeignClient.postNotice(_)
 
         where: "分支覆盖"
         time                 | num1 | num2 | num3 | num4
@@ -96,7 +96,7 @@ class PasswordForgetServiceSpec extends Specification {
 
         and: 'mock'
         mockRedisTokenUtil.getDisableTime(_) >> { return null }
-        mockNotifyFeignClient.postEmail(_) >> { throw new CommonException("") }
+        mockNotifyFeignClient.postNotice(_) >> { throw new CommonException("") }
 
         when: "方法调用"
         passwordForgetService.send(passwordForgetDTO)

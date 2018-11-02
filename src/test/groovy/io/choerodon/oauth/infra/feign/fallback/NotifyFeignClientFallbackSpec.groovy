@@ -20,7 +20,7 @@ class NotifyFeignClientFallbackSpec extends Specification {
 
     def "PostEmail"() {
         when: "方法调用"
-        notifyFeignClientFallback.postEmail(new EmailSendDTO())
+        notifyFeignClientFallback.postNotice(new EmailSendDTO())
         then: "异常抛出"
         def e = thrown(CommonException)
         e.message == "notify.error"
