@@ -26,28 +26,4 @@ class AllDTOSpec extends Specification {
         noExceptionThrown()
         dto.getSuccess() == false
     }
-
-    def "EmailSendDTO"() {
-        when: "创建DTO"
-        def o = new EmailSendDTO("code", "destinatiomEmail@qq.com", new HashMap<String, Object>())
-        then: "get方法覆盖"
-        o.getCode() == "code"
-        o.getDestinationEmail() == "destinatiomEmail@qq.com"
-        o.getVariables().isEmpty()
-        noExceptionThrown()
-    }
-
-    def "WsSendDTO"() {
-        when: "创建DTO"
-        def o = new WsSendDTO()
-        o.setCode("code")
-        o.setParams(new HashMap<String, Object>())
-        o.setId(1L)
-        o.setTemplateCode("templateCode")
-        then: "get方法覆盖"
-        o.getCode() == "code"
-        o.getId() == 1L
-        o.getParams().isEmpty()
-        o.getTemplateCode() == "templateCode"
-    }
 }
