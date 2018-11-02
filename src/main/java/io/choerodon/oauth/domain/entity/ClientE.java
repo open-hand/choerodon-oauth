@@ -125,4 +125,7 @@ public class ClientE extends AuditDomain {
     public void setAutoApprove(String autoApprove) {
         this.autoApprove = autoApprove;
     }
+
+    public ClientE() {
+    }
 }
