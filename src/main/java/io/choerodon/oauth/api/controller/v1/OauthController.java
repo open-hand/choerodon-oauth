@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+
+import io.choerodon.oauth.api.service.PrincipalService;
 import io.choerodon.oauth.api.service.SystemSettingService;
 import io.choerodon.oauth.infra.dataobject.SystemSettingDO;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.MessageSource;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,6 +65,7 @@ public class OauthController {
     private DefaultKaptcha captchaProducer;
     private BasePasswordPolicyMapper basePasswordPolicyMapper;
     private PasswordPolicyManager passwordPolicyManager;
+    private PrincipalService principalService;
 
     @Autowired
     private UserService userService;
@@ -76,11 +80,13 @@ public class OauthController {
             MessageSource messageSource,
             DefaultKaptcha captchaProducer,
             PasswordPolicyManager passwordPolicyManager,
-            BasePasswordPolicyMapper basePasswordPolicyMapper) {
+            BasePasswordPolicyMapper basePasswordPolicyMapper,
+            PrincipalService principalService) {
         this.messageSource = messageSource;
         this.captchaProducer = captchaProducer;
         this.passwordPolicyManager = passwordPolicyManager;
         this.basePasswordPolicyMapper = basePasswordPolicyMapper;
+        this.principalService=principalService;
     }
 
     public void setMessageSource(MessageSource messageSource) {
@@ -204,6 +210,9 @@ public class OauthController {
     @ResponseBody
     @RequestMapping("/api/user")
     public Principal user(Principal principal) {
+        if(((OAuth2Authentication) principal).getPrincipal() instanceof String){
+            return principalService.setClientDetailUserDetails(principal);
+        }
         return principal;
     }
 
