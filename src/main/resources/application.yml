@@ -57,7 +57,7 @@ choerodon:
     access-token-validity-seconds: 86400
     login:
       field: mail,phone
-      path: /login
+      path: /oauth/login
       ssl: false
     loginPage.title: Choerodon
   reset-password:
