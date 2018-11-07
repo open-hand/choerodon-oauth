@@ -17,7 +17,7 @@ import io.choerodon.oauth.infra.common.util.*;
 @Configuration
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Value("${choerodon.oauth.login.path:/login}")
+    @Value("${choerodon.oauth.login.path:/oauth/login}")
     private String loginPath;
     @Autowired
     private CustomAuthenticationDetailSource detailSource;
@@ -51,8 +51,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(customAuthenticationFailureHandler)
                 .successHandler(customAuthenticationSuccessHandler)
                 .and()
-                .logout().deleteCookies("access_token").invalidateHttpSession(true)
-                .logoutSuccessHandler(customLogoutSuccessHandler)
+                .logout().deleteCookies("access_token").invalidateHttpSession(true)//deleteCookies:指定退出登录后需要删除的cookie名称，多个cookie之间以逗号分隔 ; invalidateHttpSession 默认为true,用户在退出后Http session失效
+                .logoutSuccessHandler(customLogoutSuccessHandler)// 用来自定义退出成功后的操作
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .and()
                 .csrf()
