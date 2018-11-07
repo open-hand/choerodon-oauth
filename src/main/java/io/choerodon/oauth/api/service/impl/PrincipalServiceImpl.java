@@ -61,6 +61,7 @@ public class PrincipalServiceImpl implements PrincipalService {
 
         }
         //添加client信息
+        user.setOrganizationId(clientE.getOrganizationId());
         user.setClientId(clientE.getId());
         user.setClientName(clientE.getName());
         int accessTokenValidity = clientE.getAccessTokenValidity() != null ? clientE.getAccessTokenValidity().intValue() : 3600;
