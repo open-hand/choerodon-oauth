@@ -1,15 +1,8 @@
 package io.choerodon.oauth.infra.common.util;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeSet;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
@@ -17,6 +10,14 @@ import org.springframework.security.oauth2.provider.token.AuthenticationKeyGener
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * @author zhipeng.zuo
@@ -36,7 +37,7 @@ public class ChoerodonAuthenticationKeyGenerator implements AuthenticationKeyGen
 
     @Override
     public String extractKey(OAuth2Authentication authentication) {
-        Map<String, String> values = new LinkedHashMap();
+        Map<String, String> values = new LinkedHashMap<>();
         OAuth2Request authorizationRequest = authentication.getOAuth2Request();
         if (!authentication.isClientOnly()) {
             values.put(USERNAME, authentication.getName());
@@ -45,9 +46,9 @@ public class ChoerodonAuthenticationKeyGenerator implements AuthenticationKeyGen
         if (authorizationRequest.getScope() != null) {
             values.put(SCOPE, OAuth2Utils.formatParameterList(new TreeSet<>(authorizationRequest.getScope())));
         }
-        Object details = authentication.getUserAuthentication().getDetails();
-        if (details instanceof WebAuthenticationDetails) {
-            String sessionId = ((WebAuthenticationDetails) details).getSessionId();
+        Authentication auth = authentication.getUserAuthentication();
+        if (auth != null && auth.getDetails() instanceof WebAuthenticationDetails) {
+            String sessionId = ((WebAuthenticationDetails) auth.getDetails()).getSessionId();
             logger.info("sessionId : {}", sessionId);
             if (!StringUtils.isEmpty(sessionId)) {
                 values.put(SESSION, sessionId);

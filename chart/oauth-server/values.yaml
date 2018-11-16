@@ -44,7 +44,8 @@ env:
     CHOERODON_DEFAULT_REDIRECT_URL: localhost:8080/manager/swagger-ui.html
     CHOERODON_OAUTH_LOGIN_PATH: /login
     CHOERODON_OAUTH_LOGIN_SSL: false
-
+    JAVA_OPTS: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+    
 service:
   enable: false
   type: ClusterIP
