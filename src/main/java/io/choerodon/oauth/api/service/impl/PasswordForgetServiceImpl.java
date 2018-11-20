@@ -117,12 +117,12 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         variables.put("verifyCode", redisTokenUtil.store(RedisTokenUtil.SHORT_CODE, passwordForgetDTO.getUser().getEmail(), token));
         redisTokenUtil.setDisableTime(passwordForgetDTO.getUser().getEmail());
         NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
-        noticeSendDTO.setFromUserId(passwordForgetDTO.getUser().getId());
-        List<Long> ids = new ArrayList<>();
-        ids.add(passwordForgetDTO.getUser().getId());
+        NoticeSendDTO.User user = new NoticeSendDTO.User();
+        user.setEmail(passwordForgetDTO.getUser().getEmail());
+        List<NoticeSendDTO.User> users = new ArrayList<>();
+        users.add(user);
         noticeSendDTO.setCode(FORGET_PASSWORD);
-        noticeSendDTO.setTargetUsersIds(ids);
-        noticeSendDTO.setParams(variables);
+        noticeSendDTO.setTargetUsers(users);
         try {
             notifyFeignClient.postNotice(noticeSendDTO);
             return passwordForgetDTO;
@@ -193,12 +193,12 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         Map<String, Object> paramsMap = new HashMap<>();
         paramsMap.put("userName", userName);
         NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
-        noticeSendDTO.setFromUserId(userId);
-        List<Long> ids = new ArrayList<>();
-        ids.add(userId);
+        NoticeSendDTO.User user = new NoticeSendDTO.User();
+        user.setId(userId);
+        List<NoticeSendDTO.User> users = new ArrayList<>();
+        users.add(user);
         noticeSendDTO.setCode(MODIFY_PASSWORD);
-        noticeSendDTO.setTargetUsersIds(ids);
-        noticeSendDTO.setParams(paramsMap);
+        noticeSendDTO.setTargetUsers(users);
         try {
             notifyFeignClient.postNotice(noticeSendDTO);
         } catch (CommonException e) {
