@@ -8,9 +8,6 @@ spring:
           zkNodes: 127.0.0.1:2181
     bus:
       enabled: true
-  sleuth:
-    stream:
-      enabled: true
   datasource:
     url: jdbc:mysql://localhost/iam_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: choerodon
