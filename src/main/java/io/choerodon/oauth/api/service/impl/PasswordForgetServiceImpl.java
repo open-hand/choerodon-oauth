@@ -35,6 +35,8 @@ import io.choerodon.oauth.infra.feign.NotifyFeignClient;
 public class PasswordForgetServiceImpl implements PasswordForgetService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PasswordForgetServiceImpl.class);
     private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();
+    public static final String FORGET_PASSWORD = "forgetPassword";
+    public static final String MODIFY_PASSWORD = "modifyPassword";
     private UserService userService;
     private BasePasswordPolicyMapper basePasswordPolicyMapper;
     private PasswordPolicyManager passwordPolicyManager;
@@ -115,12 +117,11 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         variables.put("verifyCode", redisTokenUtil.store(RedisTokenUtil.SHORT_CODE, passwordForgetDTO.getUser().getEmail(), token));
         redisTokenUtil.setDisableTime(passwordForgetDTO.getUser().getEmail());
         NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
-        NoticeSendDTO.User user = new NoticeSendDTO.User();
-        user.setEmail(passwordForgetDTO.getUser().getEmail());
-        List<NoticeSendDTO.User> users = new ArrayList<>();
-        users.add(user);
-        noticeSendDTO.setCode("forgetPassword");
-        noticeSendDTO.setTargetUsers(users);
+        noticeSendDTO.setFromUserId(passwordForgetDTO.getUser().getId());
+        List<Long> ids = new ArrayList<>();
+        ids.add(passwordForgetDTO.getUser().getId());
+        noticeSendDTO.setCode(FORGET_PASSWORD);
+        noticeSendDTO.setTargetUsersIds(ids);
         noticeSendDTO.setParams(variables);
         try {
             notifyFeignClient.postNotice(noticeSendDTO);
@@ -192,12 +193,11 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         Map<String, Object> paramsMap = new HashMap<>();
         paramsMap.put("userName", userName);
         NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
-        NoticeSendDTO.User user = new NoticeSendDTO.User();
-        user.setId(userId);
-        List<NoticeSendDTO.User> users = new ArrayList<>();
-        users.add(user);
-        noticeSendDTO.setCode("modifyPassword");
-        noticeSendDTO.setTargetUsers(users);
+        noticeSendDTO.setFromUserId(userId);
+        List<Long> ids = new ArrayList<>();
+        ids.add(userId);
+        noticeSendDTO.setCode(MODIFY_PASSWORD);
+        noticeSendDTO.setTargetUsersIds(ids);
         noticeSendDTO.setParams(paramsMap);
         try {
             notifyFeignClient.postNotice(noticeSendDTO);
