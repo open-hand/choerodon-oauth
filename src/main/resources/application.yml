@@ -1,13 +1,4 @@
 spring:
-  cloud:
-    stream:
-      default-binder: kafka
-      kafka:
-        binder:
-          brokers: 127.0.0.1:9092
-          zkNodes: 127.0.0.1:2181
-    bus:
-      enabled: true
   datasource:
     url: jdbc:mysql://localhost/iam_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: choerodon

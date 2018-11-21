@@ -39,8 +39,6 @@ env:
     SPRING_REDIS_HOST: localhost
     SPRING_REDIS_PORT: 6379
     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://register-server.io-choerodon:8000/eureka/
-    SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka-0.kafka-headless.kafka.svc.cluster.local:9092,kafka-1.kafka-headless.kafka.svc.cluster.local:9092,kafka-2.kafka-headless.kafka.svc.cluster.local:9092
-    SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES: zookeeper-0.zookeeper-headless.zookeeper.svc.cluster.local:2181,zookeeper-1.zookeeper-headless.zookeeper.svc.cluster.local:2181,zookeeper-2.zookeeper-headless.zookeeper.svc.cluster.local:2181
     CHOERODON_DEFAULT_REDIRECT_URL: localhost:8080/manager/swagger-ui.html
     CHOERODON_OAUTH_LOGIN_PATH: /login
     CHOERODON_OAUTH_LOGIN_SSL: false
