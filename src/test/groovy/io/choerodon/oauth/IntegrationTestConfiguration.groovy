@@ -7,7 +7,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.data.redis.core.StringRedisTemplate
-import org.springframework.kafka.core.KafkaTemplate
 import spock.mock.DetachedMockFactory
 
 @TestConfiguration
@@ -21,11 +20,6 @@ class IntegrationTestConfiguration {
     @Bean
     StringRedisTemplate stringRedisTemplate() {
         return detachedMockFactory.Mock(StringRedisTemplate)
-    }
-
-    @Bean
-    KafkaTemplate<byte[], byte[]> kafkaTemplate() {
-        detachedMockFactory.Mock(KafkaTemplate)
     }
 
     @Bean
