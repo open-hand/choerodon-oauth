@@ -17,3 +17,5 @@ management:
   port: 8021
   security:
     enabled: false
+security:
+  ignored: /choerodon/config
