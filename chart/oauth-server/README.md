@@ -82,3 +82,4 @@ env.open.SPRING_REDIS_PORT | redis 端口
 env.open.CHOERODON_DEFAULT_REDIRECT_URL | 登录后默认跳转地址，应该为前台的域名地址
 env.open.CHOERODON_OAUTH_LOGIN_PATH | 登录页面地址，可以带协议配置为`https://api.example.com/oauth/login`，默认为`/login`
 env.open.CHOERODON_OAUTH_LOGIN_SSL | 如果`env.open.CHOERODON_OAUTH_LOGIN_PATH` 为带`https`协议的地址，则必须配置为`true`。默认为`false`
+env.open.SKYWALKING_OPTS | skywalking 代理端配置

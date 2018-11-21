@@ -33,9 +33,6 @@ feign:
   hystrix:
     enabled: true
 hystrix:
-  stream:
-    queue:
-      enabled: true
   command:
     default:
       execution:
