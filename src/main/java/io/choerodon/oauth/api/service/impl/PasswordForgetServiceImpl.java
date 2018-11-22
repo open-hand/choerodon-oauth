@@ -3,6 +3,7 @@ package io.choerodon.oauth.api.service.impl;
 import java.util.*;
 
 import io.choerodon.core.notify.NoticeSendDTO;
+import io.choerodon.oauth.api.validator.UserPasswordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -49,16 +50,19 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     private UserValidator userValidator;
     @Autowired
     private MessageSource messageSource;
+    private final UserPasswordValidator userPasswordValidator;
 
     public PasswordForgetServiceImpl(
             UserService userService,
             BasePasswordPolicyMapper basePasswordPolicyMapper,
             PasswordPolicyManager passwordPolicyManager,
+            UserPasswordValidator userPasswordValidator,
             PasswordRecord passwordRecord) {
         this.userService = userService;
         this.basePasswordPolicyMapper = basePasswordPolicyMapper;
         this.passwordPolicyManager = passwordPolicyManager;
         this.passwordRecord = passwordRecord;
+        this.userPasswordValidator = userPasswordValidator;
     }
 
     public void setNotifyFeignClient(NotifyFeignClient notifyFeignClient) {
@@ -153,6 +157,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             BasePasswordPolicyDO basePasswordPolicyDO
                     = basePasswordPolicyMapper.selectByPrimaryKey(basePasswordPolicyMapper.findByOrgId(user.getOrganizationId()));
             passwordPolicyManager.passwordValidate(password, baseUserDO, basePasswordPolicyDO);
+            userPasswordValidator.validate(password, user.getOrganizationId(), true);
         } catch (CommonException e) {
             LOGGER.error(e.getMessage());
             passwordForgetDTO.setSuccess(false);

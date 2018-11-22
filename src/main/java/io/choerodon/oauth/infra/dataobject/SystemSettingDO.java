@@ -40,6 +40,13 @@ public class SystemSettingDO extends AuditDomain {
     @Column(name = "DEFAULT_LANGUAGE")
     private String defaultLanguage;
 
+
+    @Column(name = "MIN_PASSWORD_LENGTH")
+    private Integer minPasswordLength;
+
+    @Column(name = "MAX_PASSWORD_LENGTH")
+    private Integer maxPasswordLength;
+
     public Long getId() {
         return id;
     }
@@ -94,5 +101,21 @@ public class SystemSettingDO extends AuditDomain {
 
     public void setDefaultLanguage(String defaultLanguage) {
         this.defaultLanguage = defaultLanguage;
+    }
+
+    public Integer getMinPasswordLength() {
+        return minPasswordLength;
+    }
+
+    public void setMinPasswordLength(Integer minPasswordLength) {
+        this.minPasswordLength = minPasswordLength;
+    }
+
+    public Integer getMaxPasswordLength() {
+        return maxPasswordLength;
+    }
+
+    public void setMaxPasswordLength(Integer maxPasswordLength) {
+        this.maxPasswordLength = maxPasswordLength;
     }
 }
