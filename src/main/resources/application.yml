@@ -12,6 +12,8 @@ eureka:
     preferIpAddress: true
     leaseRenewalIntervalInSeconds: 10
     leaseExpirationDurationInSeconds: 30
+    metadata-map:
+      CONTEXT-PATH: /oauth
   client:
     serviceUrl:
       defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8000/eureka/}
