@@ -5,6 +5,7 @@ import io.choerodon.oauth.IntegrationTestConfiguration
 import io.choerodon.oauth.api.dto.PasswordForgetDTO
 import io.choerodon.oauth.api.dto.UserDTO
 import io.choerodon.oauth.api.service.impl.PasswordForgetServiceImpl
+import io.choerodon.oauth.api.validator.UserPasswordValidator
 import io.choerodon.oauth.api.validator.UserValidator
 import io.choerodon.oauth.core.password.PasswordPolicyManager
 import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper
@@ -35,9 +36,10 @@ class PasswordForgetServiceSpec extends Specification {
     private RedisTokenUtil mockRedisTokenUtil = Mock(RedisTokenUtil)
     private UserValidator mockUserValidator = Mock(UserValidator)
     private MessageSource mockMessageSource = Mock(MessageSource)
+    private UserPasswordValidator mockUserPasswordValidator = Mock(UserPasswordValidator)
 
     void setup() {
-        passwordForgetService = new PasswordForgetServiceImpl(mockUserService, mockBasePasswordPolicyMapper, mockPasswordPolicyManager, mockPasswordRecord)
+        passwordForgetService = new PasswordForgetServiceImpl(mockUserService, mockBasePasswordPolicyMapper, mockPasswordPolicyManager, mockUserPasswordValidator, mockPasswordRecord)
         passwordForgetService.setNotifyFeignClient(mockNotifyFeignClient)
         passwordForgetService.setRedisTokenUtil(mockRedisTokenUtil)
         passwordForgetService.setUserValidator(mockUserValidator)
