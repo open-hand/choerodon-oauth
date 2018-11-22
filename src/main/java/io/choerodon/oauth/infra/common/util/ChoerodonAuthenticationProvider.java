@@ -2,18 +2,26 @@ package io.choerodon.oauth.infra.common.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+import io.choerodon.core.ldap.DirectoryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.ldap.core.DirContextOperations;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.AbstractContextMapper;
+import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.query.SearchScope;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.ldap.LdapUtils;
 import org.springframework.stereotype.Service;
 
 import io.choerodon.oauth.api.service.LdapService;
@@ -29,9 +37,12 @@ import io.choerodon.oauth.core.password.service.BaseUserService;
 import io.choerodon.oauth.domain.entity.LdapE;
 import io.choerodon.oauth.domain.entity.OrganizationE;
 import io.choerodon.oauth.domain.entity.UserE;
-import io.choerodon.oauth.infra.common.util.ldap.LdapUtil;
 import io.choerodon.oauth.infra.enums.LoginException;
 import io.choerodon.oauth.infra.exception.CustomAuthenticationException;
+
+import javax.naming.directory.DirContext;
+
+import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 /**
  * @author wuguokai
@@ -174,24 +185,122 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
     }
 
     private void checkPassword(String loginName, String credentials, String userPassword) {
-        boolean isPass;
+        boolean passed;
         UserE user = userService.queryByLoginField(loginName);
         if (user.getLdap()) {
-            LdapE ldap = ldapService.queryByOrgId(user.getOrganizationId());
-            //ldap登陆，如果ldap停用或者不存在，则返回false，登录失败
-            if (ldap != null && ldap.getEnabled()) {
-                isPass = LdapUtil.authenticate(loginName, credentials, ldap) != null;
-            } else {
-                throw new AuthenticationServiceException(LoginException.LDAP_IS_DISABLE.value());
-            }
+            passed = ldapAuthentication(user.getOrganizationId(), loginName, credentials);
         } else {
             BCryptPasswordEncoder encode = new BCryptPasswordEncoder();
-            isPass = encode.matches(credentials, userPassword);
+            passed = encode.matches(credentials, userPassword);
         }
-        if (isPass) {
+        if (passed) {
             return;
         }
         throw new AuthenticationServiceException(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value());
+    }
+
+    private boolean ldapAuthentication(Long organizationId, String loginName, String credentials) {
+        LdapE ldap = ldapService.queryByOrgId(organizationId);
+        if (ldap != null && ldap.getEnabled()) {
+            LdapContextSource contextSource = new LdapContextSource();
+            String url = ldap.getServerAddress() + ":" + ldap.getPort();
+            contextSource.setUrl(url);
+            contextSource.setBase(ldap.getBaseDn());
+            contextSource.afterPropertiesSet();
+            LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
+            //ad目录不设置会报错
+            if (DirectoryType.MICROSOFT_ACTIVE_DIRECTORY.value().equals(ldap.getDirectoryType())) {
+                ldapTemplate.setIgnorePartialResultException(true);
+            }
+            String userDn = null;
+            boolean anonymousFetchFailed = false;
+            try {
+                List<String> names =
+                        ldapTemplate.search(
+                                query()
+                                        .searchScope(SearchScope.SUBTREE)
+                                        .where("objectclass")
+                                        .is(ldap.getObjectClass())
+                                        .and(ldap.getLoginNameField())
+                                        .is(loginName),
+                                new AbstractContextMapper() {
+                                    @Override
+                                    protected Object doMapFromContext(DirContextOperations ctx) {
+                                        return ctx.getNameInNamespace();
+                                    }
+                                });
+                userDn = getUserDn(names, ldap.getLoginNameField(), loginName);
+            } catch (Exception e) {
+                anonymousFetchFailed = true;
+                LOGGER.error("ldap anonymous search objectclass = {}, {} = {} failed, exception {}", ldap.getObjectClass(), ldap.getLoginNameField(), loginName, e);
+            }
+            if (anonymousFetchFailed) {
+                userDn = accountAsUserDn2Authentication(loginName, ldap, contextSource, userDn);
+            }
+            return authentication(credentials, contextSource, userDn);
+        } else {
+            throw new AuthenticationServiceException(LoginException.LDAP_IS_DISABLE.value());
+        }
+    }
+
+    private String accountAsUserDn2Authentication(String loginName, LdapE ldap, LdapContextSource contextSource, String userDn) {
+        contextSource.setUserDn(ldap.getAccount());
+        contextSource.setPassword(ldap.getPassword());
+        contextSource.afterPropertiesSet();
+        LdapTemplate template = new LdapTemplate(contextSource);
+        if (DirectoryType.MICROSOFT_ACTIVE_DIRECTORY.value().equals(ldap.getDirectoryType())) {
+            template.setIgnorePartialResultException(true);
+        }
+        try {
+            List<String> names =
+                    template.search(
+                            query()
+                                    .searchScope(SearchScope.SUBTREE)
+                                    .where("objectclass")
+                                    .is(ldap.getObjectClass())
+                                    .and(ldap.getLoginNameField())
+                                    .is(loginName),
+                            new AbstractContextMapper() {
+                                @Override
+                                protected Object doMapFromContext(DirContextOperations ctx) {
+                                    return ctx.getNameInNamespace();
+                                }
+                            });
+            userDn = getUserDn(names, ldap.getLoginNameField(), loginName);
+        } catch (Exception e) {
+            LOGGER.error("use ldap account as userDn and password to authentication but search objectclass = {}, {} = {} failed, maybe the account or password is illegal, and check for the ldap config, exception {}", ldap.getObjectClass(), ldap.getLoginNameField(), loginName, e);
+        }
+        return userDn;
+    }
+
+    private String getUserDn(List<String> names, String loginFiled, String loginName) {
+        if (names.isEmpty()) {
+            LOGGER.warn("user not found");
+        } else if (names.size() == 1) {
+            return names.get(0);
+        } else {
+            LOGGER.warn("user {} = {} is not unique", loginFiled, loginName);
+        }
+        return null;
+    }
+
+    private boolean authentication(String credentials, LdapContextSource contextSource, String userDn) {
+        if (userDn == null) {
+            return false;
+        } else {
+            DirContext ctx = null;
+            try {
+                ctx = contextSource.getContext(userDn, credentials);
+                return true;
+            } catch (Exception e) {
+                logger.error("Login failed, userDn or credentials may be wrong, exception {}", e);
+                return false;
+            } finally {
+                // It is imperative that the created DirContext instance is always closed
+                LdapUtils.closeContext(ctx);
+            }
+
+        }
     }
 
 
