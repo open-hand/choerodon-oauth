@@ -219,7 +219,9 @@ public class OauthController {
     private boolean isNeedCaptcha(UserE user) {
         BaseUserDO baseUserDO = new BaseUserDO();
         BeanUtils.copyProperties(user, baseUserDO);
-        BasePasswordPolicyDO passwordPolicy = basePasswordPolicyMapper.findByOrgId(user.getOrganizationId());
+        BasePasswordPolicyDO passwordPolicy = new BasePasswordPolicyDO();
+        passwordPolicy.setOrganizationId(user.getOrganizationId());
+        passwordPolicy = basePasswordPolicyMapper.selectOne(passwordPolicy);
         return !user.getLocked() && passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUserDO);
     }
 }

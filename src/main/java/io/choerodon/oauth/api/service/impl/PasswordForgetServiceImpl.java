@@ -154,8 +154,9 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             BaseUserDO baseUserDO = new BaseUserDO();
             BeanUtils.copyProperties(user, baseUserDO);
             baseUserDO.setPassword(password);
-            BasePasswordPolicyDO basePasswordPolicyDO
-                    = basePasswordPolicyMapper.selectByPrimaryKey(basePasswordPolicyMapper.findByOrgId(user.getOrganizationId()));
+            BasePasswordPolicyDO basePasswordPolicyDO = new BasePasswordPolicyDO();
+            basePasswordPolicyDO.setOrganizationId(user.getOrganizationId());
+            basePasswordPolicyDO = basePasswordPolicyMapper.selectOne(basePasswordPolicyDO);
             passwordPolicyManager.passwordValidate(password, baseUserDO, basePasswordPolicyDO);
             userPasswordValidator.validate(password, user.getOrganizationId(), true);
         } catch (CommonException e) {
