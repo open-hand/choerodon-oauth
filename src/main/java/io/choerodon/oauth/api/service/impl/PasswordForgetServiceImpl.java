@@ -127,6 +127,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         users.add(user);
         noticeSendDTO.setCode(FORGET_PASSWORD);
         noticeSendDTO.setTargetUsers(users);
+        noticeSendDTO.setParams(variables);
         try {
             notifyFeignClient.postNotice(noticeSendDTO);
             return passwordForgetDTO;
