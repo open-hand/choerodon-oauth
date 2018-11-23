@@ -145,8 +145,7 @@ class PasswordForgetServiceSpec extends Specification {
         noExceptionThrown()
         1 * mockPasswordPolicyManager.passwordValidate(_, _, _)
         1 * mockRedisTokenUtil.expire(_, _)
-        1 * mockBasePasswordPolicyMapper.selectByPrimaryKey(_)
-        1 * mockBasePasswordPolicyMapper.findByOrgId(_)
+        1 * mockBasePasswordPolicyMapper.selectOne(_)
         num * mockPasswordRecord.updatePassword(_, _)
 
         where: "分支覆盖"
@@ -174,7 +173,6 @@ class PasswordForgetServiceSpec extends Specification {
         then: "无异常抛出，方法调用如下"
         thrown(NoTransactionException)
         1 * mockRedisTokenUtil.expire(_, _)
-        1 * mockBasePasswordPolicyMapper.selectByPrimaryKey(_)
-        1 * mockBasePasswordPolicyMapper.findByOrgId(_)
+        1 * mockBasePasswordPolicyMapper.selectOne(_)
     }
 }

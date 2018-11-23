@@ -116,7 +116,9 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         }
         checkOrganization(user.getOrganizationId());
 
-        BasePasswordPolicyDO passwordPolicy = basePasswordPolicyMapper.findByOrgId(user.getOrganizationId());
+        BasePasswordPolicyDO passwordPolicy = new BasePasswordPolicyDO();
+        passwordPolicy.setOrganizationId(user.getOrganizationId());
+        passwordPolicy = basePasswordPolicyMapper.selectOne(passwordPolicy);
         //登录认证策略
         BaseUserDO baseUserDO = new BaseUserDO();
         BeanUtils.copyProperties(user, baseUserDO);
@@ -170,7 +172,9 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
             String captchaCode = details.getCaptchaCode();
             String captcha = details.getCaptcha();
             UserE user = userService.queryByLoginField(username);
-            BasePasswordPolicyDO passwordPolicy = basePasswordPolicyMapper.findByOrgId(user.getOrganizationId());
+            BasePasswordPolicyDO passwordPolicy = new BasePasswordPolicyDO();
+            passwordPolicy.setOrganizationId(user.getOrganizationId());
+            passwordPolicy = basePasswordPolicyMapper.selectOne(passwordPolicy);
             BaseUserDO baseUserDO = new BaseUserDO();
             BeanUtils.copyProperties(user, baseUserDO);
             if (passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUserDO)) {

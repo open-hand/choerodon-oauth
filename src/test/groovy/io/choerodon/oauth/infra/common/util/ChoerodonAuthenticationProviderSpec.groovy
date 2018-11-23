@@ -56,7 +56,7 @@ class ChoerodonAuthenticationProviderSpec extends Specification {
         and: "mock"
         mockUserService.queryByLoginField(_) >> { return user }
         mockOrganizationService.queryOrganizationById(_) >> { return organization }
-        mockBasePasswordPolicyMapper.findByOrgId(_) >> { return new BasePasswordPolicyDO(lockedExpireTime: 3600) }
+        mockBasePasswordPolicyMapper.selectOne(_) >> { return new BasePasswordPolicyDO(lockedExpireTime: 3600) }
         mockPasswordPolicyManager.loginValidate(_, _, _) >> {
             Map returnMap = new HashMap()
             returnMap.put("maxErrorTime", false)
