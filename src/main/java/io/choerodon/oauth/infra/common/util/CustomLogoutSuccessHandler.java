@@ -1,6 +1,7 @@
 package io.choerodon.oauth.infra.common.util;
 
 import java.io.IOException;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,7 +29,10 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     @Autowired
     private CustomTokenStore customTokenStore;
 
-    @Value("${choerodon.oauth.login.path:/oauth/login}")
+    @Autowired
+    private ServletContext servletContext;
+
+    @Value("${choerodon.oauth.login.path:/login}")
     private String loginPath;
 
     public void setOauthProperties(OauthProperties oauthProperties) {
@@ -59,7 +63,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
         if (referer != null) {
             response.sendRedirect(referer);
         } else {
-            response.sendRedirect(loginPath);
+            response.sendRedirect(servletContext.getContextPath() + loginPath);
         }
     }
 
