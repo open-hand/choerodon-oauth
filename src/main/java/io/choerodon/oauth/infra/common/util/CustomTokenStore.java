@@ -1,15 +1,19 @@
 package io.choerodon.oauth.infra.common.util;
 
-import io.choerodon.oauth.infra.config.OauthProperties;
-import io.choerodon.oauth.infra.mapper.AccessTokenMapper;
+import java.util.Date;
+import java.util.HashMap;
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
+import io.choerodon.oauth.infra.config.OauthProperties;
+import io.choerodon.oauth.infra.mapper.AccessTokenMapper;
 
 /**
  * @author wuguokai
@@ -68,4 +72,11 @@ public class CustomTokenStore extends JdbcTokenStore {
         super.removeAccessToken(tokenValue);
     }
 
+    @Override
+    public void storeAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {
+        HashMap<String, Object> additionalInfo = new HashMap<>();
+        additionalInfo.put("createTime", new Date());
+        ((DefaultOAuth2AccessToken) token).setAdditionalInformation(additionalInfo);
+        super.storeAccessToken(token, authentication);
+    }
 }
