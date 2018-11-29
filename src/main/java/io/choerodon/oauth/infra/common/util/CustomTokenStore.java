@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import io.choerodon.oauth.infra.config.OauthProperties;
 import io.choerodon.oauth.infra.mapper.AccessTokenMapper;
@@ -75,7 +77,13 @@ public class CustomTokenStore extends JdbcTokenStore {
     @Override
     public void storeAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {
         HashMap<String, Object> additionalInfo = new HashMap<>();
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        String sessionId = "";
+        if (attr != null) {
+            sessionId = attr.getRequest().getSession(true).getId();
+        }
         additionalInfo.put("createTime", new Date());
+        additionalInfo.put("sessionId", sessionId);
         ((DefaultOAuth2AccessToken) token).setAdditionalInformation(additionalInfo);
         super.storeAccessToken(token, authentication);
     }
