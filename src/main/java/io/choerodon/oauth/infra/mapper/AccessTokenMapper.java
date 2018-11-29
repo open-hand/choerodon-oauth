@@ -18,4 +18,6 @@ public interface AccessTokenMapper extends BaseMapper<AccessTokenDO> {
 
     void deleteTokens(@Param("name") String username, @Param("client") String client,
                       @Param("id") String authenticationId);
+
+    void deleteUsersToken(@Param("name") String userName);
 }

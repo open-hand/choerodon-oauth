@@ -19,4 +19,11 @@
             AND authentication_id <> #{id}
         ]]>
     </delete>
+
+    <delete id="deleteUsersToken">
+        <![CDATA[
+            DELETE FROM oauth_access_token
+            WHERE user_name = #{name}
+        ]]>
+    </delete>
 </mapper>
