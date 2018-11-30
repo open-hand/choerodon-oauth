@@ -20,15 +20,19 @@ public class TokenController {
     @Autowired
     private TokenService tokenService;
 
+    public void setTokenService(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
+
     @ApiOperation(value = "根据loginName删除token")
-    @Permission(permissionPublic = true)
+    @Permission(permissionWithin = true)
     @DeleteMapping("/all")
     public void deleteTokens(@RequestParam(value = "loginName") String loginName) {
         tokenService.deleteAllUnderUser(loginName);
     }
 
     @ApiOperation(value = "根据tokenId删除token")
-    @Permission(permissionLogin = true)
+    @Permission(permissionWithin = true)
     @DeleteMapping("/one")
     public void deleteToken(@RequestParam(value = "tokenId") String tokenId) {
         tokenService.deleteOne(tokenId);
