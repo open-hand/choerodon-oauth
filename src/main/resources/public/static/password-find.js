@@ -218,14 +218,14 @@ class App extends window.React.Component {
         else if (digitsCount && (numLen < digitsCount)) {
           compareResult = `数字至少为${digitsCount}个`;
         }
+        else if (spcount && (sp < spcount)) {
+          compareResult = `特殊字符至少为${spcount}`;
+        }
         else if (regexCheck) {
           const regex = new RegExp(regexCheck);
           if (!regex.test(value)) {
             compareResult = '正则不匹配';
           }
-        }
-        else if (spcount && (sp < spcount)) {
-          compareResult = `特殊字符至少为${spcount}`;
         }
       }
     }
