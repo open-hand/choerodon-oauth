@@ -310,9 +310,6 @@ class App extends window.React.Component {
 
   compareToFirstPassword = (rule, value, callback) => {
     const form = this.props.form;
-    if (/ /.test(value)) {
-      callback('密码中不能包含空格')
-    }
     if (value && value !== form.getFieldValue('password')) {
       callback('您输入的密码与确认密码不一致!');
     } else {
