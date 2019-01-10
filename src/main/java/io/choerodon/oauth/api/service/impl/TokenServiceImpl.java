@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.util.SerializationUtils;
@@ -21,6 +23,9 @@ import io.choerodon.oauth.infra.mapper.RefreshTokenMapper;
  */
 @Service
 public class TokenServiceImpl implements TokenService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TokenServiceImpl.class);
+
     private static final String SESSION_KEY_PREFIX = "spring:session:sessions:";
     private StringRedisTemplate redisTemplate;
     private FindByIndexNameSessionRepository findByIndexNameSessionRepository;
@@ -49,6 +54,7 @@ public class TokenServiceImpl implements TokenService {
         //删除db accessToken/refreshToken
         accessTokenMapper.deleteByPrimaryKey(tokenId);
         refreshTokenMapper.deleteByPrimaryKey(accessTokenDO.getRefreshToken());
+        LOGGER.info("delete token,tokenId:{},sessionId:{}",tokenId,deserialize.getAdditionalInformation().get("sessionId"));
     }
 
     @Override
