@@ -15,6 +15,8 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.filter.AndFilter;
+import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.query.SearchScope;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,7 +53,8 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     private static final String DATA_FORMAT = "MM月dd日 HH:mm";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChoerodonAuthenticationProvider.class);
+    private static final String OBJECT_CLASS = "objectclass";
+    private static final Logger LOG = LoggerFactory.getLogger(ChoerodonAuthenticationProvider.class);
     @Value("${spring.application.name:oauth-server}")
     private String serviceName;
     @Autowired
@@ -131,7 +134,7 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
                 && (user.getLocked() == null || (user.getLocked() != null && !user.getLocked()))) {
             //DONE 锁定用户
             Integer lockExpireTime = passwordPolicy.getLockedExpireTime();
-            LOGGER.info("begin lock user, userId is: {} ", baseUserDO.getId());
+            LOG.info("begin lock user, userId is: {} ", baseUserDO.getId());
             baseUserService.lockUser(baseUserDO.getId(), lockExpireTime);
             user = userService.queryByLoginField(username);
         }
@@ -218,15 +221,14 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
             }
             String userDn = null;
             boolean anonymousFetchFailed = false;
+
+            AndFilter filter = getLoginFilter(ldap, loginName);
             try {
                 List<String> names =
                         ldapTemplate.search(
                                 query()
                                         .searchScope(SearchScope.SUBTREE)
-                                        .where("objectclass")
-                                        .is(ldap.getObjectClass())
-                                        .and(ldap.getLoginNameField())
-                                        .is(loginName),
+                                        .filter(filter),
                                 new AbstractContextMapper() {
                                     @Override
                                     protected Object doMapFromContext(DirContextOperations ctx) {
@@ -236,10 +238,14 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
                 userDn = getUserDn(names, ldap.getLoginNameField(), loginName);
             } catch (Exception e) {
                 anonymousFetchFailed = true;
-                LOGGER.error("ldap anonymous search objectclass = {}, {} = {} failed, exception {}", ldap.getObjectClass(), ldap.getLoginNameField(), loginName, e);
+                LOG.error("ldap anonymous search failed, filter {}, exception {}", filter, e);
             }
             if (anonymousFetchFailed) {
-                userDn = accountAsUserDn2Authentication(loginName, ldap, contextSource, userDn);
+                userDn = accountAsUserDn2Authentication(loginName, ldap, contextSource, filter);
+            }
+            if (userDn == null) {
+                LOG.error("can not get userDn by filter {}, login failed", filter);
+                return false;
             }
             return authentication(credentials, contextSource, userDn);
         } else {
@@ -247,7 +253,18 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         }
     }
 
-    private String accountAsUserDn2Authentication(String loginName, LdapE ldap, LdapContextSource contextSource, String userDn) {
+    private AndFilter getLoginFilter(LdapE ldap, String loginName) {
+        String objectClass = ldap.getObjectClass();
+        String[] arr = objectClass.split(",");
+        AndFilter andFilter = new AndFilter();
+        for (String str : arr) {
+            andFilter.and(new EqualsFilter(OBJECT_CLASS, str));
+        }
+        andFilter.and(new EqualsFilter(ldap.getLoginNameField(), loginName));
+        return andFilter;
+    }
+
+    private String accountAsUserDn2Authentication(String loginName, LdapE ldap, LdapContextSource contextSource, AndFilter filter) {
         contextSource.setUserDn(ldap.getAccount());
         contextSource.setPassword(ldap.getPassword());
         contextSource.afterPropertiesSet();
@@ -255,15 +272,13 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         if (DirectoryType.MICROSOFT_ACTIVE_DIRECTORY.value().equals(ldap.getDirectoryType())) {
             template.setIgnorePartialResultException(true);
         }
+        String userDn = null;
         try {
             List<String> names =
                     template.search(
                             query()
                                     .searchScope(SearchScope.SUBTREE)
-                                    .where("objectclass")
-                                    .is(ldap.getObjectClass())
-                                    .and(ldap.getLoginNameField())
-                                    .is(loginName),
+                                    .filter(filter),
                             new AbstractContextMapper() {
                                 @Override
                                 protected Object doMapFromContext(DirContextOperations ctx) {
@@ -272,38 +287,34 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
                             });
             userDn = getUserDn(names, ldap.getLoginNameField(), loginName);
         } catch (Exception e) {
-            LOGGER.error("use ldap account as userDn and password to authentication but search objectclass = {}, {} = {} failed, maybe the account or password is illegal, and check for the ldap config, exception {}", ldap.getObjectClass(), ldap.getLoginNameField(), loginName, e);
+            LOG.error("use ldap account as userDn and password to authentication but search failed, filter {}," +
+                    " maybe the account or password is illegal, and check for the ldap config, exception {}", filter, e);
         }
         return userDn;
     }
 
     private String getUserDn(List<String> names, String loginFiled, String loginName) {
         if (names.isEmpty()) {
-            LOGGER.warn("user not found");
+            LOG.warn("user not found");
         } else if (names.size() == 1) {
             return names.get(0);
         } else {
-            LOGGER.warn("user {} = {} is not unique", loginFiled, loginName);
+            LOG.warn("user {} = {} is not unique", loginFiled, loginName);
         }
         return null;
     }
 
     private boolean authentication(String credentials, LdapContextSource contextSource, String userDn) {
-        if (userDn == null) {
+        DirContext ctx = null;
+        try {
+            ctx = contextSource.getContext(userDn, credentials);
+            return true;
+        } catch (Exception e) {
+            LOG.error("Login failed, userDn or credentials may be wrong, exception {}", e);
             return false;
-        } else {
-            DirContext ctx = null;
-            try {
-                ctx = contextSource.getContext(userDn, credentials);
-                return true;
-            } catch (Exception e) {
-                logger.error("Login failed, userDn or credentials may be wrong, exception {}", e);
-                return false;
-            } finally {
-                // It is imperative that the created DirContext instance is always closed
-                LdapUtils.closeContext(ctx);
-            }
-
+        } finally {
+            // It is imperative that the created DirContext instance is always closed
+            LdapUtils.closeContext(ctx);
         }
     }
 

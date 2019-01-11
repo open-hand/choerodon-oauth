@@ -43,7 +43,6 @@ class App extends window.React.Component {
 
   handleCaptchaButtonClick = () => {
     const {currentUsername, captchaCD} = this.state;
-
     if (currentUsername === '') {
       this.setState({
         account: {
@@ -175,6 +174,7 @@ class App extends window.React.Component {
         let up = 0;
         let low = 0;
         let numLen = 0;
+        let space = 0;
         for (let i = 0; i < value.length; i += 1) {
           const a = value.charAt(i);
           if (a.match(/[^\x00-\xff]/ig) != null) {
@@ -236,6 +236,8 @@ class App extends window.React.Component {
     const {form} = this.props;
     const {step, currentUsername, currentVCode, userId, policyPassed} = this.state;
     if (step === 1) {
+      form.validateFields(['username'], {force: true});
+      form.validateFields(['captchaInput'], {force: true});
       $.post(`${server}/oauth/password/check?emailAddress=${currentUsername}&captcha=${currentVCode}`, (results) => {
         this.setState({
           vCode: {
@@ -247,7 +249,13 @@ class App extends window.React.Component {
         });
       });
     }
+    if (step === 2) {
+      form.validateFields(['password'], {force: true});
+      form.validateFields(['password1'], {force: true});
+    }
     if (step === 2 && form.getFieldValue('password') === form.getFieldValue('password1') && policyPassed) {
+      form.validateFields(['password'], {force: true});
+      form.validateFields(['password1'], {force: true});
       $.post(`${server}/oauth/password/reset?userId=${userId}&emailAddress=${currentUsername}&captcha=${currentVCode}&password=${form.getFieldValue('password')}&password1=${form.getFieldValue('password1')}`, (results) => {
         if (results && results.success === true) {
           this.setState({
@@ -313,6 +321,9 @@ class App extends window.React.Component {
     const form = this.props.form;
     const { passwdPolicy, currentUsername, errorState, errorMsg } = this.state;
     let checkPasswdMsg = this.checkPassword(passwdPolicy, value, currentUsername);
+    if (/ /.test(value)) {
+      callback('密码中不能包含空格')
+    }
     if (value && this.state.confirmDirty) {
       form.validateFields(['password1'], {force: true});
     }
@@ -353,10 +364,11 @@ class App extends window.React.Component {
             {getFieldDecorator('username', {
               rules: [{
                 required: true,
+                whitespace: true,
                 message: '请输入邮箱',
               }],
             })(
-              <Input autoFocus autoComplete="off" label="登录邮箱" name="username" id="username"
+              <Input autoComplete="off" label="登录邮箱" name="username" id="username"
                      onChange={e => this.handleValueChange(e)} placeholder="请输入邮箱" value={this.state.currentUsername}
               />
             )}
@@ -369,6 +381,7 @@ class App extends window.React.Component {
             {getFieldDecorator('captchaInput', {
               rules: [{
                 required: true,
+                whitespace: true,
                 message: '请输入验证码',
               }],
             })(
@@ -382,9 +395,9 @@ class App extends window.React.Component {
             )}
           </FormItem>
           <FormItem style={{marginTop: '60px'}}>
-            <a className="back-to-login" href="/oauth/login" style={{float: 'left'}}>返回登陆</a>
             <Button className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
-                    style={{width: '120px',float: 'right', paddingTop: '4px'}}><span>下一步</span></Button>
+                    style={{width: '120px',float: 'right', paddingTop: '4px'} } htmlType="submit"><span>下一步</span></Button>
+            <a className="back-to-login" href="/oauth/login" style={{float: 'left'}}>返回登陆</a>
           </FormItem>
         </Form>
       </div>
@@ -404,8 +417,8 @@ class App extends window.React.Component {
           >
             {getFieldDecorator('password', {
               rules: [{
-                required: true, message: '请输入密码',
-              },{
+                required: true, message: '请输入新密码',
+              }, {
                 validator: this.validateToNextPassword,
               }],
             })(
@@ -418,8 +431,8 @@ class App extends window.React.Component {
           >
             {getFieldDecorator('password1', {
               rules: [{
-                required: true, message: '请确认!',
-              }, {
+                required: true, message: '请输入确认密码'
+              },{
                 validator: this.compareToFirstPassword,
               }],
             })(
