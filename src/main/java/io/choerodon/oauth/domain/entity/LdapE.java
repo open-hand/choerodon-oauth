@@ -39,6 +39,7 @@ public class LdapE extends AuditDomain {
     private String phoneField;
     private String customFilter;
     private Integer sagaBatchSize;
+    private Integer connectionTimeout;
 
     public Long getId() {
         return id;
@@ -182,5 +183,13 @@ public class LdapE extends AuditDomain {
 
     public void setSagaBatchSize(Integer sagaBatchSize) {
         this.sagaBatchSize = sagaBatchSize;
+    }
+
+    public Integer getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public void setConnectionTimeout(Integer connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
     }
 }

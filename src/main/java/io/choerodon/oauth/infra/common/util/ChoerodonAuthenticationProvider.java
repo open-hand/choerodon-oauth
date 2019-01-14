@@ -212,9 +212,10 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         if (ldap != null && ldap.getEnabled()) {
             LdapContextSource contextSource = new LdapContextSource();
             String url = ldap.getServerAddress() + ":" + ldap.getPort();
+            int connectionTimeout = ldap.getConnectionTimeout();
             contextSource.setUrl(url);
             contextSource.setBase(ldap.getBaseDn());
-            setConnectionTimeout(contextSource);
+            setConnectionTimeout(contextSource, connectionTimeout);
             contextSource.afterPropertiesSet();
 
             LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
@@ -256,10 +257,9 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         }
     }
 
-    private void setConnectionTimeout(LdapContextSource contextSource) {
+    private void setConnectionTimeout(LdapContextSource contextSource, int connectionTimeout) {
         Map<String, Object> environment = new HashMap<>(1);
-        //设置ldap服务器连接超时时间为10s
-        environment.put("com.sun.jndi.ldap.connect.timeout", "10000");
+        environment.put("com.sun.jndi.ldap.connect.timeout", String.valueOf(connectionTimeout * 1000));
         contextSource.setBaseEnvironmentProperties(environment);
     }
 
