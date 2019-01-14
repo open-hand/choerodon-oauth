@@ -37,6 +37,8 @@ public class LdapE extends AuditDomain {
     private String realNameField;
     private String emailField;
     private String phoneField;
+    private String customFilter;
+    private Integer sagaBatchSize;
 
     public Long getId() {
         return id;
@@ -164,5 +166,21 @@ public class LdapE extends AuditDomain {
 
     public void setObjectClass(String objectClass) {
         this.objectClass = objectClass;
+    }
+
+    public String getCustomFilter() {
+        return customFilter;
+    }
+
+    public void setCustomFilter(String customFilter) {
+        this.customFilter = customFilter;
+    }
+
+    public Integer getSagaBatchSize() {
+        return sagaBatchSize;
+    }
+
+    public void setSagaBatchSize(Integer sagaBatchSize) {
+        this.sagaBatchSize = sagaBatchSize;
     }
 }

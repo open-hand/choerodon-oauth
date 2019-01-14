@@ -2,6 +2,7 @@ package io.choerodon.oauth.infra.common.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -213,7 +214,9 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
             String url = ldap.getServerAddress() + ":" + ldap.getPort();
             contextSource.setUrl(url);
             contextSource.setBase(ldap.getBaseDn());
+            setConnectionTimeout(contextSource);
             contextSource.afterPropertiesSet();
+
             LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
             //ad目录不设置会报错
             if (DirectoryType.MICROSOFT_ACTIVE_DIRECTORY.value().equals(ldap.getDirectoryType())) {
@@ -251,6 +254,13 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         } else {
             throw new AuthenticationServiceException(LoginException.LDAP_IS_DISABLE.value());
         }
+    }
+
+    private void setConnectionTimeout(LdapContextSource contextSource) {
+        Map<String, Object> environment = new HashMap<>(1);
+        //设置ldap服务器连接超时时间为10s
+        environment.put("com.sun.jndi.ldap.connect.timeout", "10000");
+        contextSource.setBaseEnvironmentProperties(environment);
     }
 
     private AndFilter getLoginFilter(LdapE ldap, String loginName) {
