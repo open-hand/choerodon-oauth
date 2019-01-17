@@ -18,7 +18,6 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.session.config.annotation.web.http.SpringHttpSessionConfiguration;
@@ -41,7 +40,6 @@ public class ChoerodonRedisHttpSessionConfiguration extends SpringHttpSessionCon
     private String redisNamespace = "";
     private RedisFlushMode redisFlushMode;
     private StringValueResolver embeddedValueResolver;
-    private RedisSerializer<Object> defaultRedisSerializer;
 
     public ChoerodonRedisHttpSessionConfiguration() {
         this.redisFlushMode = RedisFlushMode.ON_SAVE;
@@ -71,14 +69,16 @@ public class ChoerodonRedisHttpSessionConfiguration extends SpringHttpSessionCon
     }
 
     @Bean
+    public CustomJdkSerializationRedisSerializer customJdkSerializationRedisSerializer() {
+        return new CustomJdkSerializationRedisSerializer();
+    }
+
+    @Bean
     public RedisTemplate<Object, Object> sessionRedisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<Object, Object> template = new RedisTemplate<>();
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
-        if (this.defaultRedisSerializer != null) {
-            template.setDefaultSerializer(this.defaultRedisSerializer);
-        }
-
+        template.setDefaultSerializer(customJdkSerializationRedisSerializer());
         template.setConnectionFactory(connectionFactory);
         return template;
     }
@@ -88,9 +88,7 @@ public class ChoerodonRedisHttpSessionConfiguration extends SpringHttpSessionCon
         RedisOperationsSessionRepository sessionRepository = new RedisOperationsSessionRepository(sessionRedisTemplate);
         sessionRepository.setApplicationEventPublisher(applicationEventPublisher);
         sessionRepository.setDefaultMaxInactiveInterval(this.maxInactiveIntervalInSeconds);
-        if (this.defaultRedisSerializer != null) {
-            sessionRepository.setDefaultSerializer(this.defaultRedisSerializer);
-        }
+        sessionRepository.setDefaultSerializer(customJdkSerializationRedisSerializer());
         String tempRedisNamespace = this.getRedisNamespace();
         if (StringUtils.hasText(tempRedisNamespace)) {
             sessionRepository.setRedisKeyNamespace(tempRedisNamespace);
