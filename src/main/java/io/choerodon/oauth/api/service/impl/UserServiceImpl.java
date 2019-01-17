@@ -1,5 +1,8 @@
 package io.choerodon.oauth.api.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ public class UserServiceImpl implements UserService {
     public void setUserMapper(UserMapper userMapper) {
         this.userMapper = userMapper;
     }
+
     public void setUserValidator(UserValidator userValidator) {
         this.userValidator = userValidator;
     }
@@ -62,7 +66,16 @@ public class UserServiceImpl implements UserService {
         } else {
             return null;
         }
-        return userMapper.selectOne(user);
+        return selectFirstEnable(user);
+    }
+
+    private UserE selectFirstEnable(UserE userE) {
+        List<UserE> userES = userMapper.select(userE);
+        List<UserE> enabled = userES.stream().filter(u -> u.getEnabled().equals(true)).collect(Collectors.toList());
+        if (!enabled.isEmpty()) {
+            return enabled.get(0);
+        }
+        return null;
     }
 
     @Override
