@@ -73,4 +73,10 @@ public class TokenServiceImpl implements TokenService {
         Map<String, Object> byIndexNameAndIndexValue = findByIndexNameSessionRepository.findByIndexNameAndIndexValue(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, loginName);
         redisTemplate.delete(byIndexNameAndIndexValue.keySet().stream().map(s -> SESSION_KEY_PREFIX + s).collect(Collectors.toList()));
     }
+
+
+    @Override
+    public void deleteList(List<String> tokenList) {
+        tokenList.forEach(t -> deleteOne(t));
+    }
 }
