@@ -1,11 +1,10 @@
 package io.choerodon.oauth.api.controller.v1;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.choerodon.oauth.api.service.TokenService;
 import io.choerodon.swagger.annotation.Permission;
@@ -36,5 +35,13 @@ public class TokenController {
     @DeleteMapping("/one")
     public void deleteToken(@RequestParam(value = "tokenId") String tokenId) {
         tokenService.deleteOne(tokenId);
+    }
+
+
+    @ApiOperation(value = "根据tokenId List批量删除token")
+    @Permission(permissionWithin = true)
+    @DeleteMapping("/list")
+    public void deleteTokenByIdList(@RequestBody List<String> tokenIdList) {
+        tokenService.deleteList(tokenIdList);
     }
 }
