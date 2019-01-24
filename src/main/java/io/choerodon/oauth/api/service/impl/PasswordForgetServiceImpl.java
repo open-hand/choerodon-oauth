@@ -144,6 +144,9 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         passwordForgetDTO.setSuccess(redisTokenUtil.check(
                 RedisTokenUtil.SHORT_CODE,
                 passwordForgetDTO.getUser().getEmail(), captcha));
+        if(passwordForgetDTO.getSuccess()){
+            redisTokenUtil.expire(RedisTokenUtil.SHORT_CODE,passwordForgetDTO.getUser().getEmail());
+        }
         return passwordForgetDTO;
     }
 
