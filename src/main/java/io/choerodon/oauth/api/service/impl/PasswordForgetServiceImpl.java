@@ -2,8 +2,6 @@ package io.choerodon.oauth.api.service.impl;
 
 import java.util.*;
 
-import io.choerodon.core.notify.NoticeSendDTO;
-import io.choerodon.oauth.api.validator.UserPasswordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -14,10 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.notify.NoticeSendDTO;
 import io.choerodon.oauth.api.dto.PasswordForgetDTO;
 import io.choerodon.oauth.api.dto.UserDTO;
 import io.choerodon.oauth.api.service.PasswordForgetService;
 import io.choerodon.oauth.api.service.UserService;
+import io.choerodon.oauth.api.validator.UserPasswordValidator;
 import io.choerodon.oauth.api.validator.UserValidator;
 import io.choerodon.oauth.core.password.PasswordPolicyManager;
 import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO;
@@ -144,9 +144,6 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         passwordForgetDTO.setSuccess(redisTokenUtil.check(
                 RedisTokenUtil.SHORT_CODE,
                 passwordForgetDTO.getUser().getEmail(), captcha));
-        if(passwordForgetDTO.getSuccess()){
-            redisTokenUtil.expire(RedisTokenUtil.SHORT_CODE,passwordForgetDTO.getUser().getEmail());
-        }
         return passwordForgetDTO;
     }
 
@@ -175,6 +172,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         if (userE != null) {
             passwordRecord.updatePassword(user.getId(), ENCODER.encode(password));
             passwordForgetDTO.setSuccess(true);
+            redisTokenUtil.expire(RedisTokenUtil.SHORT_CODE, passwordForgetDTO.getUser().getEmail());
             passwordForgetDTO.setUser(new UserDTO(userE.getId(), userE.getLoginName(), user.getEmail()));
 
             this.sendSiteMsg(user.getId(), user.getRealName());
