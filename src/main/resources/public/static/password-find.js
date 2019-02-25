@@ -51,14 +51,18 @@ class App extends window.React.Component {
       });
       return;
     }
-    $.post(`${server}/oauth/password/check_disable?emailAddress=${currentUsername}`, (results) => {
+    $.post(`${server}/oauth/password/check_disable`, {
+      emailAddress: currentUsername
+    }, (results) => {
       this.setState({
         account: {
           ...this.validateAccount(results),
         },
       });
       if (results.success === true) {
-        $.post(`${server}/oauth/password/send?emailAddress=${currentUsername}`, (results2) => {
+        $.post(`${server}/oauth/password/send`, {
+          emailAddress: currentUsername
+        }, (results2) => {
           this.setState({
             account: {
               ...this.validateAccount(results2),
@@ -238,7 +242,10 @@ class App extends window.React.Component {
     if (step === 1) {
       form.validateFields(['username'], {force: true});
       form.validateFields(['captchaInput'], {force: true});
-      $.post(`${server}/oauth/password/check?emailAddress=${currentUsername}&captcha=${currentVCode}`, (results) => {
+      $.post(`${server}/oauth/password/check`, {
+        emailAddress: currentUsername,
+        captcha: currentVCode,
+      }, (results) => {
         this.setState({
           vCode: {
             ...this.validateCode(results),
@@ -256,7 +263,13 @@ class App extends window.React.Component {
     if (step === 2 && form.getFieldValue('password') === form.getFieldValue('password1') && policyPassed) {
       form.validateFields(['password'], {force: true});
       form.validateFields(['password1'], {force: true});
-      $.post(`${server}/oauth/password/reset?userId=${userId}&emailAddress=${currentUsername}&captcha=${currentVCode}&password=${form.getFieldValue('password')}&password1=${form.getFieldValue('password1')}`, (results) => {
+      $.post(`${server}/oauth/password/reset`,{
+        userId,
+        captcha: currentVCode,
+        emailAddress: currentUsername,
+        password: form.getFieldValue('password'),
+        password1: form.getFieldValue('password1'),
+      } ,(results) => {
         if (results && results.success === true) {
           this.setState({
             step: 3,
