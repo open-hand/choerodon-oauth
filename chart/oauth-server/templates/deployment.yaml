@@ -40,7 +40,7 @@ spec:
           #     scheme: HTTP
           readinessProbe:
             exec:
-              command: ["/bin/sh","-c","curl -s localhost:{{ .Values.deployment.managementPort }}/health --fail"]
+              command: ["/bin/sh","-c","curl -s localhost:{{ .Values.deployment.managementPort }}/actuator/health --fail"]
             failureThreshold: 3
             initialDelaySeconds: 60
             periodSeconds: 10
