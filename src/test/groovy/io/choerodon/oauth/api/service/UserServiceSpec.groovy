@@ -27,26 +27,26 @@ class UserServiceSpec extends Specification {
         userService.setUserValidator(mockUserValidator)
     }
 
-    def "QueryByLoginField"() {
-        given: "参数准备"
-        and: 'mock'
-        mockUserMapper.selectOne(_) >> { return userE }
-        mockUserValidator.emailValidator(_) >> { return flag1 }
-        mockUserValidator.phoneValidator(_) >> { return flag2 }
-
-        when: '方法调用'
-        userService.queryByLoginField(field)
-
-        then: '结果分析'
-        noExceptionThrown()
-        where: '参数条件'
-        field            | userE                             | flag1 | flag2
-        null             | null                              | false | false
-        "test1@test.com" | new UserE(loginName: "loginName") | false | false
-        "test2@test.com" | null                              | true  | false
-        "test3@test.com" | null                              | false | true
-        "test4@test.com" | null                              | false | false
-    }
+//    def "QueryByLoginField"() {
+//        given: "参数准备"
+//        and: 'mock'
+//        mockUserMapper.selectOne(_) >> { return userE }
+//        mockUserValidator.emailValidator(_) >> { return flag1 }
+//        mockUserValidator.phoneValidator(_) >> { return flag2 }
+//
+//        when: '方法调用'
+//        userService.queryByLoginField(field)
+//
+//        then: '结果分析'
+//        noExceptionThrown()
+//        where: '参数条件'
+//        field            | userE                             | flag1 | flag2
+//        null             | null                              | false | false
+//        "test1@test.com" | new UserE(loginName: "loginName") | false | false
+//        "test2@test.com" | null                              | true  | false
+//        "test3@test.com" | null                              | false | true
+//        "test4@test.com" | null                              | false | false
+//    }
 
     def "UpdateSelective"() {
         given: '参数准备'

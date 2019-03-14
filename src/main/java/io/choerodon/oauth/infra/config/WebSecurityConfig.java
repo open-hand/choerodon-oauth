@@ -3,8 +3,10 @@ package io.choerodon.oauth.infra.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -15,7 +17,7 @@ import io.choerodon.oauth.infra.common.util.*;
  * @author wuguokai
  */
 @Configuration
-@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+@Order(SecurityProperties.BASIC_AUTH_ORDER - 2)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${choerodon.oauth.login.path:/login}")
     private String loginPath;
@@ -37,9 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/login", "/public/**", "/password/**", "/static/**", "/token",
-                        "/forgetPassword/**", "/wechat/**", "/choerodon/config",
-                        "/env", "/autoconfig", "/beans", "/dump", "/health", "/info", "/metrics", "/mappings", "/trace", "/v1/token_manager/*")
-                // .antMatchers("/oauth/**")
+                        "/forgetPassword/**", "/wechat/**", "/choerodon/config", "/actuator/**", "/v1/token_manager/*")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -60,5 +60,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         if (properties.isEnabledSingleLogin()) {
             http.sessionManagement().maximumSessions(1).expiredSessionStrategy(sessionInformationExpiredStrategy);
         }
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 }

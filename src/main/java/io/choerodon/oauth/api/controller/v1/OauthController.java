@@ -86,7 +86,7 @@ public class OauthController {
         this.captchaProducer = captchaProducer;
         this.passwordPolicyManager = passwordPolicyManager;
         this.basePasswordPolicyMapper = basePasswordPolicyMapper;
-        this.principalService=principalService;
+        this.principalService = principalService;
     }
 
     public void setMessageSource(MessageSource messageSource) {
@@ -132,11 +132,15 @@ public class OauthController {
 
         model.addAttribute("systemName", systemSettingDO.getSystemName());
 
-        if (systemSettingDO.getSystemLogo() != null)
-            model.addAttribute("systemLogo", systemSettingDO.getSystemLogo().equals(new String("")) ? null : systemSettingDO.getSystemLogo()); // 为模版引擎统一数据
+        if (systemSettingDO.getSystemLogo() != null) {
+            // 为模版引擎统一数据
+            model.addAttribute("systemLogo", "".equals(systemSettingDO.getSystemLogo()) ? null : systemSettingDO.getSystemLogo());
+        }
         model.addAttribute("systemTitle", systemSettingDO.getSystemTitle());
-        if(systemSettingDO.getFavicon() != null)
-            model.addAttribute("favicon", systemSettingDO.getFavicon().equals(new String("")) ? null : systemSettingDO.getFavicon()); // 为模版引擎统一数据
+        if (systemSettingDO.getFavicon() != null) {
+            // 为模版引擎统一数据
+            model.addAttribute("favicon", "".equals(systemSettingDO.getFavicon()) ? null : systemSettingDO.getFavicon());
+        }
 
         if (!"default".equals(loginProfile)) {
             URL url = this.getClass().getResource("/templates/index-" + loginProfile + ".html");
@@ -210,7 +214,7 @@ public class OauthController {
     @ResponseBody
     @RequestMapping("/api/user")
     public Principal user(Principal principal) {
-        if(((OAuth2Authentication) principal).getPrincipal() instanceof String){
+        if (((OAuth2Authentication) principal).getPrincipal() instanceof String) {
             return principalService.setClientDetailUserDetails(principal);
         }
         return principal;

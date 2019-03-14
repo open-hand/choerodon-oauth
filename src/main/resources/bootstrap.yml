@@ -1,6 +1,7 @@
 server:
   port: 8020
-  contextPath: /oauth
+  servlet:
+    contextPath: /oauth
 spring:
   application:
     name: oauth-server
@@ -14,8 +15,5 @@ spring:
         max-interval: 2000
         multiplier: 1.1
 management:
-  port: 8021
-  security:
-    enabled: false
-security:
-  ignored: /choerodon/config
+  server:
+    port: 8021

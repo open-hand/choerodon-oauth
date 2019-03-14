@@ -136,7 +136,7 @@ class PasswordForgetServiceSpec extends Specification {
             return new UserE(id: 1L, realName: "realName", email: "test@test.com")
         }
         mockUserService.updateSelective(_) >> { return userE }
-        mockNotifyFeignClient.postPm(_) >> { throw new CommonException("") }
+        mockNotifyFeignClient.postNotice(_) >> { throw new CommonException("") }
 
         when: "方法调用"
         passwordForgetService.reset(passwordForgetDTO, captcha, password)
@@ -144,7 +144,7 @@ class PasswordForgetServiceSpec extends Specification {
         then: "无异常抛出，方法调用如下"
         noExceptionThrown()
         1 * mockPasswordPolicyManager.passwordValidate(_, _, _)
-        1 * mockRedisTokenUtil.expire(_, _)
+        _ * mockRedisTokenUtil.expire(_, _)
         1 * mockBasePasswordPolicyMapper.selectOne(_)
         num * mockPasswordRecord.updatePassword(_, _)
 
