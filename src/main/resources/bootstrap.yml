@@ -17,3 +17,8 @@ spring:
 management:
   server:
     port: 8021
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
