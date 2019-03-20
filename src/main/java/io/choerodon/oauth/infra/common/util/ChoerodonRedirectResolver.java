@@ -1,7 +1,5 @@
 package io.choerodon.oauth.infra.common.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.common.exceptions.InvalidRequestException;
 import org.springframework.security.oauth2.common.exceptions.RedirectMismatchException;
@@ -9,8 +7,6 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,7 +20,6 @@ import java.util.Set;
  */
 public class ChoerodonRedirectResolver implements RedirectResolver {
 
-    private static final Logger log = LoggerFactory.getLogger(ChoerodonRedirectResolver.class);
 
     private Collection<String> redirectGrantTypes = Arrays.asList("implicit", "authorization_code");
 
@@ -56,13 +51,22 @@ public class ChoerodonRedirectResolver implements RedirectResolver {
                     "A redirect_uri can only be used by implicit or authorization_code grant types.");
         }
 
-        Set<String> registeredRedirectUris = client.getRegisteredRedirectUri();
-        if (registeredRedirectUris == null || registeredRedirectUris.isEmpty()) {
-            throw new InvalidRequestException("At least one redirect_uri must be registered with the client.");
+        Set<String> redirectUris = client.getRegisteredRedirectUri();
+
+        if (redirectUris != null && !redirectUris.isEmpty()) {
+            return obtainMatchingRedirect(redirectUris, requestedRedirect);
+        } else if (StringUtils.hasText(requestedRedirect)) {
+            return requestedRedirect;
+        } else {
+            throw new InvalidRequestException("A redirect_uri must be supplied.");
         }
-        return obtainMatchingRedirect(registeredRedirectUris, requestedRedirect);
+
     }
 
+    /**
+     * @param grantTypes some grant types
+     * @return true if the supplied grant types includes one or more of the redirect types
+     */
     private boolean containsRedirectGrantType(Set<String> grantTypes) {
         for (String type : grantTypes) {
             if (redirectGrantTypes.contains(type)) {
@@ -71,7 +75,6 @@ public class ChoerodonRedirectResolver implements RedirectResolver {
         }
         return false;
     }
-
 
     protected boolean redirectMatches(String requestedRedirect, String redirectUri) {
         try {
@@ -89,11 +92,10 @@ public class ChoerodonRedirectResolver implements RedirectResolver {
                 return StringUtils.cleanPath(req.getPath()).startsWith(StringUtils.cleanPath(reg.getPath()));
             }
         } catch (MalformedURLException e) {
-            log.debug("RedirectMatches error", e);
+            // do nothing
         }
         return requestedRedirect.equals(redirectUri);
     }
-
 
     protected boolean hostMatches(String registered, String requested) {
         if (matchSubdomains) {
@@ -102,34 +104,18 @@ public class ChoerodonRedirectResolver implements RedirectResolver {
         return registered.equals(requested);
     }
 
-
     private String obtainMatchingRedirect(Set<String> redirectUris, String requestedRedirect) {
         Assert.notEmpty(redirectUris, "Redirect URIs cannot be empty");
 
         if (redirectUris.size() == 1 && requestedRedirect == null) {
             return redirectUris.iterator().next();
         }
-
         for (String redirectUri : redirectUris) {
             if (requestedRedirect != null && redirectMatches(requestedRedirect, redirectUri)) {
-                // Initialize with the registered redirect-uri
-                UriComponentsBuilder redirectUriBuilder = UriComponentsBuilder.fromUriString(redirectUri);
-
-                UriComponents requestedRedirectUri = UriComponentsBuilder.fromUriString(requestedRedirect).build();
-
-                if (this.matchSubdomains) {
-                    redirectUriBuilder.host(requestedRedirectUri.getHost());
-                }
-                if (!this.matchPorts) {
-                    redirectUriBuilder.port(requestedRedirectUri.getPort());
-                }
-                redirectUriBuilder.replaceQuery(requestedRedirectUri.getQuery());
-                redirectUriBuilder.fragment(null);
-                return redirectUriBuilder.build().toUriString();
+                return requestedRedirect;
             }
         }
-
         throw new RedirectMismatchException("Invalid redirect: " + requestedRedirect
-                + " does not match one of the registered values.");
+                + " does not match one of the registered values: " + redirectUris.toString());
     }
 }
