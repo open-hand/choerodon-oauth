@@ -25,6 +25,7 @@ public class LdapE extends AuditDomain {
     private String serverAddress;
     private String port;
     private String account;
+    @Column(name = "ldap_password")
     private String password;
     @Column(name = "use_ssl")
     private Boolean useSSL;
