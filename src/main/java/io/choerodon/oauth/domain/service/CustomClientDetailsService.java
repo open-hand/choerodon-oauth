@@ -39,6 +39,10 @@ public class CustomClientDetailsService implements ClientDetailsService {
         if (clientE == null) {
             throw new NoSuchClientException("No client found : " + name);
         }
+        String redirectUrl = clientE.getWebServerRedirectUri();
+        if (!redirectUrl.endsWith("/")) {
+            clientE.setWebServerRedirectUri(redirectUrl + "/");
+        }
         CustomClientDetails clientDetails = new CustomClientDetails();
         clientDetails.setAuthorizedGrantTypes(StringUtils
                 .commaDelimitedListToSet(clientE.getAuthorizedGrantTypes()));
