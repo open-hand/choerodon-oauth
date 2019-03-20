@@ -1,14 +1,13 @@
 package io.choerodon.oauth.infra.config;
 
+import io.choerodon.oauth.infra.common.util.ChoerodonAuthenticationProvider;
+import io.choerodon.oauth.infra.common.util.ChoerodonBcryptPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.GlobalAuthenticationConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import io.choerodon.oauth.infra.common.util.ChoerodonAuthenticationProvider;
 
 
 /**
@@ -27,7 +26,7 @@ public class GlobalAuthenticationConfig extends GlobalAuthenticationConfigurerAd
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new ChoerodonBcryptPasswordEncoder();
     }
 
 }
