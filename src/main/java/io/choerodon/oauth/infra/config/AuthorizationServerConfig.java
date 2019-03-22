@@ -2,6 +2,7 @@ package io.choerodon.oauth.infra.config;
 
 import javax.sql.DataSource;
 
+import io.choerodon.oauth.infra.common.util.ChoerodonRedirectResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -54,7 +55,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .authorizationCodeServices(new JdbcAuthorizationCodeServices(dataSource))
                 .tokenStore(tokenStore)
                 .userDetailsService(userDetailsService)
-                .authenticationManager(authenticationManager);
+                .authenticationManager(authenticationManager)
+                .redirectResolver(new ChoerodonRedirectResolver());
     }
     /**
      * 配置客户端详情服务，客户端详情信息在这里进行初始化

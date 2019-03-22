@@ -24,6 +24,7 @@ public class UserDO extends AuditDomain {
     private String loginName;
     private String email;
     private Long organizationId;
+    @Column(name = "hash_password")
     private String password;
     private String realName;
     private String phone;
