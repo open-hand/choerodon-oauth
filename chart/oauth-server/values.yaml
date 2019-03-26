@@ -25,7 +25,7 @@ deployment:
   managementPort: 8021
 
 metrics:
-  path: /prometheus
+  path: /actuator/prometheus
   group: spring-boot
 
 logs:
@@ -42,7 +42,7 @@ env:
     SPRING_REDIS_PORT: 6379
     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://register-server.io-choerodon:8000/eureka/
     CHOERODON_DEFAULT_REDIRECT_URL: localhost:8080/manager/swagger-ui.html
-    CHOERODON_OAUTH_LOGIN_PATH: /login
+    CHOERODON_OAUTH_LOGIN_PATH: /loginactuator
     CHOERODON_OAUTH_LOGIN_SSL: false
     # skywalking 代理端配置
     #    SKYWALKING_OPTS: >-
