@@ -27,6 +27,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -141,7 +142,9 @@ public class OauthController {
             // 为模版引擎统一数据
             model.addAttribute("favicon", "".equals(systemSettingDO.getFavicon()) ? null : systemSettingDO.getFavicon());
         }
-
+        if (systemSettingDO.getRegisterEnabled() && !StringUtils.isEmpty(systemSettingDO.getRegisterUrl())) {
+            model.addAttribute("registerUrl", systemSettingDO.getRegisterUrl());
+        }
         if (!"default".equals(loginProfile)) {
             URL url = this.getClass().getResource("/templates/index-" + loginProfile + ".html");
             if (url != null) {

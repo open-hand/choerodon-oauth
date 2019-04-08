@@ -4,7 +4,6 @@ import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
-import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -19,33 +18,27 @@ import javax.persistence.Table;
 public class SystemSettingDO extends AuditDomain {
     @Id
     @GeneratedValue
-    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "FAVICON")
     private String favicon;
 
-    @Column(name = "SYSTEM_LOGO")
     private String systemLogo;
 
-    @Column(name = "SYSTEM_TITLE")
     private String systemTitle;
 
-    @Column(name = "SYSTEM_NAME")
     private String systemName;
 
-    @Column(name = "DEFAULT_PASSWORD")
     private String defaultPassword;
 
-    @Column(name = "DEFAULT_LANGUAGE")
     private String defaultLanguage;
 
-
-    @Column(name = "MIN_PASSWORD_LENGTH")
     private Integer minPasswordLength;
 
-    @Column(name = "MAX_PASSWORD_LENGTH")
     private Integer maxPasswordLength;
+
+    private Boolean registerEnabled;
+
+    private String registerUrl;
 
     public Long getId() {
         return id;
@@ -117,5 +110,21 @@ public class SystemSettingDO extends AuditDomain {
 
     public void setMaxPasswordLength(Integer maxPasswordLength) {
         this.maxPasswordLength = maxPasswordLength;
+    }
+
+    public Boolean getRegisterEnabled() {
+        return registerEnabled;
+    }
+
+    public void setRegisterEnabled(Boolean registerEnabled) {
+        this.registerEnabled = registerEnabled;
+    }
+
+    public String getRegisterUrl() {
+        return registerUrl;
+    }
+
+    public void setRegisterUrl(String registerUrl) {
+        this.registerUrl = registerUrl;
     }
 }
