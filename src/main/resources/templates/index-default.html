@@ -310,11 +310,17 @@
     </div>
     <div class="control-group" style="margin-top: 34px">
       <div class="controls">
+
+        <div th:if="${registerUrl} != null"
+                th:class="${usernameNotFoundOrPasswordIsWrong}? 'input-icon left inputError' : 'input-icon left inputNormal'">
+          <div id="passwordInupt"></div>
+          <a class="forget-passwd" th:href="${registerUrl}" th:test="${isNeedCaptcha}">注册组织</a>
+        </div>
+
         <div
           th:class="${usernameNotFoundOrPasswordIsWrong}? 'input-icon left inputError' : 'input-icon left inputNormal'">
           <div id="passwordInupt"></div>
           <a class="forget-passwd" href="./password/find" th:test="${isNeedCaptcha}">忘记密码？</a>
-          <!--<a class="forget-passwd" href="#">忘记密码？</a>-->
         </div>
       </div>
       <div th:text="${usernameNotFound}" class="alert alert-error"></div>
