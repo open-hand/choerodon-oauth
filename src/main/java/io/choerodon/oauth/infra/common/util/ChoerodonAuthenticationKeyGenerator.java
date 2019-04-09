@@ -21,6 +21,7 @@ import java.util.TreeSet;
 
 /**
  * @author zhipeng.zuo
+ * @since 0.15.0
  */
 @Service
 public class ChoerodonAuthenticationKeyGenerator implements AuthenticationKeyGenerator {
