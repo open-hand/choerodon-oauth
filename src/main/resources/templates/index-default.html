@@ -97,9 +97,29 @@
       color: rgba(0, 0, 0, 0.87);
     }
 
+    .registry-org::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      right: -10px;
+      height: 16px;
+      width: 0;
+      border-right: 1px solid rgba(0,0,0,.54);
+      border-bottom-width: 1px;
+    }
+
     .input-icon {
       border-width: 0px;
       border-style: solid;
+      position: relative;
+    }
+
+    .ml {
+      margin-left: 10px;
+    }
+
+    .mr {
+      margin-right: 10px;
     }
 
     .login #content .input-icon .m-wrap {
@@ -243,6 +263,16 @@
       float: right;
       margin-top: 16px;
       display: inline-block;
+      position: relative;
+    }
+
+    .registry-org {
+      font-size: 10px;
+      color: #3F51B5;
+      float: right;
+      margin-top: 16px;
+      display: inline-block;
+      position: relative;
     }
 
     .pIcon {
@@ -310,17 +340,16 @@
     </div>
     <div class="control-group" style="margin-top: 34px">
       <div class="controls">
-
-        <div th:if="${registerUrl} != null"
-                th:class="${usernameNotFoundOrPasswordIsWrong}? 'input-icon left inputError' : 'input-icon left inputNormal'">
+        <div
+          th:class="${usernameNotFoundOrPasswordIsWrong}? 'placeholder input-icon left inputError' : 'placeholder input-icon left inputNormal'">
           <div id="passwordInupt"></div>
-          <a class="forget-passwd" th:href="${registerUrl}" th:test="${isNeedCaptcha}">注册组织</a>
+          <a class="forget-passwd ml" href="./password/find" th:test="${isNeedCaptcha}">忘记密码？</a>
         </div>
 
-        <div
-          th:class="${usernameNotFoundOrPasswordIsWrong}? 'input-icon left inputError' : 'input-icon left inputNormal'">
+        <div th:if="${registerUrl} != null"
+             th:class="${usernameNotFoundOrPasswordIsWrong}? 'input-icon left inputError' : 'input-icon left inputNormal'">
           <div id="passwordInupt"></div>
-          <a class="forget-passwd" href="./password/find" th:test="${isNeedCaptcha}">忘记密码？</a>
+          <a class="registry-org mr" th:href="${registerUrl}" th:test="${isNeedCaptcha}">组织注册</a>
         </div>
       </div>
       <div th:text="${usernameNotFound}" class="alert alert-error"></div>
