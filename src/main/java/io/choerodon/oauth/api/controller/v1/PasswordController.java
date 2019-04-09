@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import io.choerodon.oauth.api.dto.CaptchaCheckDTO;
@@ -72,11 +73,13 @@ public class PasswordController {
             systemSettingDO = new SystemSettingDO();
         }
         model.addAttribute("systemName", systemSettingDO.getSystemName());
-        if (systemSettingDO.getSystemLogo() != null)
-            model.addAttribute("systemLogo", systemSettingDO.getSystemLogo().equals(new String("")) ? null : systemSettingDO.getSystemLogo()); // 为模版引擎统一数据
+        if (!StringUtils.isEmpty(systemSettingDO.getSystemLogo())) {
+            model.addAttribute("systemLogo", systemSettingDO.getSystemLogo());
+        }
         model.addAttribute("systemTitle", systemSettingDO.getSystemTitle());
-        if(systemSettingDO.getFavicon() != null)
-            model.addAttribute("favicon", systemSettingDO.getFavicon().equals(new String("")) ? null : systemSettingDO.getFavicon()); // 为模版引擎统一数据
+        if (!StringUtils.isEmpty(systemSettingDO.getFavicon())) {
+            model.addAttribute("favicon", systemSettingDO.getFavicon());
+        }
         return DEFAULT_PAGE;
     }
 

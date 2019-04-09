@@ -126,6 +126,4 @@ public class ClientE extends AuditDomain {
         this.autoApprove = autoApprove;
     }
 
-    public ClientE() {
-    }
 }

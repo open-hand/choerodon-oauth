@@ -1,6 +1,7 @@
 package io.choerodon.oauth.infra.common.util;
 
 import java.io.IOException;
+import java.util.Optional;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,7 +49,8 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication) throws IOException {
-        LOGGER.info("Logout:{}", authentication != null ? authentication.getName() : "null");
+        String name = Optional.ofNullable(authentication).map(Authentication::getName).orElse("null");
+        LOGGER.info("Logout:{}", name);
         if (oauthProperties.isClearToken()) {
             request.getSession().invalidate();
             String token = extractHeaderToken(request);

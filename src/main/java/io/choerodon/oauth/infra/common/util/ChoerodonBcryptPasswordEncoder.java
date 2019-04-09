@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
  * 因此如果match不到，则先加密再次进行匹配
  *
  * @author flyleft
+ * @since 0.15.0
  */
 public class ChoerodonBcryptPasswordEncoder  implements PasswordEncoder {
 

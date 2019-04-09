@@ -26,6 +26,6 @@ public class SystemSettingServiceImpl implements SystemSettingService {
     @Override
     public SystemSettingDO getSetting() {
         List<SystemSettingDO> records = systemSettingMapper.selectAll();
-        return records.size() == 0 ? null : records.get(0);
+        return records.isEmpty() ? null : records.get(0);
     }
 }

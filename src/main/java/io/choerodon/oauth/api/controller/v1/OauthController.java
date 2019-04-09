@@ -1,7 +1,6 @@
 package io.choerodon.oauth.api.controller.v1;
 
 import java.awt.image.BufferedImage;
-import java.net.URL;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Locale;
@@ -17,6 +16,7 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import io.choerodon.oauth.api.service.PrincipalService;
 import io.choerodon.oauth.api.service.SystemSettingService;
 import io.choerodon.oauth.infra.dataobject.SystemSettingDO;
+import io.choerodon.oauth.infra.enums.ReturnPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -52,8 +52,6 @@ public class OauthController {
     private static final String SPRING_SECURITY_LAST_EXCEPTION = "SPRING_SECURITY_LAST_EXCEPTION";
     private static final String SPRING_SECURITY_LAST_EXCEPTION_PARAMS = "SPRING_SECURITY_LAST_EXCEPTION_PARAMS";
 
-    private static final String INDEX_DEFAULT = "index-default";
-    private static final String INDEX_MOBILE = "index-mobile";
     private static final Logger LOGGER = LoggerFactory.getLogger(OauthController.class);
 
     @Value("${choerodon.oauth.loginPage.profile:default}")
@@ -120,19 +118,51 @@ public class OauthController {
     }
 
     @GetMapping(value = "/login")
-    public String login(HttpServletRequest request, Model model, HttpSession session, @RequestParam(required = false) String device) {
-        String returnPage = "mobile".equals(device) ? INDEX_MOBILE : INDEX_DEFAULT;
-        SystemSettingDO systemSettingDO = systemSettingService.getSetting();
+    public String login(HttpServletRequest request, Model model,
+                        HttpSession session, @RequestParam(required = false) String device) {
+        setModelSystemSetting(model);
+        //默认登录页面
+        ReturnPage returnPage = ReturnPage.getByProfile(loginProfile);
+        if (!StringUtils.isEmpty(device)) {
+            returnPage = ReturnPage.getByProfile(device);
+        }
+        String username = (String) session.getAttribute(LOGIN_FILED);
+        String errorCode = (String) session.getAttribute(SPRING_SECURITY_LAST_EXCEPTION);
+        Object[] params = (Object[]) session.getAttribute(SPRING_SECURITY_LAST_EXCEPTION_PARAMS);
 
+        session.removeAttribute(SPRING_SECURITY_LAST_EXCEPTION);
+        session.removeAttribute(LOGIN_FILED);
+        session.removeAttribute(SPRING_SECURITY_LAST_EXCEPTION_PARAMS);
+
+        if (username == null) {
+            return returnPage.fileName();
+        }
+        UserE user = userService.queryByLoginField(username);
+        Map<String, String> error = new HashMap<>(10);
+        //数据库中无该用户
+        if (user == null) {
+            error.put(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
+                    messageSource.getMessage(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
+                            null, currentLocale));
+            model.addAllAttributes(error);
+            return returnPage.fileName();
+        }
+
+        model.addAttribute("isNeedCaptcha", needCaptcha(user));
+
+        if (errorCode != null) {
+            error.put(errorCode, messageSource.getMessage(errorCode, params, "登录失败", currentLocale));
+        }
+        model.addAllAttributes(error);
+        return returnPage.fileName();
+    }
+
+    private void setModelSystemSetting(Model model) {
+        SystemSettingDO systemSettingDO = systemSettingService.getSetting();
         if (systemSettingDO == null) {
             systemSettingDO = new SystemSettingDO();
         }
-
-        Map<String, String> error = new HashMap<>();
-        error.put(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(), null);
-
         model.addAttribute("systemName", systemSettingDO.getSystemName());
-
         if (systemSettingDO.getSystemLogo() != null) {
             // 为模版引擎统一数据
             model.addAttribute("systemLogo", "".equals(systemSettingDO.getSystemLogo()) ? null : systemSettingDO.getSystemLogo());
@@ -145,43 +175,6 @@ public class OauthController {
         if (systemSettingDO.getRegisterEnabled() && !StringUtils.isEmpty(systemSettingDO.getRegisterUrl())) {
             model.addAttribute("registerUrl", systemSettingDO.getRegisterUrl());
         }
-        if (!"default".equals(loginProfile)) {
-            URL url = this.getClass().getResource("/templates/index-" + loginProfile + ".html");
-            if (url != null) {
-                model.addAllAttributes(error);
-                returnPage = "index-" + loginProfile;
-            }
-        }
-
-        String username = (String) session.getAttribute(LOGIN_FILED);
-        String errorCode = (String) session.getAttribute(SPRING_SECURITY_LAST_EXCEPTION);
-        Object[] params = (Object[]) session.getAttribute(SPRING_SECURITY_LAST_EXCEPTION_PARAMS);
-
-        session.removeAttribute(SPRING_SECURITY_LAST_EXCEPTION);
-        session.removeAttribute(LOGIN_FILED);
-        session.removeAttribute(SPRING_SECURITY_LAST_EXCEPTION_PARAMS);
-
-        if (username == null) {
-            return returnPage;
-        }
-        UserE user = userService.queryByLoginField(username);
-        //数据库中无该用户
-        if (user == null) {
-            error.put(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
-                    messageSource.getMessage(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
-                            null, currentLocale));
-
-            model.addAllAttributes(error);
-            return returnPage;
-        }
-
-        model.addAttribute("isNeedCaptcha", isNeedCaptcha(user));
-
-        if (errorCode != null) {
-            error.put(errorCode, messageSource.getMessage(errorCode, params, "登录失败", currentLocale));
-        }
-        model.addAllAttributes(error);
-        return returnPage;
     }
 
     @RequestMapping(value = "/public/captcha")
@@ -223,7 +216,7 @@ public class OauthController {
         return principal;
     }
 
-    private boolean isNeedCaptcha(UserE user) {
+    private boolean needCaptcha(UserE user) {
         BaseUserDO baseUserDO = new BaseUserDO();
         BeanUtils.copyProperties(user, baseUserDO);
         BasePasswordPolicyDO passwordPolicy = new BasePasswordPolicyDO();
