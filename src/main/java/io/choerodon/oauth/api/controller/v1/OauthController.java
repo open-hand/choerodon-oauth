@@ -1,21 +1,16 @@
 package io.choerodon.oauth.api.controller.v1;
 
-import java.awt.image.BufferedImage;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-
 import io.choerodon.oauth.api.service.PrincipalService;
 import io.choerodon.oauth.api.service.SystemSettingService;
+import io.choerodon.oauth.api.service.UserService;
+import io.choerodon.oauth.core.password.PasswordPolicyManager;
+import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO;
+import io.choerodon.oauth.core.password.domain.BaseUserDO;
+import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper;
+import io.choerodon.oauth.domain.entity.UserE;
 import io.choerodon.oauth.infra.dataobject.SystemSettingDO;
+import io.choerodon.oauth.infra.enums.LoginException;
 import io.choerodon.oauth.infra.enums.ReturnPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +28,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.choerodon.oauth.api.service.UserService;
-import io.choerodon.oauth.core.password.PasswordPolicyManager;
-import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO;
-import io.choerodon.oauth.core.password.domain.BaseUserDO;
-import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper;
-import io.choerodon.oauth.domain.entity.UserE;
-import io.choerodon.oauth.infra.enums.LoginException;
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.awt.image.BufferedImage;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 
 /**
@@ -172,7 +170,7 @@ public class OauthController {
             // 为模版引擎统一数据
             model.addAttribute("favicon", "".equals(systemSettingDO.getFavicon()) ? null : systemSettingDO.getFavicon());
         }
-        if (systemSettingDO.getRegisterEnabled() && !StringUtils.isEmpty(systemSettingDO.getRegisterUrl())) {
+        if (systemSettingDO.getRegisterEnabled() != null && systemSettingDO.getRegisterEnabled() && !StringUtils.isEmpty(systemSettingDO.getRegisterUrl())) {
             model.addAttribute("registerUrl", systemSettingDO.getRegisterUrl());
         }
     }
