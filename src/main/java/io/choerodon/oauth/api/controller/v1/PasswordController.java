@@ -143,6 +143,12 @@ public class PasswordController {
             passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.USER_IS_ILLEGAL.value(), null, Locale.ROOT));
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
+        if(!StringUtils.hasText(pwd)) {
+            passwordForgetDTO = new PasswordForgetDTO(false);
+            passwordForgetDTO.setCode(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value());
+            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value(), null, Locale.ROOT));
+            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
+        }
         passwordForgetDTO = passwordForgetService.check(passwordForgetDTO, captcha);
         if (!passwordForgetDTO.getSuccess()) {
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);

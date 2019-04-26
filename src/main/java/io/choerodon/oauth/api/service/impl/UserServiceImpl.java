@@ -1,17 +1,16 @@
 package io.choerodon.oauth.api.service.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.api.validator.UserValidator;
 import io.choerodon.oauth.domain.entity.UserE;
 import io.choerodon.oauth.infra.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author dongfan117@gmail.com
@@ -61,12 +60,12 @@ public class UserServiceImpl implements UserService {
         UserE user = new UserE();
         if (userValidator.emailValidator(field)) {
             user.setEmail(field);
+            return userMapper.selectOne(user);
         } else if (userValidator.phoneValidator(field)) {
             user.setPhone(field);
-        } else {
-            return null;
+            return selectFirstEnable(user);
         }
-        return selectFirstEnable(user);
+        return null;
     }
 
     private UserE selectFirstEnable(UserE userE) {
