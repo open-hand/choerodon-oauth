@@ -1,25 +1,19 @@
 package io.choerodon.oauth.domain.entity;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import io.choerodon.mybatis.entity.BaseDTO;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import javax.persistence.*;
+
 
 /**
  * @author wuguokai
  * @author superlee
  */
-@ModifyAudit
-@VersionAudit
 @Table(name = "fd_organization")
-public class OrganizationE extends AuditDomain {
+public class OrganizationE extends BaseDTO {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;

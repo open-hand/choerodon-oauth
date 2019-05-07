@@ -6,7 +6,7 @@ import io.choerodon.oauth.api.service.LdapService
 import io.choerodon.oauth.api.service.OrganizationService
 import io.choerodon.oauth.api.service.UserService
 import io.choerodon.oauth.core.password.PasswordPolicyManager
-import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO
+import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDTO
 import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper
 import io.choerodon.oauth.core.password.record.PasswordRecord
 import io.choerodon.oauth.core.password.service.BaseUserService
@@ -56,7 +56,7 @@ class ChoerodonAuthenticationProviderSpec extends Specification {
         and: "mock"
         mockUserService.queryByLoginField(_) >> { return user }
         mockOrganizationService.queryOrganizationById(_) >> { return organization }
-        mockBasePasswordPolicyMapper.selectOne(_) >> { return new BasePasswordPolicyDO(lockedExpireTime: 3600) }
+        mockBasePasswordPolicyMapper.selectOne(_) >> { return new BasePasswordPolicyDTO(lockedExpireTime: 3600) }
         mockPasswordPolicyManager.loginValidate(_, _, _) >> {
             Map returnMap = new HashMap()
             returnMap.put("maxErrorTime", false)
@@ -85,7 +85,7 @@ class ChoerodonAuthenticationProviderSpec extends Specification {
             return new UserE(id: 1L, organizationId: 1L, enabled: true, locked: true, lockedUntilAt: new Date(new Date().getTime() - 10000000))
         }
         mockOrganizationService.queryOrganizationById(_) >> { return new OrganizationE(enabled: true) }
-        mockBasePasswordPolicyMapper.findByOrgId(_) >> { return new BasePasswordPolicyDO(lockedExpireTime: 3600) }
+        mockBasePasswordPolicyMapper.findByOrgId(_) >> { return new BasePasswordPolicyDTO(lockedExpireTime: 3600) }
         mockPasswordPolicyManager.loginValidate(_, _, _) >> {
             Map returnMap = new HashMap()
             returnMap.put("maxErrorTime", false)

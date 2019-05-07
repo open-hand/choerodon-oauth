@@ -5,7 +5,6 @@ import io.choerodon.oauth.IntegrationTestConfiguration
 import io.choerodon.oauth.api.service.SystemSettingService
 import io.choerodon.oauth.api.service.UserService
 import io.choerodon.oauth.core.password.PasswordPolicyManager
-import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO
 import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper
 import io.choerodon.oauth.domain.entity.UserE
 import io.choerodon.oauth.infra.dataobject.SystemSettingDO
@@ -19,7 +18,6 @@ import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpSession
-import java.security.Principal
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
