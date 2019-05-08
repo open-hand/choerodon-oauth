@@ -4,13 +4,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.choerodon.mybatis.entity.BaseDTO;
 
 /**
  * Created by Eugen on 11/29/2018.
  */
 @Table(name = "oauth_refresh_token")
-public class RefreshTokenDO extends BaseDTO {
+public class RefreshTokenDO {
 
     @Id
     private String tokenId;
