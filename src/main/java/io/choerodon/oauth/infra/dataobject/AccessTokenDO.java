@@ -6,6 +6,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.choerodon.mybatis.entity.BaseDTO;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.util.SerializationUtils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -14,7 +15,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
  * Created by xausky on 3/8/17.
  */
 @Table(name = "oauth_access_token")
-public class AccessTokenDO {
+public class AccessTokenDO extends BaseDTO {
 
     @Id
     private String tokenId;

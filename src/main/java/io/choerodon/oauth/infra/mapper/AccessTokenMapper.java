@@ -2,10 +2,10 @@ package io.choerodon.oauth.infra.mapper;
 
 import java.util.List;
 
+import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import io.choerodon.oauth.infra.dataobject.AccessTokenDO;
-import tk.mybatis.mapper.common.Mapper;
 
 /**
  * @author wuguokai
