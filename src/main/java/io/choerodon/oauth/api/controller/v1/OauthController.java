@@ -5,8 +5,8 @@ import io.choerodon.oauth.api.service.PrincipalService;
 import io.choerodon.oauth.api.service.SystemSettingService;
 import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.core.password.PasswordPolicyManager;
-import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO;
-import io.choerodon.oauth.core.password.domain.BaseUserDO;
+import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDTO;
+import io.choerodon.oauth.core.password.domain.BaseUserDTO;
 import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper;
 import io.choerodon.oauth.domain.entity.UserE;
 import io.choerodon.oauth.infra.dataobject.SystemSettingDO;
@@ -215,11 +215,11 @@ public class OauthController {
     }
 
     private boolean needCaptcha(UserE user) {
-        BaseUserDO baseUserDO = new BaseUserDO();
-        BeanUtils.copyProperties(user, baseUserDO);
-        BasePasswordPolicyDO passwordPolicy = new BasePasswordPolicyDO();
+        BaseUserDTO baseUserDTO = new BaseUserDTO();
+        BeanUtils.copyProperties(user, baseUserDTO);
+        BasePasswordPolicyDTO passwordPolicy = new BasePasswordPolicyDTO();
         passwordPolicy.setOrganizationId(user.getOrganizationId());
         passwordPolicy = basePasswordPolicyMapper.selectOne(passwordPolicy);
-        return !user.getLocked() && passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUserDO);
+        return !user.getLocked() && passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUserDTO);
     }
 }

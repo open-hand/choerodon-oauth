@@ -54,3 +54,5 @@ choerodon:
       url: http://localhost:8080/manager/swagger-ui.html
 hook:
   token: abc
+db:
+  type: mysql

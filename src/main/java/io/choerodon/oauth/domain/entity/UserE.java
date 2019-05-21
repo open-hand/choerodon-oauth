@@ -3,19 +3,15 @@ package io.choerodon.oauth.domain.entity;
 import java.util.Date;
 import javax.persistence.*;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 
 /**
  * @author dongfan117@gmail.com
  */
-@ModifyAudit
-@VersionAudit
 @Table(name = "iam_user")
-public class UserE extends AuditDomain {
+public class UserE extends BaseDTO {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String loginName;
     private String email;

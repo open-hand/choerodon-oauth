@@ -2,6 +2,8 @@ package io.choerodon.oauth.api.service.impl;
 
 import java.util.*;
 
+import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDTO;
+import io.choerodon.oauth.core.password.domain.BaseUserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -20,8 +22,6 @@ import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.api.validator.UserPasswordValidator;
 import io.choerodon.oauth.api.validator.UserValidator;
 import io.choerodon.oauth.core.password.PasswordPolicyManager;
-import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO;
-import io.choerodon.oauth.core.password.domain.BaseUserDO;
 import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper;
 import io.choerodon.oauth.core.password.record.PasswordRecord;
 import io.choerodon.oauth.domain.entity.UserE;
@@ -152,13 +152,13 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         UserE user = userService.queryByEmail(passwordForgetDTO.getUser().getEmail());
         this.redisTokenUtil.expire(user.getEmail(), captcha);
         try {
-            BaseUserDO baseUserDO = new BaseUserDO();
-            BeanUtils.copyProperties(user, baseUserDO);
-            baseUserDO.setPassword(password);
-            BasePasswordPolicyDO basePasswordPolicyDO = new BasePasswordPolicyDO();
+            BaseUserDTO baseUser = new BaseUserDTO();
+            BeanUtils.copyProperties(user, baseUser);
+            baseUser.setPassword(password);
+            BasePasswordPolicyDTO basePasswordPolicyDO = new BasePasswordPolicyDTO();
             basePasswordPolicyDO.setOrganizationId(user.getOrganizationId());
             basePasswordPolicyDO = basePasswordPolicyMapper.selectOne(basePasswordPolicyDO);
-            passwordPolicyManager.passwordValidate(password, baseUserDO, basePasswordPolicyDO);
+            passwordPolicyManager.passwordValidate(password, baseUser, basePasswordPolicyDO);
             userPasswordValidator.validate(password, user.getOrganizationId(), true);
         } catch (CommonException e) {
             LOGGER.error(e.getMessage());

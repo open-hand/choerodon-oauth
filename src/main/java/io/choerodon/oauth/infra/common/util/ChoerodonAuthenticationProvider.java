@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import io.choerodon.core.ldap.DirectoryType;
+import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDTO;
+import io.choerodon.oauth.core.password.domain.BaseUserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -32,8 +34,6 @@ import io.choerodon.oauth.api.service.OrganizationService;
 import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.core.password.PasswordPolicyManager;
 import io.choerodon.oauth.core.password.PasswordPolicyType;
-import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO;
-import io.choerodon.oauth.core.password.domain.BaseUserDO;
 import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper;
 import io.choerodon.oauth.core.password.record.PasswordRecord;
 import io.choerodon.oauth.core.password.service.BaseUserService;
@@ -120,13 +120,13 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
         }
         checkOrganization(user.getOrganizationId());
 
-        BasePasswordPolicyDO passwordPolicy = new BasePasswordPolicyDO();
+        BasePasswordPolicyDTO passwordPolicy = new BasePasswordPolicyDTO();
         passwordPolicy.setOrganizationId(user.getOrganizationId());
         passwordPolicy = basePasswordPolicyMapper.selectOne(passwordPolicy);
         //登录认证策略
-        BaseUserDO baseUserDO = new BaseUserDO();
-        BeanUtils.copyProperties(user, baseUserDO);
-        Map returnMap = passwordPolicyManager.loginValidate("password", baseUserDO, passwordPolicy);
+        BaseUserDTO baseUser = new BaseUserDTO();
+        BeanUtils.copyProperties(user, baseUser);
+        Map returnMap = passwordPolicyManager.loginValidate("password", baseUser, passwordPolicy);
         Object lock = null;
         if (returnMap != null) {
             lock = returnMap.get(PasswordPolicyType.MAX_ERROR_TIME.getValue());
@@ -135,8 +135,8 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
                 && (user.getLocked() == null || (user.getLocked() != null && !user.getLocked()))) {
             //DONE 锁定用户
             Integer lockExpireTime = passwordPolicy.getLockedExpireTime();
-            LOG.info("begin lock user, userId is: {} ", baseUserDO.getId());
-            baseUserService.lockUser(baseUserDO.getId(), lockExpireTime);
+            LOG.info("begin lock user, userId is: {} ", baseUser.getId());
+            baseUserService.lockUser(baseUser.getId(), lockExpireTime);
             user = userService.queryByLoginField(username);
         }
         if (!user.getEnabled()) {
@@ -176,12 +176,12 @@ public class ChoerodonAuthenticationProvider extends AbstractUserDetailsAuthenti
             String captchaCode = details.getCaptchaCode();
             String captcha = details.getCaptcha();
             UserE user = userService.queryByLoginField(username);
-            BasePasswordPolicyDO passwordPolicy = new BasePasswordPolicyDO();
+            BasePasswordPolicyDTO passwordPolicy = new BasePasswordPolicyDTO();
             passwordPolicy.setOrganizationId(user.getOrganizationId());
             passwordPolicy = basePasswordPolicyMapper.selectOne(passwordPolicy);
-            BaseUserDO baseUserDO = new BaseUserDO();
-            BeanUtils.copyProperties(user, baseUserDO);
-            if (passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUserDO)) {
+            BaseUserDTO baseUser = new BaseUserDTO();
+            BeanUtils.copyProperties(user, baseUser);
+            if (passwordPolicyManager.isNeedCaptcha(passwordPolicy, baseUser)) {
                 if (captchaCode == null || captcha == null || "".equals(captcha)) {
                     throw new AuthenticationServiceException(LoginException.CAPTCHA_IS_NULL.value());
                 } else if (!captchaCode.equalsIgnoreCase(captcha)) {
