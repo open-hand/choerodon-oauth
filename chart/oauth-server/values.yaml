@@ -52,7 +52,7 @@ env:
     #      -Dskywalking.collector.backend_service=oap.skywalking:11800
 
 service:
-  enable: false
+  enabled: false
   type: ClusterIP
   port: 8020
   name: oauth-server
