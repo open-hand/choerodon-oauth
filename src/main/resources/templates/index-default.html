@@ -349,7 +349,7 @@
         <div th:if="${registerUrl} != null"
              th:class="${usernameNotFoundOrPasswordIsWrong}? 'input-icon left inputError' : 'input-icon left inputNormal'">
           <div id="passwordInupt"></div>
-          <a class="registry-org mr" th:href="${registerUrl}" th:test="${isNeedCaptcha}">组织注册</a>
+          <a class="registry-org mr" th:href="${registerUrl}" th:test="${isNeedCaptcha}">注册</a>
         </div>
       </div>
       <div th:text="${usernameNotFound}" class="alert alert-error"></div>
