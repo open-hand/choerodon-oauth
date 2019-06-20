@@ -1,12 +1,13 @@
 package io.choerodon.oauth.api.validator;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.api.service.SystemSettingService;
 import io.choerodon.oauth.infra.dataobject.PasswordPolicyDO;
 import io.choerodon.oauth.infra.dataobject.SystemSettingDO;
 import io.choerodon.oauth.infra.mapper.PasswordPolicyMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * 当用户组织的密码策略未开启时，如果修改过系统设置，根据系统设置中的密码长度要求，校验用户密码
@@ -38,7 +39,7 @@ public class UserPasswordValidator {
         passwordPolicyDO.setOrganizationId(organizationId);
         passwordPolicyDO = passwordPolicyMapper.selectOne(passwordPolicyDO);
         // 组织启用密码策略时，跳过验证
-        if (Boolean.TRUE.equals(passwordPolicyDO.getEnablePassword())) {
+        if (passwordPolicyDO != null && Boolean.TRUE.equals(passwordPolicyDO.getEnablePassword())) {
             return true;
         }
 
