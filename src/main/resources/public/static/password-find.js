@@ -410,7 +410,7 @@ class App extends window.React.Component {
           <FormItem style={{marginTop: '60px'}}>
             <Button className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
                     style={{width: '120px',float: 'right', paddingTop: '4px'} } htmlType="submit"><span>下一步</span></Button>
-            <a className="back-to-login" href="/oauth/login" style={{float: 'left'}}>返回登陆</a>
+            <a className="back-to-login" href="/oauth/login" style={{float: 'left'}}>返回登录</a>
           </FormItem>
         </Form>
       </div>

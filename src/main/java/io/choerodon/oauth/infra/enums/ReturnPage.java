@@ -13,7 +13,7 @@ public enum ReturnPage {
     /**
      * 移动端返回页
      */
-    MOBILE_PAGE("mobile", "/templates/index-mobile.html", "index-mobile");
+    MOBILE_PAGE("mobile", "/templates/index-default.html", "index-default");
 
     private String profile;
     private String path;
