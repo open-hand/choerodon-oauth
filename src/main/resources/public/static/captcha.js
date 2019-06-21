@@ -13,9 +13,9 @@ var keyStr = "ABCDEFGHIJKLMNOP" + "QRSTUVWXYZabcdef" + "ghijklmnopqrstuv"
     + "wxyz0123456789+/" + "=";
 
 $(function () {
-    if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
-        window.location.href = "/oauth/login?device=mobile";
-    }
+    // if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+    //     window.location.href = "/oauth/login?device=mobile";
+    // }
     document.onkeydown = function (event) {
         var e = event || window.event;
         if (e && e.keyCode == 13) {
