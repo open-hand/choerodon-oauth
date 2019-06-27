@@ -2,47 +2,74 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# pod运行数量
 replicaCount: 1
 
 image:
+  # 镜像库地址
   repository: registry.choerodon.com.cn/choerodon/oauth-server
+  # 镜像拉取策略
   pullPolicy: IfNotPresent
 
 preJob:
+  # job超时时间
   timeout: 300
+  # job镜像库地址
   image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.4
   preConfig:
+    # 是否初始化manager_service数据库
     enabled: true
+    # 初始化到配置中心文件名
     configFile: application.yml
+    # 初始化到配置中心存储方式
     configType: k8s
+    # 注册中心地址
     registerHost: http://register-server:8000
     datasource:
-      url: jdbc:mysql://localhost:3306/manager_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
+      # manager_service数据库连接地址
+      url: jdbc:mysql://localhost:3306/manager_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true
+      # manager_service数据库用户名
       username: username
+      # manager_service数据库密码
       password: password
 
 deployment:
+  # 服务管理端口
   managementPort: 8021
 
 metrics:
+  # 收集应用的指标数据路径
   path: /actuator/prometheus
+  # 性能指标应用分组
   group: spring-boot
 
 logs:
+  # 日志收集格式
   parser: spring-boot
 
 env:
   open:
+    # 是否启用配置中心
     SPRING_CLOUD_CONFIG_ENABLED: true
+    # 配置中心地址
     SPRING_CLOUD_CONFIG_URI: http://register-server.io-choerodon:8000
-    SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1/event_store_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    # 数据库连接地址
+    SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1/event_store_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true
+    # 数据库用户名
     SPRING_DATASOURCE_USERNAME: username
+    #  数据库密码
     SPRING_DATASOURCE_PASSWORD: password
+    # redis主机地址
     SPRING_REDIS_HOST: localhost
+    # redis端口
     SPRING_REDIS_PORT: 6379
+    # 注册服务地址
     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://register-server.io-choerodon:8000/eureka/
+    # 登录后默认跳转地址，应该为前台的域名地址
     CHOERODON_DEFAULT_REDIRECT_URL: localhost:8080/manager/swagger-ui.html
+    # 登录页面地址，可以带协议配置为`https://api.example.com/oauth/login`，默认为`/login`
     CHOERODON_OAUTH_LOGIN_PATH: /login
+    # 如果`env.open.CHOERODON_OAUTH_LOGIN_PATH` 为带`https`协议的地址，则必须配置为`true`。默认为`false`
     CHOERODON_OAUTH_LOGIN_SSL: false
     # skywalking 代理端配置
     #    SKYWALKING_OPTS: >-
@@ -52,19 +79,21 @@ env:
     #      -Dskywalking.collector.backend_service=oap.skywalking:11800
 
 service:
+  # 是否创建k8s service
   enabled: false
+  # service类型
   type: ClusterIP
+  # service端口
   port: 8020
+  # service名称
   name: oauth-server
 
 resources:
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources,such as Minikube. If you do want to specify resources,uncomment the following
-  # lines,adjust them as necessary,and remove the curly braces after 'resources:'.
+  # k8s中容器能使用资源的资源最大值
   limits:
     # cpu: 100m
     memory: 2Gi
+  # k8s中容器使用的最小资源需求
   requests:
     # cpu: 100m
     memory: 1Gi
