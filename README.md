@@ -13,6 +13,98 @@
 
 `oauth-server` 服务依赖于 [iam-service](https://github.com/choerodon/iam-service) 服务的数据库, 所以请确保 `iam-service` 服务的数据库在使用前已经被初始化并投入使用。
 
+## 配置文件
+application.yml
+```application.yml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost/iam_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true
+    username: choerodon
+    password: 123456
+  redis:
+    host: localhost
+    port: 6379
+    database: 1
+eureka:
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+    metadata-map:
+      CONTEXT-PATH: oauth
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8000/eureka/}
+    registryFetchIntervalSeconds: 10
+mybatis:
+  mapperLocations: classpath*:/mapper/*.xml
+  configuration:
+    mapUnderscoreToCamelCase: true
+feign:
+  hystrix:
+    enabled: true
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 10000
+choerodon:
+  redisHttpSession:
+    enabled: true
+  oauth:
+    clear-token: true
+    enabled-single-login: false
+    access-token-validity-seconds: 86400
+    login:
+      field: mail,phone
+      path: /login
+      ssl: false
+    loginPage.title: Choerodon
+  reset-password:
+    check: true
+  default:
+    redirect:
+      url: http://localhost:8080/manager/swagger-ui.html
+hook:
+  token: abc
+db:
+  type: mysql
+```
+bootstrap.yml
+```bootstrap.yml
+server:
+  port: 8020
+  servlet:
+    contextPath: /oauth
+spring:
+  application:
+    name: oauth-server
+  cloud:
+    config:
+      uri: http://localhost:8010/
+      enabled: false
+      fail-fast: true
+      retry:
+        max-attempts: 6
+        max-interval: 2000
+        multiplier: 1.1
+management:
+  endpoint:
+    health:
+      show-details: ALWAYS
+  server:
+    port: 8021
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+```
+
 ## 安装和启动步骤
 
 * 数据库：
