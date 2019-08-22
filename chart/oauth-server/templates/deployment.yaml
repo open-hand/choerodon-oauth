@@ -33,11 +33,6 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          # readinessProbe:
-          #   httpGet:
-          #     path: /health
-          #     port: {{ .Values.deployment.managementPort }}
-          #     scheme: HTTP
           readinessProbe:
             exec:
               command: ["/bin/sh","-c","curl -s localhost:{{ .Values.deployment.managementPort }}/actuator/health --fail"]
