@@ -10,13 +10,19 @@
   <link rel="shortcut icon" th:if="${favicon != null}" th:href="${favicon}"  type="image/x-icon"/>
   <link rel="shortcut icon" th:unless="${favicon != null}" th:href="${'static/icon.ico'}"  type="image/x-icon"/>
   <link href="static/choerodon-ui.min.css" rel="stylesheet"/>
+  <!--<link href="https://unpkg.com/choerodon-ui@0.8.1/dist/choerodon-ui-pro.min.css" rel="stylesheet"/>-->
+
   <script src="static/polyfill.min.js"></script>
   <script src="static/jquery.min.js"></script>
   <script src="static/react.production.min.js"></script>
   <script src="static/react-dom.min.js"></script>
   <script src="static/babel.min.js"></script>
+  <script src="static/mobx.umd.min.js"></script>
   <script src="static/moment.min.js"></script>
   <script src="static/choerodon-ui.min.js"></script>
+  <!--<script src="https://unpkg.com/choerodon-ui@0.8.1/dist/choerodon-ui-pro.min.js"></script>-->
+  <!--<script src="static/choerodon-ui.min.js"></script>-->
+  <!--<script src="static/choerodon-ui-pro.min.js"></script>-->
   <script src="static/login.js" type="text/babel"></script>
   <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
   <title th:unless="${systemTitle}" th:text="Choerodon"></title>
@@ -26,7 +32,7 @@
       margin: 0px;
       overflow: hidden;
       font-family: 'Microsoft YaHei', arial;
-      font-size: 13px;
+      // font-size: 13px;
       line-height: 20px;
       direction: ltr;
       width: 100%;
