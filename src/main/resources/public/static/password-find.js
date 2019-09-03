@@ -1,4 +1,4 @@
-const {Input, Button, Form, Icon} = window['choerodon-ui'];
+const {Input, Button, Form, Icon} = window['choerodon-ui.min'];
 
 // const server = 'http://api.staging.saas.hand-china.com'; //本地测试的时候打开此注释
 const server = '';

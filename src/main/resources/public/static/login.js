@@ -1,14 +1,5 @@
-const {Input, Button, FormItem} = window['choerodon-ui'];
-const formItemLayout = {
-  labelCol: {
-    xs: {span: 24},
-    sm: {span: 100},
-  },
-  wrapperCol: {
-    xs: {span: 24},
-    sm: {span: 9},
-  },
-};
+const {Input, Button} = window['choerodon-ui.min'];
+
 
 class LoginButton extends window.React.Component {
   state = {
@@ -89,10 +80,10 @@ class UsernameInupt extends window.React.Component {
     this.setState({
       currentUsername: this.getUrlParams('username'),
     })
-    let elem = document.createElement("div");
-    elem.className = 'ant-input-label';
-    elem.innerHTML = '登录账号*';
-    document.getElementById('username').parentNode.appendChild(elem);
+    // let elem = document.createElement("div");
+    // elem.className = 'ant-input-label';
+    // elem.innerHTML = '登录账号*';
+    // document.getElementById('username').parentNode.appendChild(elem);
   }
 
   getUrlParams = (name) => {
@@ -134,16 +125,16 @@ class PasswordInput extends window.React.Component {
     this.setState({
       currentPassword: ''
     })
-    let elem = document.createElement("div");
-    elem.className = 'ant-input-label';
-    elem.innerHTML = '密码*';
-    document.getElementById('password').parentNode.appendChild(elem);
+    // let elem = document.createElement("div");
+    // elem.className = 'ant-input-label';
+    // elem.innerHTML = '密码*';
+    // document.getElementById('password').parentNode.appendChild(elem);
   }
 
   render() {
     return (
       <div>
-      <Input type="password" onChange={e => this.onValueChange(e)} autoComplete="off" label=" " id="password"
+      <Input labelLayout="float" type="password" onChange={e => this.onValueChange(e)} autoComplete="off" label=" " id="password"
              placeholder="请输入密码" defaultValue="" showPasswordEye/>
       </div>
     )
