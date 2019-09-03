@@ -101,7 +101,7 @@ class UsernameInupt extends window.React.Component {
   render() {
     return (
       <Input autoFocus autoComplete="off" name="username" id="username"
-             onChange={e => this.onValueChange(e)} label=" " placeholder="登录名/邮箱" defaultValue=" "
+             onChange={e => this.onValueChange(e)} label="登录名/邮箱" placeholder="登录名/邮箱" defaultValue=" "
              value={this.state.currentUsername}/>
     )
   }
@@ -134,7 +134,7 @@ class PasswordInput extends window.React.Component {
   render() {
     return (
       <div>
-      <Input labelLayout="float" type="password" onChange={e => this.onValueChange(e)} autoComplete="off" label=" " id="password"
+      <Input labelLayout="float" type="password" onChange={e => this.onValueChange(e)} autoComplete="off" label="密码" id="password"
              placeholder="请输入密码" defaultValue="" showPasswordEye/>
       </div>
     )
