@@ -399,7 +399,7 @@ class App extends window.React.Component {
               }],
             })(
               <div>
-                <Input type="text" style={{width: '237px'}} autoComplete="off" label="验证码" id="captchaInput"
+                <Input type="text" style={{width: '220px'}} autoComplete="off" label="验证码" id="captchaInput"
                        onChange={e => this.handleCodeChange(e)} placeholder="请输入验证码" value={this.state.currentVCode}
                 />
                 <Button funcType="raised" onClick={this.handleCaptchaButtonClick} loading={captchaCD > 0}
