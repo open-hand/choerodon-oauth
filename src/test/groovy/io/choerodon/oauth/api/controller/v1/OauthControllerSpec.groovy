@@ -4,10 +4,10 @@ import com.google.code.kaptcha.impl.DefaultKaptcha
 import io.choerodon.oauth.IntegrationTestConfiguration
 import io.choerodon.oauth.api.service.SystemSettingService
 import io.choerodon.oauth.api.service.UserService
+import io.choerodon.oauth.api.vo.SysSettingVO
 import io.choerodon.oauth.core.password.PasswordPolicyManager
 import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper
 import io.choerodon.oauth.domain.entity.UserE
-import io.choerodon.oauth.infra.dataobject.SystemSettingDO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -58,15 +58,15 @@ class OauthControllerSpec extends Specification {
     def "Login"() {
         given: "参数准备"
         def device = "device"
-        SystemSettingDO systemSettingDO = Mock(SystemSettingDO)
+        SysSettingVO sysSettingVO = Mock(SysSettingVO)
         when: '发送请求'
         def entity = testRestTemplate.getForEntity(
                 "/login?device={device}", String, device)
         then: '结果分析'
         entity.statusCode.is2xxSuccessful()
         noExceptionThrown()
-        1 * systemSettingService.getSetting() >> systemSettingDO
-        1 * systemSettingDO.getRegisterEnabled() >> true
+        1 * systemSettingService.getSetting() >> sysSettingVO
+        2 * sysSettingVO.getRegisterEnabled() >> true
     }
 
     def "Login-2"() {
@@ -75,7 +75,7 @@ class OauthControllerSpec extends Specification {
         def request = Mock(HttpServletRequest)
         def model = Mock(Model)
         def session = Mock(HttpSession)
-        SystemSettingDO systemSettingDO = Mock(SystemSettingDO)
+        SysSettingVO sysSettingVO = Mock(SysSettingVO)
 
         and: "mock"
         session.getAttribute("username") >> { return "userName" }
@@ -88,12 +88,12 @@ class OauthControllerSpec extends Specification {
         then: '结果分析'
         noExceptionThrown()
         login == returnPage
-        1 * systemSettingService.getSetting() >> systemSettingDO
-        1 * systemSettingDO.getRegisterEnabled() >> true
+        1 * systemSettingService.getSetting() >> sysSettingVO
+        2 * sysSettingVO.getRegisterEnabled() >> true
         where: "比对"
         user                                                 || returnPage
-        null                                                 || "index-mobile"
-        new UserE(locked: false, organizationId: 1L, id: 1L) || "index-mobile"
+        null                                                 || "index-default"
+        new UserE(locked: false, organizationId: 1L, id: 1L) || "index-default"
     }
 
     def "CreateCaptcha"() {

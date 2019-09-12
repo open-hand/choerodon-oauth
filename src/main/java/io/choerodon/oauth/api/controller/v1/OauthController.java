@@ -1,17 +1,17 @@
 package io.choerodon.oauth.api.controller.v1;
 
+import java.awt.image.BufferedImage;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-import io.choerodon.oauth.api.service.PrincipalService;
-import io.choerodon.oauth.api.service.SystemSettingService;
-import io.choerodon.oauth.api.service.UserService;
-import io.choerodon.oauth.core.password.PasswordPolicyManager;
-import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDTO;
-import io.choerodon.oauth.core.password.domain.BaseUserDTO;
-import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper;
-import io.choerodon.oauth.domain.entity.UserE;
-import io.choerodon.oauth.infra.dataobject.SystemSettingDO;
-import io.choerodon.oauth.infra.enums.LoginException;
-import io.choerodon.oauth.infra.enums.ReturnPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -28,16 +28,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.awt.image.BufferedImage;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import io.choerodon.oauth.api.service.PrincipalService;
+import io.choerodon.oauth.api.service.SystemSettingService;
+import io.choerodon.oauth.api.service.UserService;
+import io.choerodon.oauth.api.vo.SysSettingVO;
+import io.choerodon.oauth.core.password.PasswordPolicyManager;
+import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDTO;
+import io.choerodon.oauth.core.password.domain.BaseUserDTO;
+import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper;
+import io.choerodon.oauth.domain.entity.UserE;
+import io.choerodon.oauth.infra.enums.LoginException;
+import io.choerodon.oauth.infra.enums.ReturnPage;
 
 
 /**
@@ -118,7 +119,7 @@ public class OauthController {
     @GetMapping(value = "/login")
     public String login(HttpServletRequest request, Model model,
                         HttpSession session, @RequestParam(required = false) String device) {
-        setModelSystemSetting(model);
+        setModelSysSetting(model);
         //默认登录页面
         ReturnPage returnPage = ReturnPage.getByProfile(loginProfile);
         if (!StringUtils.isEmpty(device)) {
@@ -155,23 +156,25 @@ public class OauthController {
         return returnPage.fileName();
     }
 
-    private void setModelSystemSetting(Model model) {
-        SystemSettingDO systemSettingDO = systemSettingService.getSetting();
-        if (systemSettingDO == null) {
-            systemSettingDO = new SystemSettingDO();
+    private void setModelSysSetting(Model model) {
+        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+        if (sysSettingVO == null) {
+            sysSettingVO = new SysSettingVO();
         }
-        model.addAttribute("systemName", systemSettingDO.getSystemName());
-        if (systemSettingDO.getSystemLogo() != null) {
+        model.addAttribute("systemName", sysSettingVO.getSystemName());
+        String systemLogo = sysSettingVO.getSystemLogo();
+        if (!StringUtils.isEmpty(systemLogo)) {
             // 为模版引擎统一数据
-            model.addAttribute("systemLogo", "".equals(systemSettingDO.getSystemLogo()) ? null : systemSettingDO.getSystemLogo());
+            model.addAttribute("systemLogo", systemLogo);
         }
-        model.addAttribute("systemTitle", systemSettingDO.getSystemTitle());
-        if (systemSettingDO.getFavicon() != null) {
+        model.addAttribute("systemTitle", sysSettingVO.getSystemTitle());
+        String favicon = sysSettingVO.getFavicon();
+        if (!StringUtils.isEmpty(favicon)) {
             // 为模版引擎统一数据
-            model.addAttribute("favicon", "".equals(systemSettingDO.getFavicon()) ? null : systemSettingDO.getFavicon());
+            model.addAttribute("favicon", favicon);
         }
-        if (systemSettingDO.getRegisterEnabled() != null && systemSettingDO.getRegisterEnabled() && !StringUtils.isEmpty(systemSettingDO.getRegisterUrl())) {
-            model.addAttribute("registerUrl", systemSettingDO.getRegisterUrl());
+        if (sysSettingVO.getRegisterEnabled() != null && sysSettingVO.getRegisterEnabled() && !StringUtils.isEmpty(sysSettingVO.getRegisterUrl())) {
+            model.addAttribute("registerUrl", sysSettingVO.getRegisterUrl());
         }
     }
 

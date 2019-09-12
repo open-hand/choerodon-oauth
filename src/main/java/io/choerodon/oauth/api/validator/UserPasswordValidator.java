@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.api.service.SystemSettingService;
+import io.choerodon.oauth.api.vo.SysSettingVO;
 import io.choerodon.oauth.infra.dataobject.PasswordPolicyDO;
-import io.choerodon.oauth.infra.dataobject.SystemSettingDO;
 import io.choerodon.oauth.infra.mapper.PasswordPolicyMapper;
 
 /**
@@ -43,7 +43,7 @@ public class UserPasswordValidator {
             return true;
         }
 
-        SystemSettingDO setting = systemSettingService.getSetting();
+        SysSettingVO setting = systemSettingService.getSetting();
         // 系统设置为空时，跳过
         if (setting == null || setting.getMinPasswordLength() == null || setting.getMaxPasswordLength() == null) {
             return true;
@@ -52,7 +52,7 @@ public class UserPasswordValidator {
         password = password.replaceAll(" ", "");
         if (password.length() < setting.getMinPasswordLength() || password.length() > setting.getMaxPasswordLength()) {
             if (isToThrowException) {
-                throw new CommonException("error.password.length.out.of.setting");
+                throw new CommonException("error.password.length.out.of.setting", setting.getMinPasswordLength(), setting.getMaxPasswordLength());
             }
             return false;
         }

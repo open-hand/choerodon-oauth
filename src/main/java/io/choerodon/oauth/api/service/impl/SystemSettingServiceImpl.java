@@ -1,12 +1,11 @@
 package io.choerodon.oauth.api.service.impl;
 
-import io.choerodon.oauth.api.service.SystemSettingService;
-import io.choerodon.oauth.infra.dataobject.SystemSettingDO;
-import io.choerodon.oauth.infra.mapper.SystemSettingMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import io.choerodon.oauth.api.service.SystemSettingService;
+import io.choerodon.oauth.api.vo.SysSettingVO;
+import io.choerodon.oauth.infra.mapper.SysSettingMapper;
+import io.choerodon.oauth.infra.util.SysSettingUtils;
 
 
 /**
@@ -16,16 +15,14 @@ import java.util.List;
 @Service
 public class SystemSettingServiceImpl implements SystemSettingService {
 
-    private final SystemSettingMapper systemSettingMapper;
+    private SysSettingMapper sysSettingMapper;
 
-    @Autowired
-    public SystemSettingServiceImpl(SystemSettingMapper systemSettingMapper) {
-        this.systemSettingMapper = systemSettingMapper;
+    public SystemSettingServiceImpl(SysSettingMapper sysSettingMapper) {
+        this.sysSettingMapper = sysSettingMapper;
     }
 
     @Override
-    public SystemSettingDO getSetting() {
-        List<SystemSettingDO> records = systemSettingMapper.selectAll();
-        return records.isEmpty() ? null : records.get(0);
+    public SysSettingVO getSetting() {
+        return SysSettingUtils.listToSysSettingVo(sysSettingMapper.selectAll());
     }
 }
