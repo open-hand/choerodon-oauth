@@ -1,21 +1,14 @@
-package io.choerodon.oauth.infra.dataobject;
+package io.choerodon.oauth.api.vo;
 
 
 import io.choerodon.mybatis.entity.BaseDTO;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  * @author zmf
  * @since 2018-10-15
  */
-@Table(name = "IAM_SYSTEM_SETTING")
-public class SystemSettingDO extends BaseDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class SysSettingVO extends BaseDTO {
+
     private Long id;
 
     private String favicon;
@@ -37,6 +30,10 @@ public class SystemSettingDO extends BaseDTO {
     private Boolean registerEnabled;
 
     private String registerUrl;
+
+    private String resetGitlabPasswordUrl;
+
+    private String themeColor;
 
     public Long getId() {
         return id;
@@ -124,5 +121,21 @@ public class SystemSettingDO extends BaseDTO {
 
     public void setRegisterUrl(String registerUrl) {
         this.registerUrl = registerUrl;
+    }
+
+    public String getResetGitlabPasswordUrl() {
+        return resetGitlabPasswordUrl;
+    }
+
+    public void setResetGitlabPasswordUrl(String resetGitlabPasswordUrl) {
+        this.resetGitlabPasswordUrl = resetGitlabPasswordUrl;
+    }
+
+    public String getThemeColor() {
+        return themeColor;
+    }
+
+    public void setThemeColor(String themeColor) {
+        this.themeColor = themeColor;
     }
 }

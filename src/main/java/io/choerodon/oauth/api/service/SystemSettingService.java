@@ -1,6 +1,6 @@
 package io.choerodon.oauth.api.service;
 
-import io.choerodon.oauth.infra.dataobject.SystemSettingDO;
+import io.choerodon.oauth.api.vo.SysSettingVO;
 
 /**
  * 查询系统设置
@@ -14,5 +14,5 @@ public interface SystemSettingService {
      *
      * @return ，如果存在返回数据，否则返回 null
      */
-    SystemSettingDO getSetting();
+    SysSettingVO getSetting();
 }

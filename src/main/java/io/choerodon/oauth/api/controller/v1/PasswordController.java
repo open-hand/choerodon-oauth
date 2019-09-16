@@ -4,7 +4,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import io.choerodon.oauth.api.service.SystemSettingService;
-import io.choerodon.oauth.infra.dataobject.SystemSettingDO;
+import io.choerodon.oauth.api.vo.SysSettingVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -68,17 +68,17 @@ public class PasswordController {
     public String find(HttpServletRequest request, Model model) {
         request.getSession().removeAttribute("userId");
         request.getSession().removeAttribute("userName");
-        SystemSettingDO systemSettingDO = systemSettingService.getSetting();
-        if (systemSettingDO == null) {
-            systemSettingDO = new SystemSettingDO();
+        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+        if (sysSettingVO == null) {
+            sysSettingVO = new SysSettingVO();
         }
-        model.addAttribute("systemName", systemSettingDO.getSystemName());
-        if (!StringUtils.isEmpty(systemSettingDO.getSystemLogo())) {
-            model.addAttribute("systemLogo", systemSettingDO.getSystemLogo());
+        model.addAttribute("systemName", sysSettingVO.getSystemName());
+        if (!StringUtils.isEmpty(sysSettingVO.getSystemLogo())) {
+            model.addAttribute("systemLogo", sysSettingVO.getSystemLogo());
         }
-        model.addAttribute("systemTitle", systemSettingDO.getSystemTitle());
-        if (!StringUtils.isEmpty(systemSettingDO.getFavicon())) {
-            model.addAttribute("favicon", systemSettingDO.getFavicon());
+        model.addAttribute("systemTitle", sysSettingVO.getSystemTitle());
+        if (!StringUtils.isEmpty(sysSettingVO.getFavicon())) {
+            model.addAttribute("favicon", sysSettingVO.getFavicon());
         }
         return DEFAULT_PAGE;
     }

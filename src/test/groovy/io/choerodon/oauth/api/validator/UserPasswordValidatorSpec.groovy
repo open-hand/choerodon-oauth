@@ -3,7 +3,7 @@ package io.choerodon.oauth.api.validator
 import io.choerodon.core.exception.CommonException
 import io.choerodon.oauth.api.service.SystemSettingService
 import io.choerodon.oauth.infra.dataobject.PasswordPolicyDO
-import io.choerodon.oauth.infra.dataobject.SystemSettingDO
+import io.choerodon.oauth.api.vo.SysSettingVO
 import io.choerodon.oauth.infra.mapper.PasswordPolicyMapper
 import org.mockito.Mockito
 import spock.lang.Specification
@@ -42,7 +42,7 @@ class UserPasswordValidatorSpec extends Specification {
         result
 
         and: '组织未启用密码策略，系统设置不为空时'
-        SystemSettingDO setting = new SystemSettingDO()
+        SysSettingVO setting = new SysSettingVO()
         setting.setMinPasswordLength(6)
         setting.setMaxPasswordLength(16)
         Mockito.when(mockSystemSettingService.getSetting()).thenReturn(setting)
