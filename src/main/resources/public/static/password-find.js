@@ -1,4 +1,4 @@
-const {Input, Button, Form, Icon} = window['choerodon-ui.min'];
+const {Input, Button, Form, Icon, message} = window['choerodon-ui.min'];
 
 // const server = 'http://api.staging.saas.hand-china.com'; //本地测试的时候打开此注释
 const server = '';
@@ -282,7 +282,21 @@ class App extends window.React.Component {
             errorState: true
           });
           form.validateFields(['password'], {force: true});
+        } else if(results.success === false && !results.msg ) {
+          this.setState({
+            errorMsg: '未知异常',
+            errorState: true,
+          });
+          form.validateFields(['password'], {force: true});
+        } else if(results.success === false) {
+          this.setState({
+            errorMsg: results.msg,
+            errorState: true,
+          });
+          form.validateFields(['password'], {force: true});
         }
+      }).fail(err => {
+        message.error('服务器请求失败');
       });
     }
 
@@ -408,7 +422,7 @@ class App extends window.React.Component {
             )}
           </FormItem>
           <FormItem style={{marginTop: '60px'}}>
-            <Button className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
+            <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
                     style={{width: '120px',float: 'right', paddingTop: '4px'} } htmlType="submit"><span>下一步</span></Button>
             <a className="back-to-login" href="/oauth/login" style={{float: 'left'}}>返回登录</a>
           </FormItem>
