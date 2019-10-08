@@ -60,6 +60,9 @@ class App extends window.React.Component {
         },
       });
       if (results.success === true) {
+        this.setState({
+          captchaCD: 60,
+        });
         $.post(`${server}/oauth/password/send`, {
           emailAddress: currentUsername
         }, (results2) => {
@@ -67,6 +70,10 @@ class App extends window.React.Component {
             account: {
               ...this.validateAccount(results2),
             },
+          });
+        }).fail(() => {
+          this.setState({
+            captchaCD: 0,
           });
         });
       } else if (results.disableTime !== null){
@@ -466,7 +473,7 @@ class App extends window.React.Component {
               <Input showPasswordEye label="确认新密码" type="password" onBlur={this.handleConfirmBlur}/>
             )}
           </FormItem>
-          <Button className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
+          <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
                   style={{paddingTop: '4px', marginTop: '38px'}}><span>下一步</span></Button>
         </Form>
       </div>
@@ -481,7 +488,7 @@ class App extends window.React.Component {
                                               style={{fontSize: 30, color: '#3F51B5', marginRight: '23.8px'}}/>恭喜
         </div>
         <div className="change-password-success">{`您的账号“${loginName}”重置密码成功`}</div>
-        <Button className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
+        <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
                 style={{paddingTop: '4px', marginTop: '80px'}}><span>直接登录</span></Button>
       </div>
     )
