@@ -56,3 +56,8 @@ hook:
   token: abc
 db:
   type: mysql
+
+management:
+  health:
+    ldap:
+      enabled: false
