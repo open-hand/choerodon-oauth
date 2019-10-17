@@ -62,6 +62,15 @@ class App extends window.React.Component {
       if (results.success === true) {
         this.setState({
           captchaCD: 60,
+        },() => {
+          const timer = setInterval(() => {
+            this.setState({
+              captchaCD: this.state.captchaCD - 1,
+            }, () => {
+              if(this.state.captchaCD <=0 )
+                this.clearTimer(timer)
+            });
+          }, 1000)
         });
         $.post(`${server}/oauth/password/send`, {
           emailAddress: currentUsername
@@ -71,6 +80,11 @@ class App extends window.React.Component {
               ...this.validateAccount(results2),
             },
           });
+          if (!results2.success) {
+            this.setState({
+              captchaCD: 0,
+            });
+          }
         }).fail(() => {
           this.setState({
             captchaCD: 0,
