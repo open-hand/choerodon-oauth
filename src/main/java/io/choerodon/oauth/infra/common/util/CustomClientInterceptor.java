@@ -23,19 +23,23 @@ public class CustomClientInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String authorizationType = request.getParameter(AUTHORIZATION_TYPE);
-        String clientId = request.getParameter(CLIENT_ID);
+        // 不需要做普罗米修斯的客户端权限校验
+        if (authorizationType.isEmpty()) {
+            return true;
+        }
+        
         Long userId;
+        String clientId = request.getParameter(CLIENT_ID);
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof CustomUserDetails) {
             userId = ((CustomUserDetails) principal).getUserId();
         } else {
             return false;
         }
-        boolean flag = true;
-        if (!authorizationType.isEmpty()
-                && AuthorizationTypeEnum.PROMETHEUS_CLUSTER.value().equals(authorizationType)) {
-            // todo: devops 校验用户是否拥有此客户端权限
+        if (AuthorizationTypeEnum.PROMETHEUS_CLUSTER.value().equals(authorizationType)) {
+            // todo: devops 校验用户是否拥有此客户端权限，如果校验不通过，返回原因
         }
-        return flag;
+        return true;
     }
 }
