@@ -27,6 +27,8 @@ public class ClientE extends BaseDTO {
     private Long refreshTokenValidity;
     private String additionalInformation;
     private String autoApprove;
+    // 客户端类型
+    private String type;
 
     public Long getId() {
         return id;
@@ -124,4 +126,11 @@ public class ClientE extends BaseDTO {
         this.autoApprove = autoApprove;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

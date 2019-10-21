@@ -57,11 +57,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
+                .addInterceptor(customClientInterceptor)
                 .authorizationCodeServices(new JdbcAuthorizationCodeServices(dataSource))
                 .tokenStore(tokenStore)
                 .userDetailsService(userDetailsService)
                 .authenticationManager(authenticationManager)
-                .addInterceptor(customClientInterceptor)
                 .redirectResolver(new ChoerodonRedirectResolver());
     }
 

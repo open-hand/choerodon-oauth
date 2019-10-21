@@ -1,16 +1,16 @@
 package io.choerodon.oauth.infra.enums;
 
 /**
- * @author zongw.lee@gmail.com
- * @date 2019/10/18
+ * @author wanghao
+ * @Date 2019/10/21 14:49
  */
-public enum AuthorizationTypeEnum {
-
-    PROMETHEUS_CLUSTER("prometheusCluster");
+public enum ClientTypeEnum {
+    CLUSTER("cluster"),
+    APPLICATION("application");
 
     private final String value;
 
-    AuthorizationTypeEnum(String value) {
+    ClientTypeEnum(String value) {
         this.value = value;
     }
 
