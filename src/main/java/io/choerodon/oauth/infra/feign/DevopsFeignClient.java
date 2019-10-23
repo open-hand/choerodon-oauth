@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(value = "devops-service")
 public interface DevopsFeignClient {
+    //TODO 待devops提供接口
     @GetMapping(value = "/test_for_oauth")
     ResponseEntity<Boolean> testForOauth(
             @RequestParam(value = "user_id") Long userId,

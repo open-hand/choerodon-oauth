@@ -33,10 +33,12 @@ public class CustomClientInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Long userId;
         String clientId = request.getParameter(CLIENT_ID);
+        ClientE client = getClientByName(clientId);
         // 不需要做普罗米修斯的客户端权限校验
-        if (!isClusterClient(clientId)) {
+        if (!ClientTypeEnum.CLUSTER.value().equals(client.getSourceType())) {
             return true;
         }
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof CustomUserDetails) {
             userId = ((CustomUserDetails) principal).getUserId();
@@ -45,16 +47,15 @@ public class CustomClientInterceptor implements HandlerInterceptor {
         }
         // 调用devops接口校验用户是否有访问集群的权限
         // TODO 待处理
-        boolean res = devopsFeignClient.testForOauth(userId,1L).getBody();
+        boolean res = devopsFeignClient.testForOauth(userId, client.getSourceId()).getBody();
         if (!res) {
             throw new AccessDeniedException("权限不足");
         }
         return true;
     }
-    private boolean isClusterClient(String clientName) {
+    private ClientE getClientByName(String clientName) {
         ClientE clientE = new ClientE();
         clientE.setName(clientName);
-        clientE = clientMapper.selectOne(clientE);
-        return ClientTypeEnum.CLUSTER.value().equals(clientE.getType());
+        return clientMapper.selectOne(clientE);
     }
 }
