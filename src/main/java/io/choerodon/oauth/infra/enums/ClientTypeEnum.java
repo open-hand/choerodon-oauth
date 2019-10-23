@@ -5,8 +5,7 @@ package io.choerodon.oauth.infra.enums;
  * @Date 2019/10/21 14:49
  */
 public enum ClientTypeEnum {
-    CLUSTER("cluster"),
-    APPLICATION("application");
+    CLUSTER("cluster");
 
     private final String value;
 
