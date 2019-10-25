@@ -27,6 +27,7 @@
 
 - 修改starter版本为0.11.0
 - 修改gitlab.ci文件
+- 升级`choerodon-framework-parent`依赖版本为`0.13.0.RELEASE`
 
 ## [0.15.0] - 2019-03-19
 
