@@ -7,6 +7,7 @@ import io.choerodon.oauth.infra.feign.DevopsFeignClient;
 import io.choerodon.oauth.infra.mapper.ClientMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.provider.NoSuchClientException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -34,6 +35,9 @@ public class CustomClientInterceptor implements HandlerInterceptor {
         Long userId;
         String clientId = request.getParameter(CLIENT_ID);
         ClientE client = getClientByName(clientId);
+        if (client == null) {
+            throw new NoSuchClientException("No client found : " + clientId);
+        }
         // 不需要做普罗米修斯的客户端权限校验
         if (!ClientTypeEnum.CLUSTER.value().equals(client.getSourceType())) {
             return true;
@@ -46,10 +50,8 @@ public class CustomClientInterceptor implements HandlerInterceptor {
             return false;
         }
         // 调用devops接口校验用户是否有访问集群的权限
-        // TODO 待处理
-//        boolean res = devopsFeignClient.testForOauth(userId, client.getSourceId()).getBody();
-        boolean res = true;
-        if (!res) {
+        Boolean result = devopsFeignClient.checkUserClusterPermission(userId, client.getSourceId()).getBody();
+        if (Boolean.FALSE.equals(result)) {
             throw new AccessDeniedException("权限不足");
         }
         return true;
