@@ -1,8 +1,5 @@
 package io.choerodon.oauth.infra.config;
 
-import javax.sql.DataSource;
-
-import io.choerodon.oauth.infra.common.util.ChoerodonRedirectResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -12,7 +9,11 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 
+import javax.sql.DataSource;
+
 import io.choerodon.oauth.domain.service.CustomClientDetailsService;
+import io.choerodon.oauth.infra.common.util.ChoerodonRedirectResolver;
+import io.choerodon.oauth.infra.common.util.CustomClientInterceptor;
 import io.choerodon.oauth.infra.common.util.CustomTokenStore;
 import io.choerodon.oauth.infra.common.util.CustomUserDetailsServiceImpl;
 
@@ -26,6 +27,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private AuthenticationManager authenticationManager;
     private CustomClientDetailsService clientDetailsService;
     private CustomUserDetailsServiceImpl userDetailsService;
+    private CustomClientInterceptor customClientInterceptor;
     private DataSource dataSource;
     private CustomTokenStore tokenStore;
 
@@ -33,14 +35,17 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
             AuthenticationManager authenticationManager,
             CustomClientDetailsService clientDetailsService,
             CustomUserDetailsServiceImpl userDetailsService,
+            CustomClientInterceptor customClientInterceptor,
             DataSource dataSource,
             CustomTokenStore tokenStore) {
         this.authenticationManager = authenticationManager;
         this.clientDetailsService = clientDetailsService;
         this.userDetailsService = userDetailsService;
+        this.customClientInterceptor = customClientInterceptor;
         this.dataSource = dataSource;
         this.tokenStore = tokenStore;
     }
+
     /**
      * 用来配置授权（authorization）以及令牌（token）的访问端点和令牌服务(token services)。
      * <p>
@@ -52,12 +57,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
+                .addInterceptor(customClientInterceptor)
                 .authorizationCodeServices(new JdbcAuthorizationCodeServices(dataSource))
                 .tokenStore(tokenStore)
                 .userDetailsService(userDetailsService)
                 .authenticationManager(authenticationManager)
                 .redirectResolver(new ChoerodonRedirectResolver());
     }
+
     /**
      * 配置客户端详情服务，客户端详情信息在这里进行初始化
      */
