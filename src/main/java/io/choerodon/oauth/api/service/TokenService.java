@@ -23,4 +23,6 @@ public interface TokenService {
      * @param tokenList tokenList
      */
     void deleteList(List<String> tokenList);
+
+    Boolean checkPrometheusToken(String token);
 }

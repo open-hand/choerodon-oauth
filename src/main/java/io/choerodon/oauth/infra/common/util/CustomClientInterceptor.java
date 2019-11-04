@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.NoSuchClientException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,8 +23,10 @@ import javax.servlet.http.HttpServletResponse;
 public class CustomClientInterceptor implements HandlerInterceptor {
 
     private static final String CLIENT_ID = "client_id";
+    private static final String CHECK_TOKEN = "/**/check_token";
     private ClientMapper clientMapper;
     private DevopsFeignClient devopsFeignClient;
+    private AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     public CustomClientInterceptor(ClientMapper clientMapper, DevopsFeignClient devopsFeignClient) {
         this.clientMapper = clientMapper;
@@ -32,6 +35,9 @@ public class CustomClientInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (antPathMatcher.match(CHECK_TOKEN,request.getRequestURI())) {
+            return true;
+        }
         Long userId;
         String clientId = request.getParameter(CLIENT_ID);
         ClientE client = getClientByName(clientId);
@@ -56,6 +62,7 @@ public class CustomClientInterceptor implements HandlerInterceptor {
         }
         return true;
     }
+
     private ClientE getClientByName(String clientName) {
         ClientE clientE = new ClientE();
         clientE.setName(clientName);

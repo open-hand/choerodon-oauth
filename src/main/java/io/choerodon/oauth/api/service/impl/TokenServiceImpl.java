@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.choerodon.oauth.infra.common.util.CustomTokenStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -31,12 +32,14 @@ public class TokenServiceImpl implements TokenService {
     private FindByIndexNameSessionRepository findByIndexNameSessionRepository;
     private AccessTokenMapper accessTokenMapper;
     private RefreshTokenMapper refreshTokenMapper;
+    private CustomTokenStore customTokenStore;
 
-    public TokenServiceImpl(StringRedisTemplate redisTemplate, FindByIndexNameSessionRepository findByIndexNameSessionRepository, AccessTokenMapper accessTokenMapper, RefreshTokenMapper refreshTokenMapper) {
+    public TokenServiceImpl(StringRedisTemplate redisTemplate, FindByIndexNameSessionRepository findByIndexNameSessionRepository, AccessTokenMapper accessTokenMapper, RefreshTokenMapper refreshTokenMapper, CustomTokenStore customTokenStore) {
         this.redisTemplate = redisTemplate;
         this.findByIndexNameSessionRepository = findByIndexNameSessionRepository;
         this.accessTokenMapper = accessTokenMapper;
         this.refreshTokenMapper = refreshTokenMapper;
+        this.customTokenStore = customTokenStore;
     }
 
     @Override
@@ -78,5 +81,10 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public void deleteList(List<String> tokenList) {
         tokenList.forEach(t -> deleteOne(t));
+    }
+
+    @Override
+    public Boolean checkPrometheusToken(String token) {
+        return customTokenStore.checkPrometheusToken(token);
     }
 }
