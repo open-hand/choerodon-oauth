@@ -56,7 +56,7 @@ public class CustomClientInterceptor implements HandlerInterceptor {
             return false;
         }
         // 调用devops接口校验用户是否有访问集群的权限
-        Boolean result = devopsFeignClient.checkUserClusterPermission(userId, client.getSourceId()).getBody();
+        Boolean result = devopsFeignClient.checkUserClusterPermission(client.getSourceId(), userId).getBody();
         if (Boolean.FALSE.equals(result)) {
             throw new AccessDeniedException("权限不足");
         }
