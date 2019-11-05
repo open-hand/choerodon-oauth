@@ -33,8 +33,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private OauthProperties properties;
     @Autowired
     private CustomLogoutSuccessHandler customLogoutSuccessHandler;
-    @Autowired
-    private CustomerAccessDeniedHandler customerAccessDeniedHandler;
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -52,8 +50,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationDetailsSource(detailSource)
                 .failureHandler(customAuthenticationFailureHandler)
                 .successHandler(customAuthenticationSuccessHandler)
-                .and()
-                .exceptionHandling().accessDeniedHandler(customerAccessDeniedHandler)
                 .and()
                 .logout().deleteCookies("access_token").invalidateHttpSession(true)//deleteCookies:指定退出登录后需要删除的cookie名称，多个cookie之间以逗号分隔 ; invalidateHttpSession 默认为true,用户在退出后Http session失效
                 .logoutSuccessHandler(customLogoutSuccessHandler)// 用来自定义退出成功后的操作
