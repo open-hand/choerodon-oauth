@@ -1,10 +1,7 @@
 package io.choerodon.oauth.infra.common.util;
 
-import io.choerodon.core.oauth.CustomUserDetails;
-import io.choerodon.oauth.domain.entity.ClientE;
-import io.choerodon.oauth.infra.enums.ClientTypeEnum;
-import io.choerodon.oauth.infra.feign.DevopsFeignClient;
-import io.choerodon.oauth.infra.mapper.ClientMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.NoSuchClientException;
@@ -15,6 +12,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.choerodon.core.oauth.CustomUserDetails;
+import io.choerodon.oauth.domain.entity.ClientE;
+import io.choerodon.oauth.infra.enums.ClientTypeEnum;
+import io.choerodon.oauth.infra.feign.DevopsFeignClient;
+import io.choerodon.oauth.infra.mapper.ClientMapper;
+
 /**
  * @author zongw.lee@gmail.com
  * @date 2019/10/18
@@ -24,6 +27,8 @@ public class CustomClientInterceptor implements HandlerInterceptor {
 
     private static final String CLIENT_ID = "client_id";
     private static final String CHECK_TOKEN = "/**/check_token";
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomClientInterceptor.class);
+
     private ClientMapper clientMapper;
     private DevopsFeignClient devopsFeignClient;
     private AntPathMatcher antPathMatcher = new AntPathMatcher();
@@ -35,11 +40,12 @@ public class CustomClientInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (antPathMatcher.match(CHECK_TOKEN,request.getRequestURI())) {
+        if (antPathMatcher.match(CHECK_TOKEN, request.getRequestURI())) {
             return true;
         }
         Long userId;
         String clientId = request.getParameter(CLIENT_ID);
+        LOGGER.info("start to handle client:, clientId:{}", clientId);
         ClientE client = getClientByName(clientId);
         if (client == null) {
             throw new NoSuchClientException("No client found : " + clientId);
@@ -55,6 +61,8 @@ public class CustomClientInterceptor implements HandlerInterceptor {
         } else {
             return false;
         }
+
+        LOGGER.info("start to check user's cluster permission: userId:{}", userId);
         // 调用devops接口校验用户是否有访问集群的权限
         Boolean result = devopsFeignClient.checkUserClusterPermission(client.getSourceId(), userId).getBody();
         if (Boolean.FALSE.equals(result)) {
