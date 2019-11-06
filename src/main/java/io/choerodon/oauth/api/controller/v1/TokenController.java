@@ -1,14 +1,12 @@
 package io.choerodon.oauth.api.controller.v1;
 
-import java.util.List;
-
 import io.choerodon.core.annotation.Permission;
+import io.choerodon.oauth.api.service.TokenService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.oauth.api.service.TokenService;
+import java.util.List;
 
 /**
  * @author Eugen
@@ -44,11 +42,5 @@ public class TokenController {
     @DeleteMapping("/list")
     public void deleteTokenByIdList(@RequestBody List<String> tokenIdList) {
         tokenService.deleteList(tokenIdList);
-    }
-
-    @ApiOperation(value = "校验prometheus的token(true有效，false无效)")
-    @GetMapping("/prometheus/check")
-    public ResponseEntity<Boolean> checkPrometheusToken(@RequestParam(value = "token") String token) {
-        return ResponseEntity.ok(tokenService.checkPrometheusToken(token));
     }
 }
