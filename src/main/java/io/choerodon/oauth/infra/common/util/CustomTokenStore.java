@@ -1,12 +1,6 @@
 package io.choerodon.oauth.infra.common.util;
 
-import io.choerodon.oauth.api.service.ClientService;
-import io.choerodon.oauth.api.service.UserService;
-import io.choerodon.oauth.domain.entity.ClientE;
-import io.choerodon.oauth.domain.entity.UserE;
 import io.choerodon.oauth.infra.config.OauthProperties;
-import io.choerodon.oauth.infra.dataobject.AccessTokenDO;
-import io.choerodon.oauth.infra.feign.DevopsFeignClient;
 import io.choerodon.oauth.infra.mapper.AccessTokenMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,15 +29,6 @@ public class CustomTokenStore extends JdbcTokenStore {
 
     @Autowired
     private AccessTokenMapper accessTokenMapper;
-
-    @Autowired
-    private ClientService clientService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private DevopsFeignClient devopsFeignClient;
 
     @Autowired
     private ChoerodonAuthenticationKeyGenerator authenticationKeyGenerator;
@@ -100,42 +85,6 @@ public class CustomTokenStore extends JdbcTokenStore {
         additionalInfo.put("sessionId", sessionId);
         ((DefaultOAuth2AccessToken) token).setAdditionalInformation(additionalInfo);
         super.storeAccessToken(token, authentication);
-    }
-    public AccessTokenDO findAccessTokenByTokenValue(String tokenValue) {
-        AccessTokenDO record = new AccessTokenDO();
-        record.setTokenId(extractTokenKey(tokenValue));
-        return accessTokenMapper.selectOne(record);
-    }
-
-    public Boolean checkPrometheusToken(String tokenValue) {
-        OAuth2AccessToken token = super.readAccessToken(tokenValue);
-        if (token == null) {
-            return false;
-        }
-
-        if (token.isExpired()) {
-            return false;
-        }
-
-        AccessTokenDO accessToken = findAccessTokenByTokenValue(tokenValue);
-        if (accessToken == null) {
-            return false;
-        }
-        ClientE client = clientService.getClientByName(accessToken.getClientId());
-        if (client == null) {
-            return false;
-        }
-        UserE userE = userService.queryByLoginField(accessToken.getUserName());
-        if (userE == null) {
-            return false;
-        }
-
-        Boolean result = devopsFeignClient.checkUserClusterPermission(client.getSourceId(), userE.getId()).getBody();
-        if (Boolean.FALSE.equals(result)) {
-            return false;
-        }
-
-        return true;
     }
 
 }

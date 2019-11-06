@@ -1,5 +1,10 @@
 package io.choerodon.oauth.infra.common.util;
 
+import io.choerodon.core.oauth.CustomUserDetails;
+import io.choerodon.oauth.api.service.ClientService;
+import io.choerodon.oauth.domain.entity.ClientE;
+import io.choerodon.oauth.infra.enums.ClientTypeEnum;
+import io.choerodon.oauth.infra.feign.DevopsFeignClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
@@ -12,12 +17,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.choerodon.core.oauth.CustomUserDetails;
-import io.choerodon.oauth.domain.entity.ClientE;
-import io.choerodon.oauth.infra.enums.ClientTypeEnum;
-import io.choerodon.oauth.infra.feign.DevopsFeignClient;
-import io.choerodon.oauth.infra.mapper.ClientMapper;
-
 /**
  * @author zongw.lee@gmail.com
  * @date 2019/10/18
@@ -26,27 +25,28 @@ import io.choerodon.oauth.infra.mapper.ClientMapper;
 public class CustomClientInterceptor implements HandlerInterceptor {
 
     private static final String CLIENT_ID = "client_id";
-    private static final String CHECK_TOKEN = "/**/check_token";
+    private static final String AUTHORIZE = "/**/oauth/authorize";
+    private static final String CODE = "code";
+    private static final String RESPONSE_TYPE = "response_type";
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomClientInterceptor.class);
-
-    private ClientMapper clientMapper;
+    private ClientService clientService;
     private DevopsFeignClient devopsFeignClient;
     private AntPathMatcher antPathMatcher = new AntPathMatcher();
 
-    public CustomClientInterceptor(ClientMapper clientMapper, DevopsFeignClient devopsFeignClient) {
-        this.clientMapper = clientMapper;
+    public CustomClientInterceptor(ClientService clientService, DevopsFeignClient devopsFeignClient) {
+        this.clientService = clientService;
         this.devopsFeignClient = devopsFeignClient;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (antPathMatcher.match(CHECK_TOKEN, request.getRequestURI())) {
+        if (!(antPathMatcher.match(AUTHORIZE,request.getRequestURI()) && CODE.equals(request.getParameter(RESPONSE_TYPE)))) {
             return true;
         }
         Long userId;
         String clientId = request.getParameter(CLIENT_ID);
+        ClientE client = clientService.getClientByName(clientId);
         LOGGER.info("start to handle client:, clientId:{}", clientId);
-        ClientE client = getClientByName(clientId);
         if (client == null) {
             throw new NoSuchClientException("No client found : " + clientId);
         }
@@ -69,11 +69,5 @@ public class CustomClientInterceptor implements HandlerInterceptor {
             throw new AccessDeniedException("权限不足");
         }
         return true;
-    }
-
-    private ClientE getClientByName(String clientName) {
-        ClientE clientE = new ClientE();
-        clientE.setName(clientName);
-        return clientMapper.selectOne(clientE);
     }
 }
