@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+import io.choerodon.core.oauth.CustomUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -213,6 +214,10 @@ public class OauthController {
     public Principal user(Principal principal) {
         if (((OAuth2Authentication) principal).getPrincipal() instanceof String) {
             return principalService.setClientDetailUserDetails(principal);
+        }
+        if (((OAuth2Authentication) principal).getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails customUserDetails = (CustomUserDetails) ((OAuth2Authentication) principal).getPrincipal();
+            principalService.addRouteRuleCode(customUserDetails);
         }
         return principal;
     }

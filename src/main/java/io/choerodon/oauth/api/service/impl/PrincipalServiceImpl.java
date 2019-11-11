@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.choerodon.oauth.infra.dto.RouteMemberRuleDTO;
+import io.choerodon.oauth.infra.mapper.RouteMemberRuleMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,8 @@ public class PrincipalServiceImpl implements PrincipalService {
     ClientMapper clientMapper;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    private RouteMemberRuleMapper routeMemberRuleMapper;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -58,7 +62,7 @@ public class PrincipalServiceImpl implements PrincipalService {
             user.setTimeZone(userE.getTimeZone());
             user.setOrganizationId(userE.getOrganizationId());
             user.setEmail(userE.getEmail());
-
+            addRouteRuleCode(user);
         }
         //添加client信息
         user.setOrganizationId(clientE.getOrganizationId());
@@ -96,6 +100,22 @@ public class PrincipalServiceImpl implements PrincipalService {
 
         return oAuth2Authentication;
     }
+
+    @Override
+    public void addRouteRuleCode(CustomUserDetails customUserDetails) {
+        RouteMemberRuleDTO record = new RouteMemberRuleDTO();
+        Long userId = customUserDetails.getUserId();
+        if (userId == null) {
+            return;
+        }
+        record.setUserId(userId);
+        RouteMemberRuleDTO routeMemberRule = routeMemberRuleMapper.selectOne(record);
+        if (routeMemberRule == null) {
+            return;
+        }
+        customUserDetails.setRouteRuleCode(routeMemberRule.getRouteRuleCode());
+    }
+
 
     /**
      * details复制
