@@ -136,7 +136,7 @@ service:
   # 是否启用 service 暴露本服务
   enabled: true
   # Service 名称
-  name: devops-service
+  name: oauth-service
   # Service 类型
   type: ClusterIP
   # 指定 service 的 clusterIP
@@ -157,7 +157,7 @@ service:
   annotations: {}
     # prometheus.io/scrape: 'true'
     # prometheus.io/path: '/actuator/prometheus'
-    # prometheus.io/port: '8020'
+    # prometheus.io/port: '8021'
 
 ## 指标收集
 metrics:
