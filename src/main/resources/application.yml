@@ -50,6 +50,7 @@ choerodon:
   reset-password:
     check: true
   default:
+    icp: ""
     redirect:
       url: http://localhost:8080/manager/swagger-ui.html
 hook:

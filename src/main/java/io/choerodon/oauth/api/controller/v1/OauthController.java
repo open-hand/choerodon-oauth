@@ -75,6 +75,9 @@ public class OauthController {
     @Value("${choerodon.default.redirect.url:/}")
     private String defaultUrl;
 
+    @Value("${choerodon.default.icp: }")
+    private String icp;
+
     public OauthController(
             MessageSource messageSource,
             DefaultKaptcha captchaProducer,
@@ -133,7 +136,9 @@ public class OauthController {
         session.removeAttribute(SPRING_SECURITY_LAST_EXCEPTION);
         session.removeAttribute(LOGIN_FILED);
         session.removeAttribute(SPRING_SECURITY_LAST_EXCEPTION_PARAMS);
-
+        if (icp != null && !icp.equals("")) {
+            model.addAttribute("icp", icp);
+        }
         if (username == null) {
             return returnPage.fileName();
         }
