@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import io.choerodon.oauth.api.service.SystemSettingService;
 import io.choerodon.oauth.api.vo.SysSettingVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
