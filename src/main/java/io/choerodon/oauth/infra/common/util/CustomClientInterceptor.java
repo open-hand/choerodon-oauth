@@ -51,7 +51,7 @@ public class CustomClientInterceptor implements HandlerInterceptor {
             throw new NoSuchClientException("No client found : " + clientId);
         }
         // 不需要做普罗米修斯的客户端权限校验
-        if (!ClientTypeEnum.CLUSTER.value().equals(client.getSourceType())) {
+        if (ClientTypeEnum.CLUSTER.value().equals(client.getSourceType())) {
             return true;
         }
 
