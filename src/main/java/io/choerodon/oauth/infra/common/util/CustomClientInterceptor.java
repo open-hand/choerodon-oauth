@@ -1,6 +1,7 @@
 package io.choerodon.oauth.infra.common.util;
 
 import io.choerodon.core.oauth.CustomUserDetails;
+import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.oauth.api.service.ClientService;
 import io.choerodon.oauth.domain.entity.ClientE;
 import io.choerodon.oauth.infra.enums.ClientTypeEnum;
@@ -8,7 +9,6 @@ import io.choerodon.oauth.infra.feign.DevopsFeignClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.NoSuchClientException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -51,16 +51,16 @@ public class CustomClientInterceptor implements HandlerInterceptor {
             throw new NoSuchClientException("No client found : " + clientId);
         }
         // 不需要做普罗米修斯的客户端权限校验
-        if (ClientTypeEnum.CLUSTER.value().equals(client.getSourceType())) {
+        if (!ClientTypeEnum.CLUSTER.value().equals(client.getSourceType())) {
             return true;
         }
 
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof CustomUserDetails) {
-            userId = ((CustomUserDetails) principal).getUserId();
-        } else {
-            return false;
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
+        if (customUserDetails == null || customUserDetails.getUserId() == null) {
+            LOGGER.info("=========不能拿到userId");
+            throw new AccessDeniedException("未登录");
         }
+        userId = customUserDetails.getUserId();
 
         LOGGER.info("start to check user's cluster permission: userId:{}", userId);
         // 调用devops接口校验用户是否有访问集群的权限
