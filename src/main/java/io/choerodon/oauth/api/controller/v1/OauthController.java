@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import io.choerodon.core.oauth.CustomUserDetails;
+import io.choerodon.core.oauth.DetailsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -225,6 +226,17 @@ public class OauthController {
             principalService.addRouteRuleCode(customUserDetails);
         }
         return principal;
+    }
+
+    /**
+     * 判断用户是否登录
+     * @return
+     */
+    @ResponseBody
+    @GetMapping(value = "/is_login")
+    public Boolean isLogin() {
+        CustomUserDetails userDetails = DetailsHelper.getUserDetails();
+        return userDetails != null;
     }
 
     private boolean needCaptcha(UserE user) {
