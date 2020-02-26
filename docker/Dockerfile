@@ -1,3 +1,5 @@
-FROM registry.cn-shanghai.aliyuncs.com/choerodon-tools/javabase:0.8.2
+FROM registry.cn-shanghai.aliyuncs.com/c7n/javabase:0.9.0
 COPY app.jar /oauth-server.jar
+RUN chown -R www-data:www-data /oauth-server.jar
+USER www-data
 CMD java $JAVA_OPTS $SKYWALKING_OPTS -jar /oauth-server.jar
