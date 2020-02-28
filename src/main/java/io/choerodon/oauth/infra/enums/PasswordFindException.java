@@ -12,7 +12,9 @@ public enum PasswordFindException {
     PASSWORD_NOT_EQUAL("passwordNotEqual"),
     PASSWORD_DOES_NOT_HAVE_TEXT("passwordDoesNotHaveText"),
     CAPTCHA_ERROR("captchaError"),
-    DISABLE_SEND("disableSend");
+    DISABLE_SEND("disableSend"),
+    RESET_URL_INVAILED("resetUrlInvailed"),
+    ;
 
     private final String value;
 

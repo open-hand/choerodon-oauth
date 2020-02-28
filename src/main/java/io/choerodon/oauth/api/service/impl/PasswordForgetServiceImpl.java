@@ -15,6 +15,7 @@ import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper;
 import io.choerodon.oauth.core.password.record.PasswordRecord;
 import io.choerodon.oauth.domain.entity.UserE;
 import io.choerodon.oauth.infra.common.util.RedisTokenUtil;
+import io.choerodon.oauth.infra.enums.PageUrlEnum;
 import io.choerodon.oauth.infra.enums.PasswordFindException;
 import io.choerodon.oauth.infra.feign.NotifyFeignClient;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.*;
@@ -40,7 +42,6 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();
     public static final String FORGET_PASSWORD = "forgetPassword";
     public static final String MODIFY_PASSWORD = "modifyPassword";
-    public static final String RESET_URL = "/oauth/password/reset_page";
     private UserService userService;
     private BasePasswordPolicyMapper basePasswordPolicyMapper;
     private PasswordPolicyManager passwordPolicyManager;
@@ -224,7 +225,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         redisTokenUtil.setDisableTime(passwordForgetDTO.getUser().getEmail());
 
         String tokenKey = generateKey(passwordForgetDTO.getUser().getEmail());
-        String redirectUrl = gatewayUrl + RESET_URL + "/" + tokenKey;
+        String redirectUrl = gatewayUrl + PageUrlEnum.RESET_URL.value() + "/" + tokenKey;
         redisTokenUtil.store(RedisTokenUtil.LONG_CODE, tokenKey, passwordForgetDTO.getUser().getEmail(), resetUrlExpireMinutes, TimeUnit.MINUTES);
 
         Map<String, Object> variables = new HashMap<>();
@@ -249,8 +250,62 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         }
     }
 
+    @Override
+    public boolean checkTokenAvailable(String token) {
+        String value = redisTokenUtil.getValueByTypeAndKey(RedisTokenUtil.LONG_CODE, token);
+        return value != null;
+    }
+
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public PasswordForgetDTO resetPassword(String token, String password) {
+        String email = getEmailByToken(token);
+        UserE user = userService.queryByEmail(email);
+
+
+        PasswordForgetDTO passwordForgetDTO = new PasswordForgetDTO();
+        try {
+            BaseUserDTO baseUser = new BaseUserDTO();
+            BeanUtils.copyProperties(user, baseUser);
+            baseUser.setPassword(password);
+            BasePasswordPolicyDTO basePasswordPolicyDO = new BasePasswordPolicyDTO();
+            basePasswordPolicyDO.setOrganizationId(user.getOrganizationId());
+            basePasswordPolicyDO = basePasswordPolicyMapper.selectOne(basePasswordPolicyDO);
+            passwordPolicyManager.passwordValidate(password, baseUser, basePasswordPolicyDO);
+            userPasswordValidator.validate(password, user.getOrganizationId(), true);
+        } catch (CommonException e) {
+            LOGGER.error(e.getMessage());
+            passwordForgetDTO.setSuccess(false);
+            passwordForgetDTO.setMsg(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return passwordForgetDTO;
+        }
+        user.setPassword(ENCODER.encode(password));
+        UserE userE = userService.updateSelective(user);
+        if (userE != null) {
+            passwordRecord.updatePassword(user.getId(), ENCODER.encode(password));
+            passwordForgetDTO.setSuccess(true);
+            redisTokenUtil.expire(RedisTokenUtil.LONG_CODE, token);
+            passwordForgetDTO.setUser(new UserDTO(userE.getId(), userE.getLoginName(), user.getEmail()));
+
+            this.sendSiteMsg(user.getId(), user.getRealName());
+            return passwordForgetDTO;
+        }
+
+        return new PasswordForgetDTO(false);
+    }
+
+    private String getEmailByToken(String token) {
+        return redisTokenUtil.getValueByTypeAndKey(RedisTokenUtil.LONG_CODE, token);
+    }
+
     private String generateKey(String email) {
-        return UUID.randomUUID().toString() + passwordEncoder.encode(email);
+        String token = UUID.randomUUID().toString() + passwordEncoder.encode(email);
+        // 去掉特殊字符
+        token = token.replaceAll("/","");
+        return token;
     }
 
     private void sendSiteMsg(Long userId, String userName) {

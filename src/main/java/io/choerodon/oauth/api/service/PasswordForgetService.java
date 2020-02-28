@@ -17,4 +17,13 @@ public interface PasswordForgetService {
     PasswordForgetDTO checkDisable(String email);
 
     PasswordForgetDTO sendResetEmail(String email);
+
+    /**
+     * 校验token是否有效
+     * @param token
+     * @return
+     */
+    boolean checkTokenAvailable(String token);
+
+    PasswordForgetDTO resetPassword(String token, String password);
 }

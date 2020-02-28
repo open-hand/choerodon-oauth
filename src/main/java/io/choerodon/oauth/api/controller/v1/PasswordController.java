@@ -8,6 +8,7 @@ import io.choerodon.oauth.api.service.SystemSettingService;
 import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.api.vo.SysSettingVO;
 import io.choerodon.oauth.infra.dataobject.PasswordPolicyDO;
+import io.choerodon.oauth.infra.enums.PageUrlEnum;
 import io.choerodon.oauth.infra.enums.PasswordFindException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -166,5 +167,48 @@ public class PasswordController {
     @ResponseBody
     public ResponseEntity<PasswordForgetDTO> sendResetEmail(@RequestParam("emailAddress") String emailAddress) {
         return new ResponseEntity<>(passwordForgetService.sendResetEmail(emailAddress), HttpStatus.OK);
+    }
+
+    /**
+     * 进入重置密码页面
+     *
+     * @return path
+     */
+    @GetMapping(value = "/reset_page/{token}")
+    public String getResetPasswordPage(HttpServletRequest request, Model model,
+                                @PathVariable("token") String token) {
+        if (!passwordForgetService.checkTokenAvailable(token)) {
+            model.addAttribute("systemName", "连接无效");
+            return DEFAULT_PAGE;
+        }
+        return PageUrlEnum.RESET_URL.value();
+    }
+
+    @PostMapping(value = "/reset_password")
+    @ResponseBody
+    public ResponseEntity<PasswordForgetDTO> resetPassword(
+            @RequestParam("token") String token,
+            @RequestParam("password") String pwd,
+            @RequestParam("password1") String pwd1) {
+        PasswordForgetDTO passwordForgetDTO;
+        if (!passwordForgetService.checkTokenAvailable(token)) {
+            passwordForgetDTO = new PasswordForgetDTO(false);
+            passwordForgetDTO.setCode(PasswordFindException.PASSWORD_NOT_EQUAL.value());
+            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.PASSWORD_NOT_EQUAL.value(), null, Locale.ROOT));
+            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
+        }
+        if (!pwd.equals(pwd1)) {
+            passwordForgetDTO = new PasswordForgetDTO(false);
+            passwordForgetDTO.setCode(PasswordFindException.PASSWORD_NOT_EQUAL.value());
+            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.PASSWORD_NOT_EQUAL.value(), null, Locale.ROOT));
+            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
+        }
+        if(!StringUtils.hasText(pwd)) {
+            passwordForgetDTO = new PasswordForgetDTO(false);
+            passwordForgetDTO.setCode(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value());
+            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value(), null, Locale.ROOT));
+            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
+        }
+        return ResponseEntity.ok(passwordForgetService.resetPassword(token, pwd));
     }
 }

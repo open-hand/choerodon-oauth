@@ -68,4 +68,8 @@ public class RedisTokenUtil {
     public void store(String type, String key, String value, Long expireTime, TimeUnit timeUnit) {
         this.redisTemplate.opsForValue().set(createKey(type, key), value, expireTime, timeUnit);
     }
+
+    public String getValueByTypeAndKey(String type, String key) {
+        return this.redisTemplate.opsForValue().get(createKey(type, key));
+    }
 }
