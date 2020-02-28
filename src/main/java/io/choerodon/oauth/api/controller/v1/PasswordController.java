@@ -177,6 +177,18 @@ public class PasswordController {
     @GetMapping(value = "/reset_page/{token}")
     public String getResetPasswordPage(HttpServletRequest request, Model model,
                                 @PathVariable("token") String token) {
+        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+        if (sysSettingVO == null) {
+            sysSettingVO = new SysSettingVO();
+        }
+        model.addAttribute("systemName", sysSettingVO.getSystemName());
+        if (!StringUtils.isEmpty(sysSettingVO.getSystemLogo())) {
+            model.addAttribute("systemLogo", sysSettingVO.getSystemLogo());
+        }
+        model.addAttribute("systemTitle", sysSettingVO.getSystemTitle());
+        if (!StringUtils.isEmpty(sysSettingVO.getFavicon())) {
+            model.addAttribute("favicon", sysSettingVO.getFavicon());
+        }
         if (!passwordForgetService.checkTokenAvailable(token)) {
             model.addAttribute("systemName", "连接无效");
             return DEFAULT_PAGE;
