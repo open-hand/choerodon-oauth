@@ -15,4 +15,6 @@ public interface PasswordForgetService {
     PasswordForgetDTO reset(PasswordForgetDTO passwordForgetDTO, String captcha, String password);
 
     PasswordForgetDTO checkDisable(String email);
+
+    PasswordForgetDTO sendResetEmail(String email);
 }

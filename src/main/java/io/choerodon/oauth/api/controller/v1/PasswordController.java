@@ -1,12 +1,15 @@
 package io.choerodon.oauth.api.controller.v1;
 
-import java.util.Locale;
-import javax.servlet.http.HttpServletRequest;
-
+import io.choerodon.oauth.api.dto.CaptchaCheckDTO;
+import io.choerodon.oauth.api.dto.PasswordForgetDTO;
+import io.choerodon.oauth.api.service.PasswordForgetService;
+import io.choerodon.oauth.api.service.PasswordPolicyService;
 import io.choerodon.oauth.api.service.SystemSettingService;
+import io.choerodon.oauth.api.service.UserService;
 import io.choerodon.oauth.api.vo.SysSettingVO;
+import io.choerodon.oauth.infra.dataobject.PasswordPolicyDO;
+import io.choerodon.oauth.infra.enums.PasswordFindException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +19,8 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.oauth.api.dto.CaptchaCheckDTO;
-import io.choerodon.oauth.api.dto.PasswordForgetDTO;
-import io.choerodon.oauth.api.service.PasswordForgetService;
-import io.choerodon.oauth.api.service.PasswordPolicyService;
-import io.choerodon.oauth.api.service.UserService;
-import io.choerodon.oauth.infra.dataobject.PasswordPolicyDO;
-import io.choerodon.oauth.infra.enums.PasswordFindException;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 
 /**
  * @author wuguokai
@@ -89,7 +87,7 @@ public class PasswordController {
     @ResponseBody
     public ResponseEntity<PasswordForgetDTO> send(@RequestParam("emailAddress") String emailAddress) {
         PasswordForgetDTO passwordForgetDTO = passwordForgetService.checkUserByEmail(emailAddress);
-        if (!passwordForgetDTO.getSuccess()) {
+        if (Boolean.FALSE.equals(passwordForgetDTO.getSuccess())) {
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(passwordForgetService.send(passwordForgetDTO), HttpStatus.OK);
@@ -102,12 +100,12 @@ public class PasswordController {
             @RequestParam("captcha") String captcha) {
         CaptchaCheckDTO check;
         PasswordForgetDTO passwordForgetDTO = passwordForgetService.checkUserByEmail(emailAddress);
-        if (!passwordForgetDTO.getSuccess()) {
+        if (Boolean.FALSE.equals(passwordForgetDTO.getSuccess())) {
             check = new CaptchaCheckDTO(passwordForgetDTO, null);
             return new ResponseEntity<>(check, HttpStatus.OK);
         }
         PasswordForgetDTO passwordForgetCheck = passwordForgetService.check(passwordForgetDTO, captcha);
-        if (!passwordForgetCheck.getSuccess()) {
+        if (Boolean.FALSE.equals(passwordForgetCheck.getSuccess())) {
             check = new CaptchaCheckDTO(passwordForgetCheck, null);
             return new ResponseEntity<>(check, HttpStatus.OK);
         }
@@ -135,7 +133,7 @@ public class PasswordController {
         }
 
         passwordForgetDTO = passwordForgetService.checkUserByEmail(emailAddress);
-        if (!passwordForgetDTO.getSuccess()) {
+        if (Boolean.FALSE.equals(passwordForgetDTO.getSuccess())) {
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         if (!userId.equals(passwordForgetDTO.getUser().getId())) {
@@ -151,7 +149,7 @@ public class PasswordController {
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         passwordForgetDTO = passwordForgetService.check(passwordForgetDTO, captcha);
-        if (!passwordForgetDTO.getSuccess()) {
+        if (Boolean.FALSE.equals(passwordForgetDTO.getSuccess())) {
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(passwordForgetService.reset(passwordForgetDTO, captcha, pwd), HttpStatus.OK);
@@ -162,5 +160,11 @@ public class PasswordController {
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<PasswordForgetDTO> checkDisable(@RequestParam("emailAddress") String emailAddress) {
         return new ResponseEntity<>(passwordForgetService.checkDisable(emailAddress), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/send_reset_email")
+    @ResponseBody
+    public ResponseEntity<PasswordForgetDTO> sendResetEmail(@RequestParam("emailAddress") String emailAddress) {
+        return new ResponseEntity<>(passwordForgetService.sendResetEmail(emailAddress), HttpStatus.OK);
     }
 }
