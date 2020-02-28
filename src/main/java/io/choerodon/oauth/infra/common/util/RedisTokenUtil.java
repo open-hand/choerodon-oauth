@@ -64,4 +64,8 @@ public class RedisTokenUtil {
     private String createKey(String type, String key) {
         return NAME_SPACE + ":" + type + ":" + key;
     }
+
+    public void store(String type, String key, String value, Long expireTime, TimeUnit timeUnit) {
+        this.redisTemplate.opsForValue().set(createKey(type, key), value, expireTime, timeUnit);
+    }
 }
