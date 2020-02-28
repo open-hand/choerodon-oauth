@@ -25,5 +25,11 @@ public interface PasswordForgetService {
      */
     boolean checkTokenAvailable(String token);
 
+    /**
+     * 重置密码
+     * @param token
+     * @param password
+     * @return
+     */
     PasswordForgetDTO resetPassword(String token, String password);
 }

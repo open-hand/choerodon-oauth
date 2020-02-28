@@ -261,10 +261,9 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public PasswordForgetDTO resetPassword(String token, String password) {
+        // 使用token，查出存在redis里的email,然后再根据email查出用户信息
         String email = getEmailByToken(token);
         UserE user = userService.queryByEmail(email);
-
-
         PasswordForgetDTO passwordForgetDTO = new PasswordForgetDTO();
         try {
             BaseUserDTO baseUser = new BaseUserDTO();
