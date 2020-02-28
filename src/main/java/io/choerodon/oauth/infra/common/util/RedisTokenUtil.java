@@ -61,7 +61,7 @@ public class RedisTokenUtil {
         return token.equals(this.redisTemplate.opsForValue().get(createKey(type, key) + ""));
     }
 
-    private String createKey(String type, String key) {
+    public String createKey(String type, String key) {
         return NAME_SPACE + ":" + type + ":" + key;
     }
 
@@ -71,5 +71,17 @@ public class RedisTokenUtil {
 
     public String getValueByTypeAndKey(String type, String key) {
         return this.redisTemplate.opsForValue().get(createKey(type, key));
+    }
+
+    public String getValueByKey(String key) {
+        return this.redisTemplate.opsForValue().get(key);
+    }
+
+    public void expireByKey(String tokenKey) {
+        this.redisTemplate.delete(tokenKey);
+    }
+
+    public void storeByKey(String key, String value, Long expireTime, TimeUnit timeUnit) {
+        this.redisTemplate.opsForValue().set(key, value, expireTime, timeUnit);
     }
 }

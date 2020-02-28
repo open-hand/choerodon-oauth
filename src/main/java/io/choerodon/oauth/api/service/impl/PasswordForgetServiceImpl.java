@@ -15,7 +15,6 @@ import io.choerodon.oauth.core.password.mapper.BasePasswordPolicyMapper;
 import io.choerodon.oauth.core.password.record.PasswordRecord;
 import io.choerodon.oauth.domain.entity.UserE;
 import io.choerodon.oauth.infra.common.util.RedisTokenUtil;
-import io.choerodon.oauth.infra.enums.PageUrlEnum;
 import io.choerodon.oauth.infra.enums.PasswordFindException;
 import io.choerodon.oauth.infra.feign.NotifyFeignClient;
 import org.slf4j.Logger;
@@ -42,6 +41,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder();
     public static final String FORGET_PASSWORD = "forgetPassword";
     public static final String MODIFY_PASSWORD = "modifyPassword";
+    public static final String RESET_PAGE = "/oauth/password/reset_page";
     private UserService userService;
     private BasePasswordPolicyMapper basePasswordPolicyMapper;
     private PasswordPolicyManager passwordPolicyManager;
@@ -209,7 +209,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
     @Override
     public PasswordForgetDTO sendResetEmail(String email) {
-
+        String keyType = RedisTokenUtil.SHORT_CODE;
         // 校验邮箱
         PasswordForgetDTO passwordForgetDTO = checkUserByEmail(email);
         if (!passwordForgetDTO.getSuccess()) {
@@ -221,12 +221,23 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             return passwordForgetDTO1;
         }
 
+        // 如果之前发送的token未失效，则让之前发送的token失效
+        String emailKey = redisTokenUtil.createKey(keyType, email);
+        String tokenKey = redisTokenUtil.getValueByKey(emailKey);
+        if (tokenKey != null) {
+            redisTokenUtil.expireByKey(tokenKey);
+        }
+
         // 60秒内不能重复发送邮件，记录不能发送的时间
         redisTokenUtil.setDisableTime(passwordForgetDTO.getUser().getEmail());
 
-        String tokenKey = generateKey(passwordForgetDTO.getUser().getEmail());
-        String redirectUrl = gatewayUrl + PageUrlEnum.RESET_URL.value() + "/" + tokenKey;
-        redisTokenUtil.store(RedisTokenUtil.LONG_CODE, tokenKey, passwordForgetDTO.getUser().getEmail(), resetUrlExpireMinutes, TimeUnit.MINUTES);
+        tokenKey = generateTokenKey(passwordForgetDTO.getUser().getEmail());
+        String redirectUrl = gatewayUrl + RESET_PAGE + "/" + tokenKey;
+        // 保存token和email，保存两条记录
+        // emailKey -> tokenKey
+        // tokenKey -> email
+        redisTokenUtil.storeByKey(emailKey, tokenKey, resetUrlExpireMinutes, TimeUnit.MINUTES);
+        redisTokenUtil.storeByKey(tokenKey, email, resetUrlExpireMinutes, TimeUnit.MINUTES);
 
         Map<String, Object> variables = new HashMap<>();
         variables.put("userName", passwordForgetDTO.getUser().getLoginName());
@@ -252,7 +263,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
     @Override
     public boolean checkTokenAvailable(String token) {
-        String value = redisTokenUtil.getValueByTypeAndKey(RedisTokenUtil.LONG_CODE, token);
+        String value = redisTokenUtil.getValueByKey(token);
         return value != null;
     }
 
@@ -297,10 +308,10 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     }
 
     private String getEmailByToken(String token) {
-        return redisTokenUtil.getValueByTypeAndKey(RedisTokenUtil.LONG_CODE, token);
+        return redisTokenUtil.getValueByKey(token);
     }
 
-    private String generateKey(String email) {
+    private String generateTokenKey(String email) {
         String token = UUID.randomUUID().toString() + passwordEncoder.encode(email);
         // 去掉特殊字符
         token = token.replaceAll("/","");
