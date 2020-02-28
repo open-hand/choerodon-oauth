@@ -297,7 +297,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         if (userE != null) {
             passwordRecord.updatePassword(user.getId(), ENCODER.encode(password));
             passwordForgetDTO.setSuccess(true);
-            redisTokenUtil.expire(RedisTokenUtil.LONG_CODE, token);
+            redisTokenUtil.expireByKey(token);
             passwordForgetDTO.setUser(new UserDTO(userE.getId(), userE.getLoginName(), user.getEmail()));
 
             this.sendSiteMsg(user.getId(), user.getRealName());
