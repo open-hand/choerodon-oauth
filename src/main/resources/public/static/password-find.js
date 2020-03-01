@@ -44,12 +44,26 @@ class App extends window.React.Component {
     this.setState({
       currentUsername: e.target.value
     })
+    const p = /[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[\\w](?:[\\w-]*[\\w])?/;
+    if (e.target.value && !p.test(e.target.value)) {
+      this.setState({
+        account: {
+          validateStatus: 'error',
+          errorMsg: '请输入正确的邮箱格式',
+        },
+      })
+    } else {
+      this.setState({
+        account: {},
+      })
+    }
   }
 
   handleButtonClick = () => {
     const {form} = this.props;
     const {step, currentUsername, policyPassed} = this.state;
     if (step === 1) {
+      this.setState({ loading: true });
       form.validateFields(['username'], {force: true});
       $.post(`${server}/oauth/password/send_reset_email`, {
         emailAddress: currentUsername,
@@ -58,7 +72,15 @@ class App extends window.React.Component {
           this.setState({
             step: 2,
           });
+        } else if (results){
+          this.setState({
+            account: {
+              validateStatus: 'error',
+              errorMsg: results.msg,
+            },
+          })
         }
+        this.setState({ loading: false });
       });
     }
   }
@@ -91,7 +113,7 @@ class App extends window.React.Component {
 
   renderStep1 = () => {
     const {form} = this.props;
-    const {account} = this.state;
+    const {account, currentUsername, loading} = this.state;
     const {getFieldDecorator} = form;
     return (
       <div>
@@ -110,13 +132,14 @@ class App extends window.React.Component {
               }],
             })(
               <Input autoComplete="off" label="登录邮箱" name="username" id="username"
-                     onChange={e => this.handleValueChange(e)} placeholder="请输入邮箱" value={this.state.currentUsername}
+                     onChange={e => this.handleValueChange(e)} placeholder="请输入邮箱" value={currentUsername}
               />
             )}
           </FormItem>
           <FormItem style={{marginTop: '60px'}}>
-            <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
-                    style={{width: '120px',float: 'right', paddingTop: '4px'} } htmlType="submit"><span>下一步</span></Button>
+            <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={loading}
+                    style={{width: '120px',float: 'right', paddingTop: '4px'} } htmlType="submit"
+                    disabled={account.validateStatus === 'error' || !currentUsername}><span>下一步</span></Button>
             <a className="back-to-login" href="/oauth/login" style={{float: 'left'}}>返回登录</a>
           </FormItem>
         </Form>
