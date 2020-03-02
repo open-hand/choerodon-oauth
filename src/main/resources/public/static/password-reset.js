@@ -34,10 +34,11 @@ class App extends window.React.Component {
   };
 
   componentDidMount() {
-    this.setState({
-      currentUsername: '',
-      currentVCode: '',
-    })
+    if ($("#is_success").val() === 'false') {
+      this.setState({
+        step: 3
+      })
+    }
   }
 
   checkPassword = (passwordPolicy, value, userName) => {
@@ -290,6 +291,17 @@ class App extends window.React.Component {
       </div>
     )
   }
+  renderStep3 = () => {
+    return (
+        <div>
+          <div className="congratulation">链接已失效
+          </div>
+          <div className="change-password-success">该链接已失效，请重新获取。</div>
+          <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
+                  style={{paddingTop: '4px', marginTop: '80px', float: 'left'}}><span>我知道了</span></Button>
+        </div>
+    )
+  }
 
   render() {
     const {step} = this.state;
@@ -298,6 +310,8 @@ class App extends window.React.Component {
         return this.renderStep1();
       case 2:
         return this.renderStep2();
+      case 3:
+        return this.renderStep3();
     }
   }
 }

@@ -190,8 +190,9 @@ public class PasswordController {
             model.addAttribute("favicon", sysSettingVO.getFavicon());
         }
         if (!passwordForgetService.checkTokenAvailable(token)) {
-            model.addAttribute("systemName", "连接无效");
-            return DEFAULT_PAGE;
+            model.addAttribute("success", "false");
+        } else {
+            model.addAttribute("success", "true");
         }
         return PageUrlEnum.RESET_URL.value();
     }
