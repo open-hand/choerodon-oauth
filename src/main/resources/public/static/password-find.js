@@ -154,8 +154,8 @@ class App extends window.React.Component {
                                               style={{fontSize: 30, color: '#3F51B5', marginRight: '23.8px'}}/>发送成功
         </div>
         <div className="change-password-success">重置密码的链接已发送至您的邮箱，请尽快前往查收。该链接30分钟内有效。</div>
-        <Button type="primary" funcType="raised" className="btn" loading={this.state.loading}
-                style={{paddingTop: '4px', marginTop: '80px'}}><span>我知道了</span></Button>
+        <Button type="primary" funcType="raised" className="btn" href="/oauth/login"  loading={this.state.loading}
+                style={{width: '120px',float: 'right',paddingTop: '4px', marginTop: '80px'}}><span>我知道了</span></Button>
       </div>
     )
   }

@@ -297,8 +297,8 @@ class App extends window.React.Component {
           <div className="congratulation">链接已失效
           </div>
           <div className="change-password-success">该链接已失效，请重新获取。</div>
-          <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
-                  style={{paddingTop: '4px', marginTop: '80px', float: 'left'}}><span>我知道了</span></Button>
+          <Button type="primary" funcType="raised" className="btn" href="/oauth/login"  loading={this.state.loading}
+                  style={{width: '120px',float: 'right',paddingTop: '4px', marginTop: '80px'}}><span>我知道了</span></Button>
         </div>
     )
   }
