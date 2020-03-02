@@ -40,294 +40,49 @@ class App extends window.React.Component {
     })
   }
 
-
-  handleCaptchaButtonClick = () => {
-    const {currentUsername, captchaCD} = this.state;
-    if (currentUsername === '') {
-      this.setState({
-        account: {
-          ...this.validateAccount(false),
-        },
-      });
-      return;
-    }
-    $.post(`${server}/oauth/password/check_disable`, {
-      emailAddress: currentUsername
-    }, (results) => {
-      this.setState({
-        account: {
-          ...this.validateAccount(results),
-        },
-      });
-      if (results.success === true) {
-        this.setState({
-          captchaCD: 60,
-        },() => {
-          const timer = setInterval(() => {
-            this.setState({
-              captchaCD: this.state.captchaCD - 1,
-            }, () => {
-              if(this.state.captchaCD <=0 )
-                this.clearTimer(timer)
-            });
-          }, 1000)
-        });
-        $.post(`${server}/oauth/password/send`, {
-          emailAddress: currentUsername
-        }, (results2) => {
-          this.setState({
-            account: {
-              ...this.validateAccount(results2),
-            },
-          });
-          if (!results2.success) {
-            this.setState({
-              captchaCD: 0,
-            });
-          }
-        }).fail(() => {
-          this.setState({
-            captchaCD: 0,
-          });
-        });
-      } else if (results.disableTime !== null){
-        this.setState({
-          captchaCD: results.disableTime - Math.round(new Date() / 1000),
-        },() => {
-          const timer = setInterval(() => {
-            this.setState({
-              captchaCD: this.state.captchaCD - 1,
-            }, () => {
-              if(this.state.captchaCD <=0 )
-                this.clearTimer(timer)
-            });
-          }, 1000)
-        });
-      }
-    });
-  }
-
-  clearTimer = (timer) => {
-    this.setState({
-      captchaCD: 0,
-    })
-    clearInterval(timer)
-  }
-
   handleValueChange = (e) => {
     this.setState({
       currentUsername: e.target.value
     })
-  }
-
-  handleCodeChange = (e) => {
-    this.setState({
-      currentVCode: e.target.value
-    })
-  }
-
-  componentDidUpdate() {
-
-  }
-
-  validateAccount = (results) => {
-    const { captchaCD : CD } = this.state;
-    if (!results) {
-      return {
-        validateStatus: 'error',
-        errorMsg: '请输入用户邮箱',
-      };
-    }
-    if (results.success && results.user) {
+    const p = /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/;
+    if (e.target.value && !p.test(e.target.value)) {
       this.setState({
-        captchaCD: 60,
-      },() => {
-        const timer = setInterval(() => {
-          this.setState({
-            captchaCD: this.state.captchaCD - 1,
-          }, () => {
-            if(this.state.captchaCD <=0 )
-              this.clearTimer(timer)
-          });
-        }, 1000)
-      });
-      return {
-        validateStatus: 'success',
-        errorMsg: '验证码发送成功',
-      };
-    }
-    return {
-      validateStatus: 'error',
-      errorMsg: results.msg,
-    };
-  }
-
-  validateCode = (results) => {
-    if (!results) {
-      return {
-        validateStatus: 'error',
-        errorMsg: '',
-      };
-    }
-    if (results.success) {
-      this.setState({
-        step: 2,
+        account: {
+          validateStatus: 'error',
+          errorMsg: '请输入正确的邮箱格式',
+        },
       })
-      return {
-        validateStatus: 'success',
-        errorMsg: 'passed',
-      };
+    } else {
+      this.setState({
+        account: {},
+      })
     }
-    return {
-      validateStatus: 'error',
-      errorMsg: '验证码错误',
-    };
   }
-  checkPassword = (passwordPolicy, value, userName) => {
-    let compareResult = '';
-    if (passwordPolicy) {
-      const {
-        enablePassword: check, minLength, maxLength,
-        uppercaseCount: upcount, specialCharCount: spcount,
-        lowercaseCount: lowcount, notUsername: notEqualsUsername,
-        regularExpression: regexCheck, digitsCount
-      } = passwordPolicy;
-      if (value && (check)) {
-        let len = 0;
-        let rs = '';
-        let sp;
-        let up = 0;
-        let low = 0;
-        let numLen = 0;
-        let space = 0;
-        for (let i = 0; i < value.length; i += 1) {
-          const a = value.charAt(i);
-          if (a.match(/[^\x00-\xff]/ig) != null) {
-          len += 2;
-          } else {
-            len += 1;
-          }
-        }
-        const pattern = new RegExp('[-~`@#$%^&*_=+|/()<>,.;:!]');
-        for (let i = 0; i < value.length; i += 1) {
-          rs += value.substr(i, 1).replace(pattern, '');
-          sp = value.length - rs.length;
-        }
-        if(/[\d]/.test(value)) {
-          const num = value.match(/\d/g);
-          numLen = num ? num.length : 0;
-        }
-        if (/[A-Z]/i.test(value)) {
-          const ups = value.match(/[A-Z]/g);
-          up = ups ? ups.length : 0;
-        }
-        if (/[a-z]/i.test(value)) {
-          const lows = value.match(/[a-z]/g);
-          low = lows ? lows.length : 0;
-        }
-        if (minLength && (len < minLength)) {
-          compareResult = `密码长度至少为${minLength}`;
-        }
-        else if (maxLength && (len > maxLength)) {
-          compareResult = `密码长度最多为${maxLength}`;
-        }
-        else if (upcount && (up < upcount)) {
-          compareResult = `大写字母至少为${upcount}`;
-        }
-        else if (lowcount && (low < lowcount)) {
-          compareResult = `小写字母至少为${lowcount}`;
-        }
-        else if (notEqualsUsername && value === userName) {
-          compareResult = '密码不能与账号相同';
-        }
-        else if (digitsCount && (numLen < digitsCount)) {
-          compareResult = `数字至少为${digitsCount}个`;
-        }
-        else if (spcount && (sp < spcount)) {
-          compareResult = `特殊字符至少为${spcount}`;
-        }
-        else if (regexCheck) {
-          const regex = new RegExp(regexCheck);
-          if (!regex.test(value)) {
-            compareResult = '正则不匹配';
-          }
-        }
-      }
-    }
-    return compareResult;
-  };
 
   handleButtonClick = () => {
     const {form} = this.props;
-    const {step, currentUsername, currentVCode, userId, policyPassed} = this.state;
+    const {step, currentUsername, policyPassed} = this.state;
     if (step === 1) {
+      this.setState({ loading: true });
       form.validateFields(['username'], {force: true});
-      form.validateFields(['captchaInput'], {force: true});
-      $.post(`${server}/oauth/password/check`, {
+      $.post(`${server}/oauth/password/send_reset_email`, {
         emailAddress: currentUsername,
-        captcha: currentVCode,
       }, (results) => {
-        this.setState({
-          vCode: {
-            ...this.validateCode(results),
-          },
-          passwdPolicy: results.passwordPolicyDO,
-          userId: results.user.id,
-          loginName: results.user.loginName,
-        });
-      });
-    }
-    if (step === 2) {
-      form.validateFields(['password'], {force: true});
-      form.validateFields(['password1'], {force: true});
-    }
-    if (step === 2 && form.getFieldValue('password') === form.getFieldValue('password1') && policyPassed) {
-      form.validateFields(['password'], {force: true});
-      form.validateFields(['password1'], {force: true});
-      $.post(`${server}/oauth/password/reset`,{
-        userId,
-        captcha: currentVCode,
-        emailAddress: currentUsername,
-        password: form.getFieldValue('password'),
-        password1: form.getFieldValue('password1'),
-      } ,(results) => {
         if (results && results.success === true) {
           this.setState({
-            step: 3,
-            password: form.getFieldValue('password'),
+            step: 2,
           });
+        } else if (results){
+          this.setState({
+            account: {
+              validateStatus: 'error',
+              errorMsg: results.msg,
+            },
+          })
         }
-        else if(results.success === false && results.msg === 'error.password.policy.notRecent') {
-          this.setState({
-            errorMsg: '与近期密码相同',
-            errorState: true
-          });
-          form.validateFields(['password'], {force: true});
-        } else if(results.success === false && !results.msg ) {
-          this.setState({
-            errorMsg: '未知异常',
-            errorState: true,
-          });
-          form.validateFields(['password'], {force: true});
-        } else if(results.success === false) {
-          this.setState({
-            errorMsg: results.msg,
-            errorState: true,
-          });
-          form.validateFields(['password'], {force: true});
-        }
-      }).fail(err => {
-        message.error('服务器请求失败');
+        this.setState({ loading: false });
       });
     }
-
-    if (step === 3) {
-      const { loginName } = this.state;
-      // const encodePasswd = this.encode(password);
-      // $.post(`${server}/oauth/login?username=${currentUsername}&password=${encodePasswd}`)
-      window.location.href = `/oauth/login?username=${loginName}`;
-    }
-
   }
 
   encode = (password) => {
@@ -356,49 +111,9 @@ class App extends window.React.Component {
     return output;
   }
 
-  compareToFirstPassword = (rule, value, callback) => {
-    const form = this.props.form;
-    if (value && value !== form.getFieldValue('password')) {
-      callback('您输入的密码与确认密码不一致!');
-    } else {
-      callback();
-    }
-  };
-
-  validateToNextPassword = (rule, value, callback) => {
-    const form = this.props.form;
-    const { passwdPolicy, currentUsername, errorState, errorMsg } = this.state;
-    let checkPasswdMsg = this.checkPassword(passwdPolicy, value, currentUsername);
-    if (/ /.test(value)) {
-      callback('密码中不能包含空格')
-    }
-    if (value && this.state.confirmDirty) {
-      form.validateFields(['password1'], {force: true});
-    }
-    if(checkPasswdMsg || errorState) {
-      this.setState({
-        policyPassed: false,
-        errorState: false,
-      });
-      callback(checkPasswdMsg ? checkPasswdMsg : errorMsg);
-    }
-    else {
-      this.setState({
-        policyPassed: true,
-      });
-      callback();
-    }
-  }
-
-  handleConfirmBlur = (e) => {
-    const value = e.target.value;
-    this.setState({confirmDirty: this.state.confirmDirty || !!value});
-  }
-
-
   renderStep1 = () => {
     const {form} = this.props;
-    const {account, vCode, captchaCD} = this.state;
+    const {account, currentUsername, loading} = this.state;
     const {getFieldDecorator} = form;
     return (
       <div>
@@ -417,34 +132,14 @@ class App extends window.React.Component {
               }],
             })(
               <Input autoComplete="off" label="登录邮箱" name="username" id="username"
-                     onChange={e => this.handleValueChange(e)} placeholder="请输入邮箱" value={this.state.currentUsername}
+                     onChange={e => this.handleValueChange(e)} placeholder="请输入邮箱" value={currentUsername}
               />
             )}
           </FormItem>
-          <FormItem
-            {...formItemLayout}
-            validateStatus={vCode.validateStatus}
-            help={vCode.errorMsg}
-          >
-            {getFieldDecorator('captchaInput', {
-              rules: [{
-                required: true,
-                whitespace: true,
-                message: '请输入验证码',
-              }],
-            })(
-              <div>
-                <Input type="text" style={{width: '220px'}} autoComplete="off" label="验证码" id="captchaInput"
-                       onChange={e => this.handleCodeChange(e)} placeholder="请输入验证码" value={this.state.currentVCode}
-                />
-                <Button funcType="raised" onClick={this.handleCaptchaButtonClick} loading={captchaCD > 0}
-                        style={{float: 'right'}}>{captchaCD === 0 ? '发送验证码' : `${captchaCD}秒后重试`}</Button>
-              </div>
-            )}
-          </FormItem>
           <FormItem style={{marginTop: '60px'}}>
-            <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
-                    style={{width: '120px',float: 'right', paddingTop: '4px'} } htmlType="submit"><span>下一步</span></Button>
+            <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={loading}
+                    style={{width: '120px',float: 'right', paddingTop: '4px'} } htmlType="submit"
+                    disabled={account.validateStatus === 'error' || !currentUsername}><span>下一步</span></Button>
             <a className="back-to-login" href="/oauth/login" style={{float: 'left'}}>返回登录</a>
           </FormItem>
         </Form>
@@ -453,57 +148,14 @@ class App extends window.React.Component {
   }
 
   renderStep2 = () => {
-    const {form} = this.props;
-    const {getFieldDecorator} = form;
-    return (
-      <div>
-        <span className="loginSpan">忘记密码</span>
-        <Form layout="vertical" className="form-vertical login-form">
-          <FormItem
-            {...formItemLayout}
-            label="新密码"
-          >
-            {getFieldDecorator('password', {
-              rules: [{
-                required: true, message: '请输入新密码',
-              }, {
-                validator: this.validateToNextPassword,
-              }],
-            })(
-              <Input showPasswordEye label="新密码" type="password"/>
-            )}
-          </FormItem>
-          <FormItem
-            {...formItemLayout}
-            label="确认密码"
-          >
-            {getFieldDecorator('password1', {
-              rules: [{
-                required: true, message: '请输入确认密码'
-              },{
-                validator: this.compareToFirstPassword,
-              }],
-            })(
-              <Input showPasswordEye label="确认新密码" type="password" onBlur={this.handleConfirmBlur}/>
-            )}
-          </FormItem>
-          <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
-                  style={{paddingTop: '4px', marginTop: '38px'}}><span>下一步</span></Button>
-        </Form>
-      </div>
-    )
-  }
-
-  renderStep3 = () => {
-    const { loginName } = this.state;
     return (
       <div>
         <div className="congratulation"><Icon type="done"
-                                              style={{fontSize: 30, color: '#3F51B5', marginRight: '23.8px'}}/>恭喜
+                                              style={{fontSize: 30, color: '#3F51B5', marginRight: '23.8px'}}/>发送成功
         </div>
-        <div className="change-password-success">{`您的账号“${loginName}”重置密码成功`}</div>
-        <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
-                style={{paddingTop: '4px', marginTop: '80px'}}><span>直接登录</span></Button>
+        <div className="change-password-success">重置密码的链接已发送至您的邮箱，请尽快前往查收。该链接30分钟内有效。</div>
+        <Button type="primary" funcType="raised" className="btn" href="/oauth/login"  loading={this.state.loading}
+                style={{width: '120px',float: 'right',paddingTop: '4px', marginTop: '80px'}}><span>我知道了</span></Button>
       </div>
     )
   }
@@ -515,8 +167,6 @@ class App extends window.React.Component {
         return this.renderStep1();
       case 2:
         return this.renderStep2();
-      case 3:
-        return this.renderStep3();
     }
   }
 }
