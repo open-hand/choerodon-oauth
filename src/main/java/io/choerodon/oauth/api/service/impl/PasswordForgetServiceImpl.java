@@ -107,7 +107,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             return passwordForgetDTO;
         }
 
-        if (user.getLdap()) {
+        if (Boolean.TRUE.equals(user.getLdap())) {
             passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.LDAP_CANNOT_CHANGE_PASSWORD.value(), null, Locale.ROOT));
             passwordForgetDTO.setCode(PasswordFindException.LDAP_CANNOT_CHANGE_PASSWORD.value());
             return passwordForgetDTO;
@@ -116,80 +116,6 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         passwordForgetDTO.setSuccess(true);
         passwordForgetDTO.setUser(new UserDTO(user.getId(), user.getLoginName(), user.getEmail()));
         return passwordForgetDTO;
-    }
-
-    @Override
-    public PasswordForgetDTO send(PasswordForgetDTO passwordForgetDTO) {
-        PasswordForgetDTO passwordForgetDTO1 = this.checkDisable(passwordForgetDTO.getUser().getEmail());
-        if (!passwordForgetDTO1.getSuccess()) {
-            return passwordForgetDTO1;
-        }
-        String token = redisTokenUtil.createShortToken();
-        Map<String, Object> variables = new HashMap<>();
-
-        variables.put("userName", passwordForgetDTO.getUser().getLoginName());
-        variables.put("verifyCode", redisTokenUtil.store(RedisTokenUtil.SHORT_CODE, passwordForgetDTO.getUser().getEmail(), token));
-        redisTokenUtil.setDisableTime(passwordForgetDTO.getUser().getEmail());
-        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
-        NoticeSendDTO.User user = new NoticeSendDTO.User();
-        user.setEmail(passwordForgetDTO.getUser().getEmail());
-        List<NoticeSendDTO.User> users = new ArrayList<>();
-        users.add(user);
-        noticeSendDTO.setCode(FORGET_PASSWORD);
-        noticeSendDTO.setTargetUsers(users);
-        noticeSendDTO.setParams(variables);
-        try {
-            notifyFeignClient.postNotice(noticeSendDTO);
-            return passwordForgetDTO;
-        } catch (CommonException e) {
-            passwordForgetDTO.setSuccess(false);
-            LOGGER.warn("The mail send error. {} {}", e.getCode(), e);
-            return passwordForgetDTO;
-        }
-
-    }
-
-    @Override
-    public PasswordForgetDTO check(PasswordForgetDTO passwordForgetDTO, String captcha) {
-        passwordForgetDTO.setSuccess(redisTokenUtil.check(
-                RedisTokenUtil.SHORT_CODE,
-                passwordForgetDTO.getUser().getEmail(), captcha));
-        return passwordForgetDTO;
-    }
-
-    @Override
-    public PasswordForgetDTO reset(PasswordForgetDTO passwordForgetDTO, String captcha, String password) {
-        UserE user = userService.queryByEmail(passwordForgetDTO.getUser().getEmail());
-        this.redisTokenUtil.expire(user.getEmail(), captcha);
-        try {
-            BaseUserDTO baseUser = new BaseUserDTO();
-            BeanUtils.copyProperties(user, baseUser);
-            baseUser.setPassword(password);
-            BasePasswordPolicyDTO basePasswordPolicyDO = new BasePasswordPolicyDTO();
-            basePasswordPolicyDO.setOrganizationId(user.getOrganizationId());
-            basePasswordPolicyDO = basePasswordPolicyMapper.selectOne(basePasswordPolicyDO);
-            passwordPolicyManager.passwordValidate(password, baseUser, basePasswordPolicyDO);
-            userPasswordValidator.validate(password, user.getOrganizationId(), true);
-        } catch (CommonException e) {
-            LOGGER.error(e.getMessage());
-            passwordForgetDTO.setSuccess(false);
-            passwordForgetDTO.setMsg(e.getMessage());
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return passwordForgetDTO;
-        }
-        user.setPassword(ENCODER.encode(password));
-        UserE userE = userService.updateSelective(user);
-        if (userE != null) {
-            passwordRecord.updatePassword(user.getId(), ENCODER.encode(password));
-            passwordForgetDTO.setSuccess(true);
-            redisTokenUtil.expire(RedisTokenUtil.SHORT_CODE, passwordForgetDTO.getUser().getEmail());
-            passwordForgetDTO.setUser(new UserDTO(userE.getId(), userE.getLoginName(), user.getEmail()));
-
-            this.sendSiteMsg(user.getId(), user.getRealName());
-            return passwordForgetDTO;
-        }
-
-        return new PasswordForgetDTO(false);
     }
 
     @Override
@@ -212,12 +138,12 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         String keyType = RedisTokenUtil.SHORT_CODE;
         // 校验邮箱
         PasswordForgetDTO passwordForgetDTO = checkUserByEmail(email);
-        if (!passwordForgetDTO.getSuccess()) {
+        if (Boolean.FALSE.equals(passwordForgetDTO.getSuccess())) {
             return passwordForgetDTO;
         }
         // 校验60秒内是否发送过邮件
         PasswordForgetDTO passwordForgetDTO1 = this.checkDisable(passwordForgetDTO.getUser().getEmail());
-        if (!passwordForgetDTO1.getSuccess()) {
+        if (Boolean.FALSE.equals(passwordForgetDTO1.getSuccess())) {
             return passwordForgetDTO1;
         }
 
@@ -267,8 +193,6 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         return value != null;
     }
 
-
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public PasswordForgetDTO resetPassword(String token, String password) {
@@ -313,8 +237,8 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
     private String generateTokenKey(String email) {
         String token = UUID.randomUUID().toString() + passwordEncoder.encode(email);
-        // 去掉特殊字符
-        token = token.replaceAll("/","");
+        // 去掉特殊字符"/"
+        token = token.replaceAll("\\/","");
         return token;
     }
 
