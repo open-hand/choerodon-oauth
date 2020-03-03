@@ -83,86 +83,11 @@ public class PasswordController {
         return DEFAULT_PAGE;
     }
 
-
-    @PostMapping(value = "/send")
-    @ResponseBody
-    public ResponseEntity<PasswordForgetDTO> send(@RequestParam("emailAddress") String emailAddress) {
-        PasswordForgetDTO passwordForgetDTO = passwordForgetService.checkUserByEmail(emailAddress);
-        if (Boolean.FALSE.equals(passwordForgetDTO.getSuccess())) {
-            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(passwordForgetService.send(passwordForgetDTO), HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/check")
-    @ResponseBody
-    public ResponseEntity<CaptchaCheckDTO> check(
-            @RequestParam("emailAddress") String emailAddress,
-            @RequestParam("captcha") String captcha) {
-        CaptchaCheckDTO check;
-        PasswordForgetDTO passwordForgetDTO = passwordForgetService.checkUserByEmail(emailAddress);
-        if (Boolean.FALSE.equals(passwordForgetDTO.getSuccess())) {
-            check = new CaptchaCheckDTO(passwordForgetDTO, null);
-            return new ResponseEntity<>(check, HttpStatus.OK);
-        }
-        PasswordForgetDTO passwordForgetCheck = passwordForgetService.check(passwordForgetDTO, captcha);
-        if (Boolean.FALSE.equals(passwordForgetCheck.getSuccess())) {
-            check = new CaptchaCheckDTO(passwordForgetCheck, null);
-            return new ResponseEntity<>(check, HttpStatus.OK);
-        }
-        PasswordPolicyDO passwordPolicyDO = passwordPolicyService.queryByOrgId(userService.queryByEmail(emailAddress).getOrganizationId());
-        check = new CaptchaCheckDTO(passwordForgetCheck, passwordPolicyDO);
-        return new ResponseEntity<>(check, HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/reset")
-    @ResponseBody
-    @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<PasswordForgetDTO> reset(
-            @RequestParam("emailAddress") String emailAddress,
-            @RequestParam("captcha") String captcha,
-            @RequestParam("userId") Long userId,
-            @RequestParam("password") String pwd,
-            @RequestParam("password1") String pwd1) {
-        PasswordForgetDTO passwordForgetDTO;
-        if (!pwd.equals(pwd1)) {
-            passwordForgetDTO = new PasswordForgetDTO(false);
-
-            passwordForgetDTO.setCode(PasswordFindException.PASSWORD_NOT_EQUAL.value());
-            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.PASSWORD_NOT_EQUAL.value(), null, Locale.ROOT));
-            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
-        }
-
-        passwordForgetDTO = passwordForgetService.checkUserByEmail(emailAddress);
-        if (Boolean.FALSE.equals(passwordForgetDTO.getSuccess())) {
-            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
-        }
-        if (!userId.equals(passwordForgetDTO.getUser().getId())) {
-            passwordForgetDTO = new PasswordForgetDTO(false);
-            passwordForgetDTO.setCode(PasswordFindException.USER_IS_ILLEGAL.value());
-            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.USER_IS_ILLEGAL.value(), null, Locale.ROOT));
-            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
-        }
-        if(!StringUtils.hasText(pwd)) {
-            passwordForgetDTO = new PasswordForgetDTO(false);
-            passwordForgetDTO.setCode(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value());
-            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value(), null, Locale.ROOT));
-            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
-        }
-        passwordForgetDTO = passwordForgetService.check(passwordForgetDTO, captcha);
-        if (Boolean.FALSE.equals(passwordForgetDTO.getSuccess())) {
-            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(passwordForgetService.reset(passwordForgetDTO, captcha, pwd), HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/check_disable")
-    @ResponseBody
-    @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<PasswordForgetDTO> checkDisable(@RequestParam("emailAddress") String emailAddress) {
-        return new ResponseEntity<>(passwordForgetService.checkDisable(emailAddress), HttpStatus.OK);
-    }
-
+    /**
+     * 发送重置密码邮件
+     * @param emailAddress
+     * @return
+     */
     @PostMapping(value = "/send_reset_email")
     @ResponseBody
     public ResponseEntity<PasswordForgetDTO> sendResetEmail(@RequestParam("emailAddress") String emailAddress) {
@@ -197,6 +122,13 @@ public class PasswordController {
         return PageUrlEnum.RESET_URL.value();
     }
 
+    /**
+     * 重置密码
+     * @param token
+     * @param pwd
+     * @param pwd1
+     * @return
+     */
     @PostMapping(value = "/reset_password")
     @ResponseBody
     public ResponseEntity<PasswordForgetDTO> resetPassword(

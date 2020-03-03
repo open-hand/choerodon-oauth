@@ -90,6 +90,10 @@ env:
     CHOERODON_OAUTH_LOGIN_PATH: /login
     # 如果`env.open.CHOERODON_OAUTH_LOGIN_PATH` 为带`https`协议的地址，则必须配置为`true`。默认为`false`
     CHOERODON_OAUTH_LOGIN_SSL: false
+    # 网关地址
+    CHOERODON_GATEWAY_URL: http://api.example.com
+    # 重置密码邮件失效时间
+    CHOERODON_RESET_PASSWORD_RESETURLEXPIREMINUTES: 30
 
     ## skywalking 代理端配置
     # SKYWALKING_OPTS: >-
