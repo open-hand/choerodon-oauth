@@ -178,7 +178,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         noticeSendDTO.setTargetUsers(users);
         noticeSendDTO.setParams(variables);
         try {
-//            notifyFeignClient.postNotice(noticeSendDTO);
+            notifyFeignClient.postNotice(noticeSendDTO);
             return passwordForgetDTO;
         } catch (CommonException e) {
             passwordForgetDTO.setSuccess(false);
@@ -224,7 +224,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             redisTokenUtil.expireByKey(token);
             passwordForgetDTO.setUser(new UserDTO(userE.getId(), userE.getLoginName(), user.getEmail()));
 
-//            this.sendSiteMsg(user.getId(), user.getRealName());
+            this.sendSiteMsg(user.getId(), user.getRealName());
             return passwordForgetDTO;
         }
 
