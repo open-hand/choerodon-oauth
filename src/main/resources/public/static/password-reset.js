@@ -135,7 +135,7 @@ class App extends window.React.Component {
         if (results && results.success === true) {
           this.setState({
             step: 2,
-            loginName: results.user.loginName
+            email: results.user.email
           });
         }
         else if(results.success === false && results.msg === 'error.password.policy.notRecent') {
@@ -163,10 +163,10 @@ class App extends window.React.Component {
     }
 
     if (step === 2) {
-      const { loginName } = this.state;
+      const { email } = this.state;
       // const encodePasswd = this.encode(password);
       // $.post(`${server}/oauth/login?username=${currentUsername}&password=${encodePasswd}`)
-      window.location.href = `/oauth/login?username=${loginName}`;
+      window.location.href = `/oauth/login?username=${email}`;
     }
 
   }
@@ -279,13 +279,13 @@ class App extends window.React.Component {
   }
 
   renderStep2 = () => {
-    const { loginName } = this.state;
+    const { email } = this.state;
     return (
       <div>
         <div className="congratulation"><Icon type="done"
                                               style={{fontSize: 30, color: '#3F51B5', marginRight: '23.8px'}}/>恭喜
         </div>
-        <div className="change-password-success">{`您的账号“${loginName}”重置密码成功`}</div>
+        <div className="change-password-success">{`您的账号“${email}”重置密码成功`}</div>
         <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
                 style={{paddingTop: '4px', marginTop: '80px'}}><span>直接登录</span></Button>
       </div>
