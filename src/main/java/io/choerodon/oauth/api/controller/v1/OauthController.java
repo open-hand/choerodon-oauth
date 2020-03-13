@@ -133,7 +133,6 @@ public class OauthController {
         String username = (String) session.getAttribute(LOGIN_FILED);
         String errorCode = (String) session.getAttribute(SPRING_SECURITY_LAST_EXCEPTION);
         Object[] params = (Object[]) session.getAttribute(SPRING_SECURITY_LAST_EXCEPTION_PARAMS);
-        session.setMaxInactiveInterval(90);
         session.removeAttribute(SPRING_SECURITY_LAST_EXCEPTION);
         session.removeAttribute(LOGIN_FILED);
         session.removeAttribute(SPRING_SECURITY_LAST_EXCEPTION_PARAMS);
