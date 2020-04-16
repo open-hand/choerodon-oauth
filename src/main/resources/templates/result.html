@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script src="static/jquery.min.js"></script>
+    <title>Choerodon</title>
+    <style>
+        html,body {
+            padding:0px;
+            margin:0px;
+            background-color: #00BCD4;
+            overflow:hidden;
+            font-family: 'Open Sans', 'Microsoft YaHei', serif;
+            font-size: 13px;
+            line-height: 20px;
+            direction: ltr;
+        }
+        .login .logo {
+            width: 247px;
+            margin: 0 auto;
+            padding: 15px;
+            text-align: center;
+            z-index: 999;
+            position: relative;
+        }
+        .login #content {
+            background-color: #fff;
+            width: 291px;
+            margin: 0 auto;
+            margin-bottom: 0px;
+            padding: 30px;
+            padding-top: 20px;
+            padding-bottom: 15px;
+            z-index: 999;
+            margin-top: 100px;
+            position: relative;
+            opacity:0.95;
+        }
+        .login #content .form-title {
+            font-weight: 300;
+            margin-bottom: 25px;
+            font-size: 24.5px;
+        }
+
+        .login #content .login-form {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .alert-error {
+            color: #f92e2d;
+            padding-left: 10px;
+        }
+
+        .login #content .control-group {
+            margin-bottom: 10px !important;
+        }
+
+        .control-label {
+            margin-top: 2px;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 20px;
+        }
+
+
+        .input-icon.left i {
+            color: #ccc;
+            display: block !important;
+            position: absolute !important;
+            z-index: 1;
+            margin: 9px 2px 4px 10px;
+            width: 16px;
+            height: 16px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .login #content .input-icon .m-wrap {
+            margin: 0px !important;
+        }
+
+        .login #content .m-wrap {
+            width: 249px;
+        }
+
+        select {
+            width: 220px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            height: 30px;
+            line-height: 30px;
+        }
+
+        input.m-wrap {
+            border: 1px solid #e5e5e5;
+        }
+
+        input[type="text"].m-wrap, input[type="password"].m-wrap {
+            -webkit-appearance: none !important;
+            outline: 0;
+            height: 20px;
+            padding: 6px 6px !important;
+            padding-left: 33px !important;
+            line-height: 20px;
+            font-size: 14px;
+            font-weight: normal;
+            vertical-align: top;
+            background-color: #ffffff;
+            background-image: none !important;
+            filter: none !important;
+            -webkit-box-shadow: none !important;
+            -moz-box-shadow: none !important;
+            box-shadow: none !important;
+            -webkit-border-radius: 0px;
+            -moz-border-radius: 0px;
+            border-radius: 0px;
+            background: transparent;
+        }
+
+        .login #content .form-actions {
+            clear: both;
+            padding: 10px 0 10px 0;
+        }
+        input.error {
+            background: #fff0f0 !important;
+            border-color: #A90329;
+        }
+        .btn {
+            background-color: #1d8df9;
+            background-image: none;
+            filter: none;
+            border: 0;
+            padding: 10px 14px;
+            text-shadow: none;
+            font-size: 16px;
+            color: #ffffff;
+            cursor: pointer;
+            outline: none;
+            -webkit-box-shadow: none !important;
+            -moz-box-shadow: none !important;
+            box-shadow: none !important;
+            -webkit-border-radius: 0 !important;
+            -moz-border-radius: 0 !important;
+            border-radius: 0 !important;
+            width: 100%;
+        }
+        @font-face {
+            font-family: 'FontAwesome';
+            src: url('../public/static/fontawesome-webfont.woff2?v=4.6.3') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+        .fa {
+            display: inline-block;
+            font: normal normal normal 14px/1 FontAwesome;
+            font-size: inherit;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .fa-user:before {
+            content: "\f007";
+        }
+        .fa-user-md:before {
+            content: "\f0f0";
+        }
+        .fa-lock:before {
+            content: "\f023";
+        }
+        .fa-refresh:before {
+            content: "\f021";
+        }
+
+    </style>
+
+</head>
+<body class="login">
+<div id="content">
+    <div th:text="${message}"></div>
+</div>
+</body>
+</html>

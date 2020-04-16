@@ -4,12 +4,12 @@
     <parent>
         <groupId>io.choerodon</groupId>
         <artifactId>choerodon-framework-parent</artifactId>
-        <version>0.16.1-SNAPSHOT</version>
+        <version>0.16.2-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>hzero-oauth</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.22.0-SNAPSHOT</version>
     <name>hzero-oauth</name>
     <description>Demo project for Spring Boot</description>
 
@@ -18,6 +18,7 @@
     </properties>
 
     <dependencies>
+
         <!-- 数据库驱动 -->
         <dependency>
             <groupId>mysql</groupId>
@@ -28,6 +29,16 @@
         <dependency>
             <groupId>org.hzero</groupId>
             <artifactId>hzero-oauth</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hzero.starter</groupId>
+                    <artifactId>hzero-starter-dynamic-route</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hzero.starter</groupId>
+                    <artifactId>hzero-starter-hitoa</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
 
@@ -39,11 +50,10 @@
             <groupId>org.hzero.starter</groupId>
             <artifactId>hzero-starter-config-client</artifactId>
         </dependency>
-
     </dependencies>
 
     <repositories>
-            <repository>
+        <repository>
             <id>HzeroRelease</id>
             <name>Hzero-Release Repository</name>
             <url>http://nexus.saas.hand-china.com/content/repositories/Hzero-Release/</url>
