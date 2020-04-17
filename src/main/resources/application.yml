@@ -124,6 +124,7 @@ hzero:
     # 是否显示切换语言
     show-language: ${HZERO_OAUTH_SHOW_LANGUAGE:true}
     login:
+      page: ${HZERO_OAUTH_LOGIN_PAGE:/choerodon/login}
       #网关是否启用https
       enable-https: ${HZERO_OAUTH_LOGIN_ENABLE_HTTPS:false}
       #开放给外部的oauth网关地址，支持https
