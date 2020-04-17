@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 @RequestMapping("/choerodon/password")
-public class ChoerodonPasswordController {
+public class PasswordC7NController {
 
     private static final String DEFAULT_PAGE = "password-find";
     @Autowired

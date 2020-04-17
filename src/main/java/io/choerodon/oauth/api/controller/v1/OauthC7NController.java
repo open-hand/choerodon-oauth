@@ -10,10 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-import io.choerodon.core.oauth.CustomUserDetails;
-import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.oauth.api.vo.SysSettingVO;
 import io.choerodon.oauth.app.service.SystemSettingService;
 import io.choerodon.oauth.infra.enums.LoginException;
@@ -32,7 +29,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 
 /**
@@ -41,12 +37,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RefreshScope
 @Controller
 @RequestMapping("/choerodon")
-public class ChoerodonOauthController {
+public class OauthC7NController {
     private static final String LOGIN_FILED = "username";
     private static final String SPRING_SECURITY_LAST_EXCEPTION = "SPRING_SECURITY_LAST_EXCEPTION";
     private static final String SPRING_SECURITY_LAST_EXCEPTION_PARAMS = "SPRING_SECURITY_LAST_EXCEPTION_PARAMS";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChoerodonOauthController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OauthC7NController.class);
 
     @Value("${choerodon.oauth.loginPage.profile:default}")
     private String loginProfile;
@@ -69,7 +65,7 @@ public class ChoerodonOauthController {
     @Value("${choerodon.default.icp: }")
     private String icp;
 
-    public ChoerodonOauthController(
+    public OauthC7NController(
             MessageSource messageSource,
             DefaultKaptcha captchaProducer) {
         this.messageSource = messageSource;
@@ -174,14 +170,14 @@ public class ChoerodonOauthController {
         }
     }
 
-    /**
-     * 判断用户是否登录
-     * @return
-     */
-    @ResponseBody
-    @GetMapping(value = "/is_login")
-    public Boolean isLogin() {
-        CustomUserDetails userDetails = DetailsHelper.getUserDetails();
-        return userDetails != null;
-    }
+//    /**
+//     * 判断用户是否登录
+//     * @return
+//     */
+//    @ResponseBody
+//    @GetMapping(value = "/is_login")
+//    public Boolean isLogin() {
+//        CustomUserDetails userDetails = DetailsHelper.getUserDetails();
+//        return userDetails != null;
+//    }
 }
