@@ -140,7 +140,7 @@ class App extends window.React.Component {
             <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={loading}
                     style={{width: '120px',float: 'right', paddingTop: '4px'} } htmlType="submit"
                     disabled={account.validateStatus === 'error' || !currentUsername}><span>下一步</span></Button>
-            <a className="back-to-login" href="/oauth/login" style={{float: 'left'}}>返回登录</a>
+            <a className="back-to-login" href="/oauth/choerodon/login" style={{float: 'left'}}>返回登录</a>
           </FormItem>
         </Form>
       </div>
