@@ -65,7 +65,7 @@ spec:
           containerPort: {{ .Values.service.ports.http.port }}
           protocol: TCP
         - name: actuator
-          containerPort: {{ .Values.service.ports.http.actuator }}
+          containerPort: {{ .Values.service.ports.actuator.port }}
           protocol: TCP
         resources:
 {{ toYaml .Values.resources | indent 10 }}
