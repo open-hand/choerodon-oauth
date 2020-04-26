@@ -20,6 +20,30 @@ preJob:
       username: hzero
       password: hzero
 
+## Deployment 更新策略
+deploymentUpdate:
+  type: RollingUpdate
+  maxUnavailable: 0
+  maxSurge: 100%
+
+## Pod 优先级设置
+## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+##
+priorityClassName: ""
+
+## Pod 节点分配
+## ref: https://kubernetes.io/docs/user-guide/node-selection/
+##
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+## 给 Pod 附加的 annotations
+podAnnotations: {}
+
+## ## Pod 附加的 labels
+podLabels: {}
+
 env:
   open:
     # 认证服务器 自定义资源匹配器
@@ -103,29 +127,7 @@ env:
     JAVA_OPTS: >
       -Xms1024m
       -Xmx1536m
-## Deployment 更新策略
-deploymentUpdate:
-  type: RollingUpdate
-  maxUnavailable: 0
-  maxSurge: 100%
 
-## Pod 优先级设置
-## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
-##
-priorityClassName: ""
-
-## Pod 节点分配
-## ref: https://kubernetes.io/docs/user-guide/node-selection/
-##
-nodeSelector: {}
-tolerations: []
-affinity: {}
-
-## 给 Pod 附加的 annotations
-podAnnotations: {}
-
-## ## Pod 附加的 labels
-podLabels: {}
 
 ## Liveness 和 Readiness 探针相关配置
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
