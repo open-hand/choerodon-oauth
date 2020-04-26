@@ -3,12 +3,6 @@ package io.choerodon.oauth.api.controller.v1;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
-import io.choerodon.oauth.api.vo.PasswordForgetDTO;
-import io.choerodon.oauth.api.vo.SysSettingVO;
-import io.choerodon.oauth.app.service.PasswordForgetService;
-import io.choerodon.oauth.app.service.SystemSettingService;
-import io.choerodon.oauth.infra.enums.PageUrlEnum;
-import io.choerodon.oauth.infra.enums.PasswordFindException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -18,6 +12,13 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import io.choerodon.oauth.api.vo.PasswordForgetDTO;
+import io.choerodon.oauth.api.vo.SysSettingVO;
+import io.choerodon.oauth.app.service.PasswordForgetService;
+import io.choerodon.oauth.app.service.SystemSettingService;
+import io.choerodon.oauth.infra.enums.PageUrlEnum;
+import io.choerodon.oauth.infra.enums.PasswordFindException;
+
 /**
  * @author wuguokai
  */
@@ -26,6 +27,9 @@ import org.springframework.web.bind.annotation.*;
 public class PasswordC7NController {
 
     private static final String DEFAULT_PAGE = "password-find";
+
+
+    private String loginPage = "/oauth/choerodon/login";
     @Autowired
     private PasswordForgetService passwordForgetService;
     @Autowired
@@ -54,6 +58,7 @@ public class PasswordC7NController {
         if (!StringUtils.isEmpty(sysSettingVO.getFavicon())) {
             model.addAttribute("favicon", sysSettingVO.getFavicon());
         }
+        model.addAttribute("loginPage", loginPage);
         return DEFAULT_PAGE;
     }
 
@@ -93,6 +98,7 @@ public class PasswordC7NController {
         } else {
             model.addAttribute("success", "true");
         }
+        model.addAttribute("loginPage", loginPage);
         return PageUrlEnum.RESET_URL.value();
     }
 
