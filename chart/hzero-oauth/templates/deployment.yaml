@@ -62,10 +62,10 @@ spec:
 {{- end }}
         ports:
         - name: http
-          containerPort: {{ .Values.env.open.SERVER_PORT }}
+          containerPort: {{ .Values.service.ports.http.port }}
           protocol: TCP
         - name: actuator
-          containerPort: {{ .Values.env.open.MANAGEMENT_SERVER_PORT }}
+          containerPort: {{ .Values.service.ports.http.actuator }}
           protocol: TCP
         resources:
 {{ toYaml .Values.resources | indent 10 }}
