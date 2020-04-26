@@ -1,100 +1,84 @@
-# Choerodon Base Service
-Choerodon Base Service 提供一些基础功能 ，主要包括角色管理、菜单管理、用户管理、租户管理、权限刷新和单据权限管理。
-                              
-## Introduction
+# Quick start
 
-## Add Helm chart repository
+部署文件的渲染模板，我们下文将定义一些变量，helm执行时会将变量渲染进模板文件中。
 
-``` bash    
-helm repo add choerodon https://openchart.choerodon.com.cn/choerodon/c7n
-helm repo update
+## _helpers.tpl
+
+这个文件我们用来进行标签模板的定义，以便在上文提到的位置进行标签渲染。
+
+标签总共分为三个部分: 平台、微服务、监控。
+
+### 平台标签
+
+#### deployment 级:
+
 ```
-
-## Installing the Chart
-
-```bash
-$ helm install c7n/hzero-oauth --name hzero-oauth
+{{- define "service.labels.standard" -}}
+choerodon.io/release: {{ .Release.Name | quote }}
+{{- end -}}
 ```
+平台管理实例需要的实例ID。
 
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
+### 微服务标签
 
-## Uninstalling the Chart
+#### pod 级:
 
-```bash
-$ helm delete hzero-oauth
 ```
+{{- define "service.microservice.labels" -}}
+choerodon.io/version: {{ .Chart.Version | quote }}
+choerodon.io/service: {{ .Chart.Name | quote }}
+choerodon.io/metrics-port: {{ .Values.deployment.managementPort | quote }}
+{{- end -}}
+```
+微服务注册中心进行识别时所需要的版本号、项目名称、管理端口。
 
-## Configuration
+### 监控和日志标签
 
-Parameter | Description	| Default
---- |  ---  |  ---  
-`replicaCount` | pod运行数量 | `1`
-`image.repository` | 镜像库地址 | `registry.choerodon.com.cn/choerodon/hzero-oauth`
-`image.pullPolicy` | 镜像拉取策略 | `IfNotPresent`
-`preJob.timeout` | job超时时间 | `300`
-`preJob.image` | job镜像库地址 | `registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.4`
-`preJob.preConfig.enabled`| 是否初始manager_service数据库 | `true`
-`preJob.preConfig.configFile` | 初始化到配置中心文件名 | `application.yml`
-`preJob.preConfig.configType` | 初始化到配置中心存储方式 | `k8s`
-`preJob.preConfig.updatePolicy` | 初始化配置策略: not/add/override/update | `add`
-`preJob.preConfig.registerHost` | 注册中心地址 | `http://register-server:8000`
-`preJob.preConfig.datasource.url` | manager_service数据库连接地址 | `jdbc:mysql://localhost:3306/manager_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true`
-`preJob.preConfig.datasource.username` | manager_service数据库用户名 | `choerodon`
-`preJob.preConfig.datasource.password` | manager_service数据库密码 | `password`
-`preJob.preInitDB.enabled` | 是否初始base_service数据库 | `true`
-`preJob.preInitDB.datasource.url` | base_service数据库连接地址 | `jdbc:mysql://localhost:3306/base_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true`
-`preJob.preInitDB.datasource.username` | base_service数据库用户名 | `choerodon`
-`preJob.preInitDB.datasource.password` | base_service数据库密码 | `password`
-`preJob.preInitDB.datasource.exclusion` | 初始化数据库更新数据的时候忽略的表或列 | `iam_user.hash_password,oauth_client.web_server_redirect_uri,oauth_ldap.server_address,oauth_ldap.object_class,iam_role.is_enabled,fd_organization.name`
-`metrics.path` | 收集应用的指标数据路径 | `/actuator/prometheus`
-`metrics.group` | 性能指标应用分组 | `spring-boot`
-`logs.parser` | 日志收集格式 | `spring-boot`
-`deployment.managementPort` | 服务管理端口 | `8031`
-`ingress.enabled` | 是否创建k8s ingress | `false`
-`env.open.SPRING_CLOUD_CONFIG_ENABLED` | 是否启用配置中心 | `true`
-`env.open.SPRING_CLOUD_CONFIG_URI` | 配置中心地址 | `http://register-server:8000`
-`env.open.SPRING_DATASOURCE_URL` | 数据库连接地址 | `jdbc:mysql://localhost/base_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true`
-`env.open.SPRING_DATASOURCE_USERNAME` | 数据库用户名 | `choerodon`
-`env.open.SPRING_DATASOURCE_PASSWORD` | 数据库密码 | `password`
-`env.open.SPRING_REDIS_HOST` | redis主机地址 | `localhost`
-`env.open.SPRING_REDIS_PORT` | redis端口 | `6379`
-`env.open.SPRING_REDIS_DATABASE` | redis db | `1`
-`env.open.CHOERODON_RESOURCE_JWT_IGNORE` |忽略jwt的url | `/favicon.ico`
-`env.open.EUREKA_CLIENT_SERVICEURL_DEFAULTZONE` | 注册服务地址 | `http://register-server.io-choerodon:8000/eureka/`
-`env.open.CHOERODON_CLEANPERMISSION` | 清理permission表中的旧接口和role_permission表中角色和权限层级不匹配的脏数据 | `false`
-`env.open.CHOERODON_GATEWAY_URL` | 网关地址 | `http://api.staging.saas.hand-china.com`
-`service.enabled` | 是否创建k8s service | `false`
-`service.type` |  service类型 | `ClusterIP`
-`service.port` | service端口 | `8030`
-`service.name` | service名称 | `hzero-oauth`
-`resources.limits` | k8s中容器能使用资源的资源最大值 | `3Gi`
-`resources.requests` | k8s中容器使用的最小资源需求 | `2Gi`
+#### deployment 级:
 
-### SkyWalking Configuration
-Parameter | Description
+```
+{{- define "service.logging.deployment.label" -}}
+choerodon.io/logs-parser: {{ .Values.logs.parser | quote }}
+{{- end -}}
+```
+日志管理所需要的应用标签。该标签指定应用程序的日志格式，内置格式有`nginx`,`spring-boot`,`docker`对于spring-boot微服务请使用`spring-boot`，如果不需要收集日志请移除此段代码，并删除模板文件关于`service.logging.deployment.label`的引用。
+
+#### pod 级:
+
+```
+{{- define "service.monitoring.pod.annotations" -}}
+choerodon.io/metrics-group: {{ .Values.metrics.group | quote }}
+choerodon.io/metrics-path: {{ .Values.metrics.path | quote }}
+{{- end -}}
+```
+性能指标管理所需要的应用类别以及监控指标路径。其中`metrics-group`将应用按照某个关键字分组，并在grafana配置实现分组展示。`metrics-path`指定收集应用的指标数据路径。
+如果不需要监控请移除此段代码
+
+## values.yaml
+
+这个文件中的键值对，即为我们上文中所引用的变量。
+
+将所以有变量集中在一个文件中，方便部署的时候进行归档以及灵活替换。
+
+同时，helm命令支持使用 `--set FOO_BAR=FOOBAR` 参数对values 文件中的变量进行赋值，可以进一步简化部署流程。
+
+
+## 参数对照表
+
+参数名 | 含义 
 --- |  --- 
-`javaagent` | SkyWalking 代理jar包(添加则开启 SkyWalking，删除则关闭)
-`skywalking.agent.application_code` | SkyWalking 应用名称
-`skywalking.agent.sample_n_per_3_secs` | SkyWalking 采样率配置
-`skywalking.agent.namespace` | SkyWalking 跨进程链路中的header配置
-`skywalking.agent.authentication` | SkyWalking 认证token配置
-`skywalking.agent.span_limit_per_segment` | SkyWalking 每segment中的最大span数配置
-`skywalking.agent.ignore_suffix` | SkyWalking 需要忽略的调用配置
-`skywalking.agent.is_open_debugging_class` | SkyWalking 是否保存增强后的字节码文件
-`skywalking.collector.backend_service` | SkyWalking OAP 服务地址和端口配置
+service.enable|是否创建service
+preJob.preConfig.mysql{}|初始化配置所需manager_service数据库信息
+preJob.preInitDB.mysql{}|初始化数据库所需数据库信息
+env.open.SPRING_DATASOURCE_URL|数据库链接地址
+env.open.SPRING_DATASOURCE_USERNAME|数据库用户名
+env.open.SPRING_DATASOURCE_PASSWORD|数据库密码
+env.open.SPRING_CLOUD_CONFIG_ENABLED|启用配置中心
+env.open.SPRING_CLOUD_CONFIG_URI|配置中心地址
+env.open.EUREKA_CLIENT_SERVICEURL_DEFAULTZONE|注册服务地址
+env.open.SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS|kafka地址
+env.open.SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES|zookeeper地址
+env.open.SERVICES_GITLAB_URL|gitlab地址
+persistence.enabled|是否启用持久化存储
+persistence.existingClaim|绑定的pvc名称
 
-```bash
-$ helm install c7n/hzero-oauth \
-    --set env.open.SKYWALKING_OPTS="-javaagent:/agent/skywalking-agent.jar -Dskywalking.agent.application_code=hzero-oauth  -Dskywalking.agent.sample_n_per_3_secs=-1 -Dskywalking.collector.backend_service=oap.skywalking:11800" \
-    --name hzero-oauth
-```
-
-## 验证部署
-```bash
-curl -s $(kubectl get po -n c7n-system -l choerodon.io/release=hzero-oauth -o jsonpath="{.items[0].status.podIP}"):8031/actuator/health | jq -r .status
-```
-出现以下类似信息即为成功部署
-
-```bash
-UP
-```

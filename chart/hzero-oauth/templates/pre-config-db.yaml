@@ -1,12 +1,11 @@
-{{- if .Values.preJob.preInitDB.enabled }}
+{{- if .Values.preJob.preInitDB.enable }}
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ .Release.Name }}-init-db
   annotations:
-    "helm.sh/hook-weight": "1"
     "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-delete-policy": "before-hook-creation"
+    "helm.sh/hook-weight": "1"
   labels:
 {{ include "service.labels.standard" . | indent 4 }}
 spec:
@@ -20,27 +19,22 @@ spec:
       - command:
         - sh
         - -c
-        - cp -rfp /var/choerodon/* /tools
+        - cp -rf /var/choerodon/* /tools
         image: {{ .Values.preJob.image }}
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         name: tools
         volumeMounts:
         - mountPath: /tools
           name: tools-jar
       containers:
       - name: {{ .Release.Name }}-init-db
-        image: {{ include "service.image" . }}
+        image: "{{ .Values.image.repository }}:{{ .Chart.Version }}"
         command:
         - /bin/sh
         - -c
-        - >
-          java -Ddata.init=true
-          -Ddata.update.exclusion={{ .Values.preJob.preInitDB.datasource.exclusion }}
-          -Dspring.datasource.url="{{ .Values.preJob.preInitDB.datasource.url }}"
-          -Dspring.datasource.username={{ .Values.preJob.preInitDB.datasource.username }}
-          -Dspring.datasource.password={{ .Values.preJob.preInitDB.datasource.password }}
-          -Ddata.jar=/choerodon/{{ .Chart.Name }}.jar
-          -jar /var/choerodon/choerodon-tool-liquibase.jar;
+        - '
+          java -Dspring.datasource.url="{{ .Values.preJob.preInitDB.datasource.url }}" -Dspring.datasource.username={{ .Values.preJob.preInitDB.datasource.username }} -Dspring.datasource.password={{ .Values.preJob.preInitDB.datasource.password }} -Ddata.init=true -Ddata.update.exclusion={{ .Values.preJob.preInitDB.datasource.exclusion }} -Ddata.jar=/{{ .Chart.Name }}.jar -jar /var/choerodon/choerodon-tool-liquibase.jar;
+          '
         volumeMounts:
         - mountPath: /var/choerodon
           name: tools-jar
