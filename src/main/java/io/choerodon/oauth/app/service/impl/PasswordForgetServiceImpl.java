@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.notify.NoticeSendDTO;
 import io.choerodon.oauth.api.validator.UserValidator;
 import io.choerodon.oauth.api.vo.PasswordForgetDTO;
 import io.choerodon.oauth.api.vo.UserDTO;
@@ -148,14 +147,15 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         variables.put("userName", passwordForgetDTO.getUser().getLoginName());
         variables.put("redirectUrl", redirectUrl);
 
-        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
-        NoticeSendDTO.User user = new NoticeSendDTO.User();
-        user.setEmail(passwordForgetDTO.getUser().getEmail());
-        List<NoticeSendDTO.User> users = new ArrayList<>();
-        users.add(user);
-        noticeSendDTO.setCode(FORGET);
-        noticeSendDTO.setTargetUsers(users);
-        noticeSendDTO.setParams(variables);
+
+//        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
+//        NoticeSendDTO.User user = new NoticeSendDTO.User();
+//        user.setEmail(passwordForgetDTO.getUser().getEmail());
+//        List<NoticeSendDTO.User> users = new ArrayList<>();
+//        users.add(user);
+//        noticeSendDTO.setCode(FORGET);
+//        noticeSendDTO.setTargetUsers(users);
+//        noticeSendDTO.setParams(variables);
         try {
 //            notifyFeignClient.postNotice(noticeSendDTO);
             return passwordForgetDTO;
@@ -221,13 +221,13 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     private void sendSiteMsg(Long userId, String userName) {
         Map<String, Object> paramsMap = new HashMap<>();
         paramsMap.put("userName", userName);
-        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
-        NoticeSendDTO.User user = new NoticeSendDTO.User();
-        user.setId(userId);
-        List<NoticeSendDTO.User> users = new ArrayList<>();
-        users.add(user);
-        noticeSendDTO.setCode(MODIFY);
-        noticeSendDTO.setTargetUsers(users);
+//        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
+//        NoticeSendDTO.User user = new NoticeSendDTO.User();
+//        user.setId(userId);
+//        List<NoticeSendDTO.User> users = new ArrayList<>();
+//        users.add(user);
+//        noticeSendDTO.setCode(MODIFY);
+//        noticeSendDTO.setTargetUsers(users);
         try {
 //            notifyFeignClient.postNotice(noticeSendDTO);
         } catch (CommonException e) {
