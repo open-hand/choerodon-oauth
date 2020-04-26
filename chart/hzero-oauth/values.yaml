@@ -1,181 +1,141 @@
-## 初始化配置至配置服务及初始化本服务数据库
-preJob:
-  # job 超时时间
-  timeout: 1200
-  # 工具 jar 包镜像库地址
-  image: registry.cn-shanghai.aliyuncs.com/c7n/dbtool:0.6.7
-  preConfig:
-    # 是否初始化manager_service数据库
-    enabled: true
-    # 初始化到配置中心文件名
-    configFile: application.yml
-    # 初始化到配置中心存储方式: k8s/db
-    configType: k8s
-    # 初始化配置策略: not/add/override/update
-    updatePolicy: add
-    # 注册中心地址
-    registerHost: http://register-server:8000
-    # 当 configType 值为 db 时配置 manager-service 的数据库
-    datasource:
-      url: jdbc:mysql://localhost:3306/manager_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=Asia/Shanghai
-      username: username
-      password: password
-  preInitDB:
-    # 是否初始化base_service数据库
-    enabled: true
-    datasource:
-      # 初始化数据库更新数据的时候忽略的表或列
-      exclusion: iam_user.hash_password,oauth_client.web_server_redirect_uri,oauth_ldap.server_address,oauth_ldap.object_class,iam_role.is_enabled,fd_organization.name
-      # 本服务数据库相关信息
-      url: jdbc:mysql://localhost:3306/base_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=Asia/Shanghai
-      username: username
-      password: password
+# Default values for hzero-oauth.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
 
-## 实例运行数量
 replicaCount: 1
 
-## 设置默认的 image、imageTag 和 imagePullPolicy。
 image:
-  repository: registry.cn-shanghai.aliyuncs.com/c7n/hzero-oauth
-  tag: ~
-  pullPolicy: IfNotPresent
+  repository: registry.choerodon.com.cn/hzero-hzero/hzero-oauth
+  pullPolicy: Always
 
-## Deployment 更新策略
-deploymentUpdate:
-  type: RollingUpdate
-  maxUnavailable: 0
-  maxSurge: 100%
+preJob:
+  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.2
+  timeout: 120
+  preInitDB:
+    # 是否初始化groovy脚本或excel数据
+    enable: false
+    # 初始化数据库配置
+    datasource:
+      url: jdbc:mysql://db.hzero.org:3306/hzero_platform?useUnicode=true&characterEncoding=utf-8&useSSL=false
+      username: hzero
+      password: hzero
 
-## Pod 优先级设置
-## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
-##
-priorityClassName: ""
-
-## Pod 节点分配
-## ref: https://kubernetes.io/docs/user-guide/node-selection/
-##
-nodeSelector: {}
-tolerations: []
-affinity: {}
-
-## 给 Pod 附加的 annotations
-podAnnotations: {}
-
-## ## Pod 附加的 labels
-podLabels: {}
-
-## 实例运行时的环境变量
 env:
   open:
-    # 本实例服务端口
-    SERVER_PORT: 8030
-    # 本实例管理端口
-    MANAGEMENT_SERVER_PORT: 8031
-
+    # 认证服务器 自定义资源匹配器
+    HZERO_OAUTH_CUSTOM_RESOURCE_MATCHER: false
+    # 验证 client 时不检查 client 的一致性
+    HZERO_OAUTH_NOT_CHECK_CLIENT_EQUALS: false
+    # 移动设备ID参数
+    HZERO_OAUTH_DEVICE_ID_PARAMETER: device_id
+    # 登录设备来源参数
+    HZERO_OAUTH_SOURCE_TYPE_PARAMETER: source_type
+    # 移动端开启图形验证码校验，默认不开启
+    HZERO_OAUTH_ENABLE_APP_CAPTCHA: false
+    # 始终开启图形验证码校验，默认否
+    HZERO_OAUTH_ENABLE_ALWAYS_CAPTCHA: false
+    # 标题
+    HZERO_OAUTH_TITLE: HZERO
+    # 版权信息
+    HZERO_OAUTH_COPYRIGHT: Copyright © The HZERO Author®. All rights reserved.
+    # Logo URL
+    HZERO_OAUTH_LOGO_URL: /oauth/static/main/img/logo.svg
+    # 登录页面默认语言
+    HZERO_OAUTH_DEFAULT_LANGUAGE: zh_CN
+    # 是否显示切换语言
+    HZERO_OAUTH_SHOW_LANGUAGE: true
+    # 登录页面
+    HZERO_OAUTH_LOGIN_PAGE: /choerodon/login
+    #网关是否启用https
+    HZERO_OAUTH_LOGIN_ENABLE_HTTPS: false
+    # 允许使用的登录名，默认有 用户名、邮箱、手机号
+    HZERO_OAUTH_LOGIN_SUPPORT_FIELDS: username,email,phone
+    # 前端默认模板
+    HZERO_OAUTH_LOGIN_DEFAULT_TEMPLATE: slide
+    # 默认登录成功跳转地址
+    HZERO_OAUTH_LOGIN_SUCCESS_URL: http://dev.hzero.org/workplace
+    # 退出时是否清理token
+    HZERO_OAUTH_LOGOUT_CLEAR_TOKEN: true
+    # 启用二级域名单点登录
+    HZERO_OAUTH_SSO_ENABLED: true
+    # 数据库所有者模式，例如 SqlServer 下的 dbo/guest
+    HZERO_DB_OWNER:
+    # Eureka 注册中心地址
+    EUREKA_DEFAULT_ZONE: http://dev.hzero.org:8000/eureka/
+    # 服务以IP地址注册
+    EUREKA_INSTANCE_PREFER_IP_ADDRESS: true
     # 是否启用配置中心
-    SPRING_CLOUD_CONFIG_ENABLED: true
+    SPRING_CLOUD_CONFIG_ENABLED: false
     # 配置中心地址
-    SPRING_CLOUD_CONFIG_URI: http://register-server:8000
-
-    # Redis 主机地址
-    SPRING_REDIS_HOST: localhost
-    # Redis 端口
-    SPRING_REDIS_PORT: 6379
-    # Redis db
-    SPRING_REDIS_DATABASE: 2
-
-    # 数据库连接地址
-    SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/base_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=Asia/Shanghai
+    SPRING_CLOUD_CONFIG_URI: http://dev.hzero.org:8010/
+    # 数据库地址
+    SPRING_DATASOURCE_URL: jdbc:mysql://db.hzero.org:3306/hzero_platform?useUnicode=true&characterEncoding=utf-8&useSSL=false
     # 数据库用户名
-    SPRING_DATASOURCE_USERNAME: choerodon
+    SPRING_DATASOURCE_USERNAME: hzero
     # 数据库密码
-    SPRING_DATASOURCE_PASSWORD: password
+    SPRING_DATASOURCE_PASSWORD: hzero
+    # 连接池最小空闲连接数
+    SPRING_DATASOURCE_MINIMUM_IDLE: 20
+    # 连接池允许的最大连接数
+    SPRING_DATASOURCE_MAXIMUM_POOL_SIZE: 200
+    # Redis host
+    SPRING_REDIS_HOST: redis.hzero.org
+    # Redis Port
+    SPRING_REDIS_PORT: 6379
+    # Redis DB
+    SPRING_REDIS_DATABASE: 3
+    # Hystrix 熔断超时时间
+    HYSTRIX_COMMAND_TIMEOUT_IN_MILLISECONDS: 40000
+    # Ribbon 读取超时时间
+    RIBBON_READ_TIMEOUT: 30000
+    # Ribbon 连接超时时间
+    RIBBON_CONNECT_TIMEOUT: 3000
+    # session 失效时间设置短一点，登录后让 Session 自动失效
+    SERVER_SERVLET_SESSION_TIMEOUT: 120
+    # IO线程数, 它主要执行非阻塞的任务
+    SERVER_UNDERTOW_IO_THREADS: 4
+    # 阻塞任务线程池
+    SERVER_UNDERTOW_WORKER_THREADS: 128
+    # 每块buffer的空间大小，越小空间被利用越充分
+    SERVER_UNDERTOW_BUFFER_SIZE: 1024
+    # 日志级别
+    LOG_LEVEL: info
+    JAVA_OPTS: >
+      -Xms1024m
+      -Xmx1536m
 
-    # 注册服务地址
-    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://register-server:8000/eureka/
-
-    # 忽略jwt的url
-    CHOERODON_RESOURCE_JWT_IGNORE: /favicon.ico
-
-    # 清理permission表中的旧接口和role_permission表中角色和权限层级不匹配的脏数据
-    CHOERODON_CLEANPERMISSION: false
-
-    # 网关地址
-    CHOERODON_GATEWAY_URL: http://api.example.com
-
-    #用户默认密码
-    CHOERODON_USER_DEFAULT_PASSWORD: abcd1234
-
-## Liveness 和 Readiness 探针相关配置
-## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
-livenessProbe:
-  initialDelaySeconds: 180
-  periodSeconds: 30
-  timeoutSeconds: 3
-  successThreshold: 1
-  failureThreshold: 3
-readinessProbe:
-  initialDelaySeconds: 5
-  periodSeconds: 15
-  timeoutSeconds: 3
-  successThreshold: 1
-  failureThreshold: 3
-
-## 资源请求和限制相关配置
-## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-##
-resources: 
-  limits:
-    # cpu: 100m
-    memory: 2Gi
-  requests:
-    # cpu: 100m
-    memory: 2Gi
-
-## 插件相关配置
-plugins:
-  # skywalking agent 镜像地址
-  skywalkingAgentImage: registry.cn-shanghai.aliyuncs.com/c7n/skywalking-agent:6.5.0
-
-## service 相关设置
-## ref: http://kubernetes.io/docs/user-guide/services/
-##
-service:
-  # 是否启用 service 暴露本服务
-  enabled: true
-  # Service 名称
-  name: hzero-oauth
-  # Service 类型
-  type: ClusterIP
-  # 指定 service 的 clusterIP
-  clusterIP: ~
-  # 端口设置
-  ports: 
-    # 服务端口
-    http: 
-      port: 8030
-      nodePort: 30092
-    # 管理端口
-    actuator: 
-      port: 8031
-      nodePort: 30093
-  ## externalIPs 设置
-  # externalIPs:
-  #   - externalIp1
-  annotations: {}
-    # prometheus.io/scrape: 'true'
-    # prometheus.io/path: '/actuator/prometheus'
-    # prometheus.io/port: '8031'
-
-## 指标收集
 metrics:
-  # 收集应用的指标数据路径
   path: /actuator/prometheus
-  # 性能指标应用分组
   group: spring-boot
 
-# 是否收集日志至EFK
 logs:
-  enabled: false
-  # 日志收集格式
   parser: spring-boot
+
+persistence:
+  enabled: false
+  ## A manually managed Persistent Volume and Claim
+  ## Requires persistence.enabled: true
+  ## If defined, PVC must be created manually before volume will be bound
+  # existingClaim:
+  # subPath:
+
+service:
+  enabled: false
+  type: ClusterIP
+  port: 8020
+  name: hzero-oauth
+deployment:
+  # 管理端口
+  managementPort: 8021
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources,such as Minikube. If you do want to specify resources,uncomment the following
+  # lines,adjust them as necessary,and remove the curly braces after 'resources:'.
+  limits:
+    # cpu: 100m
+    memory: 1.7Gi
+  requests:
+    # cpu: 100m
+    memory: 1.2Gi
