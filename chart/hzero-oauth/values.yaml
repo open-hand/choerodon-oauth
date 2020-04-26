@@ -46,6 +46,10 @@ podLabels: {}
 
 env:
   open:
+    # 本实例服务端口
+    SERVER_PORT: 8020
+    # 本实例管理端口
+    MANAGEMENT_SERVER_PORT: 8021
     # 认证服务器 自定义资源匹配器
     HZERO_OAUTH_CUSTOM_RESOURCE_MATCHER: false
     # 验证 client 时不检查 client 的一致性
