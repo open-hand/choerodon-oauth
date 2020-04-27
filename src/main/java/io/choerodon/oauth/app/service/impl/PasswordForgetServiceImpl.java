@@ -12,10 +12,9 @@ import io.choerodon.oauth.app.service.UserService;
 import io.choerodon.oauth.infra.dto.UserE;
 import io.choerodon.oauth.infra.enums.PasswordFindException;
 import io.choerodon.oauth.infra.util.RedisTokenUtil;
-import io.choerodon.oauth.infra.util.UserPasswordValidator;
+
 import org.hzero.boot.oauth.domain.entity.BaseUser;
 import org.hzero.boot.oauth.domain.service.UserPasswordService;
-import org.hzero.boot.oauth.infra.mapper.BasePasswordPolicyMapper;
 import org.hzero.boot.oauth.policy.PasswordPolicyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,15 +57,12 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     private UserValidator userValidator;
     @Autowired
     private MessageSource messageSource;
-    private final UserPasswordValidator userPasswordValidator;
 
     public PasswordForgetServiceImpl(
             UserService userService,
-            PasswordPolicyManager passwordPolicyManager,
-            UserPasswordValidator userPasswordValidator) {
+            PasswordPolicyManager passwordPolicyManager) {
         this.userService = userService;
         this.passwordPolicyManager = passwordPolicyManager;
-        this.userPasswordValidator = userPasswordValidator;
     }
 
     @Override
@@ -184,7 +180,6 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             BeanUtils.copyProperties(user, baseUser);
             baseUser.setPassword(password);
             passwordPolicyManager.passwordValidate(password, user.getOrganizationId(), baseUser);
-            userPasswordValidator.validate(password, user.getOrganizationId(), true);
         } catch (CommonException e) {
             LOGGER.error(e.getMessage());
             passwordForgetDTO.setSuccess(false);

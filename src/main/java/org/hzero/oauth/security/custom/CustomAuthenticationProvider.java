@@ -192,9 +192,12 @@ public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticat
         }
         String loginName = userDetails.getUsername();
         String userPassword = userDetails.getPassword();
-
+        LOGGER.info("->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.");
+        LOGGER.info("loginName", loginName);
+        LOGGER.info("userPassword", userPassword);
         boolean passed;
         User user = loginRecordService.getLocalLoginUser();
+        LOGGER.info("credentials", credentials);
         if (user.getLdap()) {
             passed = ldapAuthentication(user.getOrganizationId(), loginName, credentials);
         } else {
@@ -224,6 +227,7 @@ public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticat
      * 密码认证失败处理
      */
     protected void processPasswordLoginError() {
+        LOGGER.error("->>>>>>>>>>>>>>validate password failed");
         // password error
         User loginUser = loginRecordService.getLocalLoginUser();
         long residualTimes = loginRecordService.loginError(loginUser);
