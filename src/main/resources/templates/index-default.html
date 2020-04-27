@@ -20,6 +20,7 @@
   <script src="../static/mobx.umd.min.js"></script>
   <script src="../static/moment.min.js"></script>
   <script src="../static/choerodon-ui.min.js"></script>
+  <script src="../static/jsencrypt.min.js"></script>
   <!--<script src="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.js"></script>-->
   <!--<script src="../static/choerodon-ui.min.js"></script>-->
   <!--<script src="../static/choerodon-ui-pro.min.js"></script>-->
@@ -328,10 +329,13 @@
     }
 
   </style>
-
+  <template id="templateData"
+            th:attr="data-publicKey=${publicKey}">
+  </template>
 </head>
 <body class="login">
 <script th:src="@{../static/captcha.js(t=${new java.util.Date().getTime()})}"></script>
+
 <div th:class="${isNeedCaptcha} ? 'content1' : 'content2'" id="content">
   <div style="display: flex;justify-content: center;margin-top: 50px">
       <img th:if="${favicon != null}" th:src="${favicon}"  class="pIcon"/>
@@ -348,6 +352,7 @@
         </div>
       </div>
     </div>
+
     <div class="control-group" style="margin-top: 34px">
       <div class="controls">
         <div
@@ -385,9 +390,8 @@
               <div id="captchaInupt"></div>
               <!--<input class="m-wrap " type="text" style="width: 200px; border: 1px solid #ccc;" name="captcha"/>-->
             </div>
-
             <div style="display: flex; align-items: center; margin-left: 52px;">
-              <img id="imgObj" src="public/captcha"
+              <img id="imgObj" src="/oauth/public/captcha"
                    style="border: 1px solid #ccc; float: right ; width: 88px;height: 32px;"
                    onclick="changeImg()"/>
               <i class="fa fa-refresh" title="刷新验证码"

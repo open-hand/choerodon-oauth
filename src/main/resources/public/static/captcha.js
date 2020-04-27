@@ -6,7 +6,7 @@ function changeImg() {
 
 function chgUrl(url) {
     var timestamp = (new Date()).valueOf();
-    return 'public/captcha?code=' + timestamp;
+    return '/oauth/public/captcha?code=' + timestamp;
 }
 
 var keyStr = "ABCDEFGHIJKLMNOP" + "QRSTUVWXYZabcdef" + "ghijklmnopqrstuv"
@@ -66,15 +66,4 @@ function hide() {
 function show() {
     $("#content").show();
     $("#list").hide();
-}
-
-function changeImg() {
-    var imgSrc = $("#imgObj");
-    var src = imgSrc.attr("src");
-    imgSrc.attr("src", chgUrl(src));
-}
-
-function chgUrl(url) {
-    var timestamp = (new Date()).valueOf();
-    return 'public/captcha?code=' + timestamp;
 }

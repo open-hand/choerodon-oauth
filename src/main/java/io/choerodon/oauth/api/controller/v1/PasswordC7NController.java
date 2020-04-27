@@ -46,10 +46,18 @@ public class PasswordC7NController {
     public String find(HttpServletRequest request, Model model) {
         request.getSession().removeAttribute("userId");
         request.getSession().removeAttribute("userName");
-        SysSettingVO sysSettingVO = systemSettingService.getSetting();
-        if (sysSettingVO == null) {
-            sysSettingVO = new SysSettingVO();
-        }
+       // todo 数据迁移后恢复
+//        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+//        if (sysSettingVO == null) {
+//            sysSettingVO = new SysSettingVO();
+//        }
+        SysSettingVO sysSettingVO = new SysSettingVO();
+        sysSettingVO.setSystemName("Choerodon");
+        sysSettingVO.setRegisterEnabled(true);
+        sysSettingVO.setSystemLogo("");
+        sysSettingVO.setSystemTitle("Choerodon | 多云应用技术集成平台");
+        sysSettingVO.setFavicon("");
+        sysSettingVO.setRegisterUrl("http://choerodon.staging.saas.hand-china.com/#/base/register-organization");
         model.addAttribute("systemName", sysSettingVO.getSystemName());
         if (!StringUtils.isEmpty(sysSettingVO.getSystemLogo())) {
             model.addAttribute("systemLogo", sysSettingVO.getSystemLogo());
@@ -81,10 +89,18 @@ public class PasswordC7NController {
     @GetMapping(value = "/reset_page/{token}")
     public String getResetPasswordPage(HttpServletRequest request, Model model,
                                        @PathVariable("token") String token) {
-        SysSettingVO sysSettingVO = systemSettingService.getSetting();
-        if (sysSettingVO == null) {
-            sysSettingVO = new SysSettingVO();
-        }
+        // todo 数据迁移后恢复
+//        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+//        if (sysSettingVO == null) {
+//            sysSettingVO = new SysSettingVO();
+//        }
+        SysSettingVO sysSettingVO = new SysSettingVO();
+        sysSettingVO.setSystemName("Choerodon");
+        sysSettingVO.setRegisterEnabled(true);
+        sysSettingVO.setSystemLogo("");
+        sysSettingVO.setSystemTitle("Choerodon | 多云应用技术集成平台");
+        sysSettingVO.setFavicon("");
+        sysSettingVO.setRegisterUrl("http://choerodon.staging.saas.hand-china.com/#/base/register-organization");
         model.addAttribute("systemName", sysSettingVO.getSystemName());
         if (!StringUtils.isEmpty(sysSettingVO.getSystemLogo())) {
             model.addAttribute("systemLogo", sysSettingVO.getSystemLogo());
@@ -113,16 +129,9 @@ public class PasswordC7NController {
     @ResponseBody
     public ResponseEntity<PasswordForgetDTO> resetPassword(
             @RequestParam("token") String token,
-            @RequestParam("password") String pwd,
-            @RequestParam("password1") String pwd1) {
+            @RequestParam("password") String pwd) {
         PasswordForgetDTO passwordForgetDTO;
         if (!passwordForgetService.checkTokenAvailable(token)) {
-            passwordForgetDTO = new PasswordForgetDTO(false);
-            passwordForgetDTO.setCode(PasswordFindException.PASSWORD_NOT_EQUAL.value());
-            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.PASSWORD_NOT_EQUAL.value(), null, Locale.ROOT));
-            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
-        }
-        if (!pwd.equals(pwd1)) {
             passwordForgetDTO = new PasswordForgetDTO(false);
             passwordForgetDTO.setCode(PasswordFindException.PASSWORD_NOT_EQUAL.value());
             passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.PASSWORD_NOT_EQUAL.value(), null, Locale.ROOT));

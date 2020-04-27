@@ -5,7 +5,7 @@ function changeImg() {
 }
 function chgUrl(url) {
     var timestamp = (new Date()).valueOf();
-    return 'public/captcha?code='+timestamp;
+    return '/oauth/public/captcha?code='+timestamp;
 }
 
 $(function() {

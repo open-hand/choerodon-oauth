@@ -1,6 +1,9 @@
 const {Input, Button} = window['choerodon-ui.min'];
 
 
+
+
+
 class LoginButton extends window.React.Component {
   state = {
     loading: false,
@@ -12,7 +15,7 @@ class LoginButton extends window.React.Component {
 
   handleButtonClickTest = (e) => {
     this.setState({loading: true})
-  
+
     $("#usernameIsNullMsg").css('display', 'none');
     $("#passwordIsNullMsg").css('display', 'none');
     $("#usernameOrPasswordNotFoundMsg").html("");
@@ -28,10 +31,57 @@ class LoginButton extends window.React.Component {
       this.setState({loading: false})
       return;
     }
-    $("#md5_password").val(this.encode(password));
+    $("#md5_password").val(this.encryptPwd(password));
     $('.login-form').submit();
-  };
+  }
 
+ encryptPwd = (password) => {
+  var publickey = $('#templateData').data('publickey');
+  /* 有公钥 使用 rsa 加密, 否则使用 md5 加密 */
+  if (publickey) {
+    // 初始化加密器
+    var encrypt = new JSEncrypt(); // 设置公钥
+
+    encrypt.setPublicKey(publickey); // 加密
+
+    return encrypt.encrypt(password);
+  } else {
+    return this.encryptMd5(password);
+  }
+}
+encryptMd5 = (password) => {
+  var output = "";
+  var chr1,
+      chr2,
+      chr3 = "";
+  var enc1,
+      enc2,
+      enc3,
+      enc4 = "";
+  var i = 0;
+
+  do {
+    chr1 = password.charCodeAt(i++);
+    chr2 = password.charCodeAt(i++);
+    chr3 = password.charCodeAt(i++);
+    enc1 = chr1 >> 2;
+    enc2 = (chr1 & 3) << 4 | chr2 >> 4;
+    enc3 = (chr2 & 15) << 2 | chr3 >> 6;
+    enc4 = chr3 & 63;
+
+    if (isNaN(chr2)) {
+      enc3 = enc4 = 64;
+    } else if (isNaN(chr3)) {
+      enc4 = 64;
+    }
+
+    output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2) + keyStr.charAt(enc3) + keyStr.charAt(enc4);
+    chr1 = chr2 = chr3 = "";
+    enc1 = enc2 = enc3 = enc4 = "";
+  } while (i < password.length);
+
+  return output;
+}
   encode = (password) => {
     var output = "";
     var chr1, chr2, chr3 = "";
