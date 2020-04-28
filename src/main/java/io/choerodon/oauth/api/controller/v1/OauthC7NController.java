@@ -17,6 +17,10 @@ import io.choerodon.oauth.infra.enums.LoginException;
 import io.choerodon.oauth.infra.enums.ReturnPage;
 import org.hzero.oauth.domain.entity.User;
 import org.hzero.oauth.domain.service.UserLoginService;
+import org.hzero.oauth.infra.encrypt.EncryptClient;
+import org.hzero.oauth.security.config.SecurityProperties;
+import org.hzero.oauth.security.constant.SecurityAttributes;
+import org.hzero.oauth.security.util.LoginUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,11 +69,19 @@ public class OauthC7NController {
     @Value("${choerodon.default.icp: }")
     private String icp;
 
+    private final SecurityProperties securityProperties;
+
+    private final EncryptClient encryptClient;
+
     public OauthC7NController(
             MessageSource messageSource,
-            DefaultKaptcha captchaProducer) {
+            DefaultKaptcha captchaProducer,
+            SecurityProperties securityProperties,
+            EncryptClient encryptClient) {
         this.messageSource = messageSource;
         this.captchaProducer = captchaProducer;
+        this.securityProperties = securityProperties;
+        this.encryptClient = encryptClient;
     }
 
     @GetMapping(value = "/")
@@ -81,24 +93,33 @@ public class OauthC7NController {
     public String login(HttpServletRequest request, Model model,
                         HttpSession session, @RequestParam(required = false) String device) {
         setModelSysSetting(model);
+        // 是否加密
+        if (securityProperties.getPassword().isEnableEncrypt()) {
+            String publicKey = encryptClient.getPublicKey();
+            model.addAttribute(LoginUtil.FIELD_PUBLIC_KEY, publicKey);
+            session.setAttribute(LoginUtil.FIELD_PUBLIC_KEY, publicKey);
+        }
         //默认登录页面
         ReturnPage returnPage = ReturnPage.getByProfile(loginProfile);
         if (!StringUtils.isEmpty(device)) {
             returnPage = ReturnPage.getByProfile(device);
         }
-        String username = (String) session.getAttribute(LOGIN_FILED);
-        String errorCode = (String) session.getAttribute(SPRING_SECURITY_LAST_EXCEPTION);
+
+        User user = userLoginService.queryRequestUser(request);
+
+        String errorCode = (String) session.getAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION);
         Object[] params = (Object[]) session.getAttribute(SPRING_SECURITY_LAST_EXCEPTION_PARAMS);
-        session.removeAttribute(SPRING_SECURITY_LAST_EXCEPTION);
-        session.removeAttribute(LOGIN_FILED);
+        session.removeAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION);
+        session.removeAttribute(SecurityAttributes.SECURITY_LOGIN_USERNAME);
         session.removeAttribute(SPRING_SECURITY_LAST_EXCEPTION_PARAMS);
         if (icp != null && !icp.equals("")) {
             model.addAttribute("icp", icp);
         }
-        if (username == null) {
+
+        if (user == null) {
             return returnPage.fileName();
         }
-        User user = userLoginService.queryRequestUser(request);
+
         Map<String, String> error = new HashMap<>(10);
         //数据库中无该用户
         if (user == null) {
@@ -108,8 +129,8 @@ public class OauthC7NController {
             model.addAllAttributes(error);
             return returnPage.fileName();
         }
-
         model.addAttribute("isNeedCaptcha",  userLoginService.isNeedCaptcha(user));
+
 
         if (errorCode != null) {
             error.put(errorCode, messageSource.getMessage(errorCode, params, "登录失败", currentLocale));
@@ -119,7 +140,15 @@ public class OauthC7NController {
     }
 
     private void setModelSysSetting(Model model) {
-        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+        // TODO 数据迁移后替换
+//        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+        SysSettingVO sysSettingVO = new SysSettingVO();
+        sysSettingVO.setSystemName("Choerodon");
+        sysSettingVO.setRegisterEnabled(true);
+        sysSettingVO.setSystemLogo("");
+        sysSettingVO.setSystemTitle("Choerodon | 多云应用技术集成平台");
+        sysSettingVO.setFavicon("");
+        sysSettingVO.setRegisterUrl("http://choerodon.staging.saas.hand-china.com/#/base/register-organization");
         if (sysSettingVO == null) {
             sysSettingVO = new SysSettingVO();
         }

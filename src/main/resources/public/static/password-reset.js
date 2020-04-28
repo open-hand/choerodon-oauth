@@ -127,10 +127,10 @@ class App extends window.React.Component {
     if (step === 1 && form.getFieldValue('password') === form.getFieldValue('password1') && policyPassed) {
       form.validateFields(['password'], {force: true});
       form.validateFields(['password1'], {force: true});
+      var newPassword = this.encryptPwd(form.getFieldValue('password'));
       $.post(`${server}/oauth/password/reset_password`,{
         token: token,
-        password: form.getFieldValue('password'),
-        password1: form.getFieldValue('password1'),
+        password: newPassword
       } ,(results) => {
         if (results && results.success === true) {
           this.setState({
@@ -166,9 +166,56 @@ class App extends window.React.Component {
       const { email } = this.state;
       // const encodePasswd = this.encode(password);
       // $.post(`${server}/oauth/login?username=${currentUsername}&password=${encodePasswd}`)
-      window.location.href = `/oauth/login?username=${email}`;
+      window.location.href = `${loginPage}?username=${email}`;
     }
 
+  }
+  encryptPwd = (password) => {
+    var publickey = $('#templateData').data('publickey');
+    /* 有公钥 使用 rsa 加密, 否则使用 md5 加密 */
+    if (publickey) {
+      // 初始化加密器
+      var encrypt = new JSEncrypt(); // 设置公钥
+
+      encrypt.setPublicKey(publickey); // 加密
+
+      return encrypt.encrypt(password);
+    } else {
+      return this.encryptMd5(password);
+    }
+  }
+  encryptMd5 = (password) => {
+    var output = "";
+    var chr1,
+        chr2,
+        chr3 = "";
+    var enc1,
+        enc2,
+        enc3,
+        enc4 = "";
+    var i = 0;
+
+    do {
+      chr1 = password.charCodeAt(i++);
+      chr2 = password.charCodeAt(i++);
+      chr3 = password.charCodeAt(i++);
+      enc1 = chr1 >> 2;
+      enc2 = (chr1 & 3) << 4 | chr2 >> 4;
+      enc3 = (chr2 & 15) << 2 | chr3 >> 6;
+      enc4 = chr3 & 63;
+
+      if (isNaN(chr2)) {
+        enc3 = enc4 = 64;
+      } else if (isNaN(chr3)) {
+        enc4 = 64;
+      }
+
+      output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2) + keyStr.charAt(enc3) + keyStr.charAt(enc4);
+      chr1 = chr2 = chr3 = "";
+      enc1 = enc2 = enc3 = enc4 = "";
+    } while (i < password.length);
+
+    return output;
   }
 
   encode = (password) => {
@@ -297,7 +344,7 @@ class App extends window.React.Component {
           <div className="congratulation">链接已失效
           </div>
           <div className="change-password-success">该链接已失效，请重新获取。</div>
-          <Button type="primary" funcType="raised" className="btn" href="/oauth/login"  loading={this.state.loading}
+          <Button type="primary" funcType="raised" className="btn" href="${loginPage}"  loading={this.state.loading}
                   style={{width: '120px',float: 'right',paddingTop: '4px', marginTop: '80px'}}><span>我知道了</span></Button>
         </div>
     )
