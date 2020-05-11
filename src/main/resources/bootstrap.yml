@@ -38,6 +38,7 @@ eureka:
     # 服务的一些元数据信息
     metadata-map:
       VERSION: 1.3.0.RELEASE
+      CONTEXT: /oauth
   client:
     serviceUrl:
       # 注册中心地址
