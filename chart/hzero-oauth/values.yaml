@@ -86,8 +86,6 @@ env:
     HZERO_OAUTH_LOGOUT_CLEAR_TOKEN: true
     # 启用二级域名单点登录
     HZERO_OAUTH_SSO_ENABLED: true
-    # 数据库所有者模式，例如 SqlServer 下的 dbo/guest
-    HZERO_DB_OWNER:
     # Eureka 注册中心地址
     EUREKA_DEFAULT_ZONE: http://dev.hzero.org:8000/eureka/
     # 服务以IP地址注册
