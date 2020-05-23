@@ -140,9 +140,7 @@ public class OauthC7NController {
     }
 
     private void setModelSysSetting(Model model) {
-        // TODO 数据迁移后替换
-//        SysSettingVO sysSettingVO = systemSettingService.getSetting();
-        SysSettingVO sysSettingVO = new SysSettingVO();
+        SysSettingVO sysSettingVO = systemSettingService.getSetting();
         sysSettingVO.setSystemName("Choerodon");
         sysSettingVO.setRegisterEnabled(true);
         sysSettingVO.setSystemLogo("");
