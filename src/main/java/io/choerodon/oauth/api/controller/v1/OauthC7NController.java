@@ -140,15 +140,7 @@ public class OauthC7NController {
     }
 
     private void setModelSysSetting(Model model) {
-        // TODO 数据迁移后替换
-//        SysSettingVO sysSettingVO = systemSettingService.getSetting();
-        SysSettingVO sysSettingVO = new SysSettingVO();
-        sysSettingVO.setSystemName("Choerodon");
-        sysSettingVO.setRegisterEnabled(true);
-        sysSettingVO.setSystemLogo("");
-        sysSettingVO.setSystemTitle("Choerodon | 多云应用技术集成平台");
-        sysSettingVO.setFavicon("");
-        sysSettingVO.setRegisterUrl("http://choerodon.staging.saas.hand-china.com/#/base/register-organization");
+        SysSettingVO sysSettingVO = systemSettingService.getSetting();
         if (sysSettingVO == null) {
             sysSettingVO = new SysSettingVO();
         }
