@@ -168,7 +168,8 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
         // 消息参数 消息模板中${projectName}
         Map<String,String> argsMap=new HashMap<>();
-        argsMap.put("userName", passwordForgetDTO.getUser().getLoginName());
+        String username = passwordForgetDTO.getUser().getLdap() ? passwordForgetDTO.getUser().getLoginName() : passwordForgetDTO.getUser().getEmail();
+        argsMap.put("userName",  username);
         argsMap.put("redirectUrl",redirectUrl);
         messageSender.setArgs(argsMap);
 
@@ -186,7 +187,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
         // 发送消息
         try {
-           messageClient.async().sendMessage(messageSender);
+           messageClient.sendMessage(messageSender);
             return passwordForgetDTO;
         } catch (CommonException e) {
             passwordForgetDTO.setSuccess(false);
@@ -250,7 +251,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     private void sendSiteMsg(User user) {
         MessageSender messageSender=new MessageSender();
         // 消息code
-        messageSender.setMessageCode(FORGET);
+        messageSender.setMessageCode(MODIFY);
         // 默认为0L,都填0L,可不填写
         messageSender.setTenantId(0L);
 
@@ -273,7 +274,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
         // 发送消息
         try {
-            messageClient.async().sendMessage(messageSender);
+            messageClient.sendMessage(messageSender);
         } catch (CommonException e) {
             LOGGER.warn("The site msg send error. {} {}", e.getCode(), e);
         }
