@@ -3,6 +3,8 @@ package io.choerodon.oauth.api.controller.v1;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
+import org.hzero.oauth.infra.encrypt.EncryptClient;
+import org.hzero.oauth.security.util.LoginUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,8 @@ public class PasswordC7NController {
     private MessageSource messageSource;
     @Autowired
     private SystemSettingService systemSettingService;
+    @Autowired
+    private EncryptClient encryptClient;
 
     /**
      * 进入找回密码页面
@@ -46,18 +50,10 @@ public class PasswordC7NController {
     public String find(HttpServletRequest request, Model model) {
         request.getSession().removeAttribute("userId");
         request.getSession().removeAttribute("userName");
-       // todo 数据迁移后恢复
-//        SysSettingVO sysSettingVO = systemSettingService.getSetting();
-//        if (sysSettingVO == null) {
-//            sysSettingVO = new SysSettingVO();
-//        }
-        SysSettingVO sysSettingVO = new SysSettingVO();
-        sysSettingVO.setSystemName("Choerodon");
-        sysSettingVO.setRegisterEnabled(true);
-        sysSettingVO.setSystemLogo("");
-        sysSettingVO.setSystemTitle("Choerodon | 多云应用技术集成平台");
-        sysSettingVO.setFavicon("");
-        sysSettingVO.setRegisterUrl("http://choerodon.staging.saas.hand-china.com/#/base/register-organization");
+        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+        if (sysSettingVO == null) {
+            sysSettingVO = new SysSettingVO();
+        }
         model.addAttribute("systemName", sysSettingVO.getSystemName());
         if (!StringUtils.isEmpty(sysSettingVO.getSystemLogo())) {
             model.addAttribute("systemLogo", sysSettingVO.getSystemLogo());
@@ -66,6 +62,7 @@ public class PasswordC7NController {
         if (!StringUtils.isEmpty(sysSettingVO.getFavicon())) {
             model.addAttribute("favicon", sysSettingVO.getFavicon());
         }
+
         model.addAttribute("loginPage", loginPage);
         return DEFAULT_PAGE;
     }
@@ -89,18 +86,10 @@ public class PasswordC7NController {
     @GetMapping(value = "/reset_page/{token}")
     public String getResetPasswordPage(HttpServletRequest request, Model model,
                                        @PathVariable("token") String token) {
-        // todo 数据迁移后恢复
-//        SysSettingVO sysSettingVO = systemSettingService.getSetting();
-//        if (sysSettingVO == null) {
-//            sysSettingVO = new SysSettingVO();
-//        }
-        SysSettingVO sysSettingVO = new SysSettingVO();
-        sysSettingVO.setSystemName("Choerodon");
-        sysSettingVO.setRegisterEnabled(true);
-        sysSettingVO.setSystemLogo("");
-        sysSettingVO.setSystemTitle("Choerodon | 多云应用技术集成平台");
-        sysSettingVO.setFavicon("");
-        sysSettingVO.setRegisterUrl("http://choerodon.staging.saas.hand-china.com/#/base/register-organization");
+        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+        if (sysSettingVO == null) {
+            sysSettingVO = new SysSettingVO();
+        }
         model.addAttribute("systemName", sysSettingVO.getSystemName());
         if (!StringUtils.isEmpty(sysSettingVO.getSystemLogo())) {
             model.addAttribute("systemLogo", sysSettingVO.getSystemLogo());
@@ -114,6 +103,8 @@ public class PasswordC7NController {
         } else {
             model.addAttribute("success", "true");
         }
+        String publicKey = encryptClient.getPublicKey();
+        model.addAttribute(LoginUtil.FIELD_PUBLIC_KEY, publicKey);
         model.addAttribute("loginPage", loginPage);
         return PageUrlEnum.RESET_URL.value();
     }

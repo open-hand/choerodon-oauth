@@ -127,10 +127,9 @@ class App extends window.React.Component {
     if (step === 1 && form.getFieldValue('password') === form.getFieldValue('password1') && policyPassed) {
       form.validateFields(['password'], {force: true});
       form.validateFields(['password1'], {force: true});
-      var newPassword = this.encryptPwd(form.getFieldValue('password'));
-      $.post(`${server}/oauth/password/reset_password`,{
+      $.post(`${server}/oauth/choerodon/password/reset_password`,{
         token: token,
-        password: newPassword
+        password: this.encryptPwd(form.getFieldValue('password'))
       } ,(results) => {
         if (results && results.success === true) {
           this.setState({
@@ -166,7 +165,7 @@ class App extends window.React.Component {
       const { email } = this.state;
       // const encodePasswd = this.encode(password);
       // $.post(`${server}/oauth/login?username=${currentUsername}&password=${encodePasswd}`)
-      window.location.href = `${loginPage}?username=${email}`;
+      window.location.href = `/oauth/choerodon/login?username=${email}`;
     }
 
   }
@@ -344,7 +343,7 @@ class App extends window.React.Component {
           <div className="congratulation">链接已失效
           </div>
           <div className="change-password-success">该链接已失效，请重新获取。</div>
-          <Button type="primary" funcType="raised" className="btn" href="${loginPage}"  loading={this.state.loading}
+          <Button type="primary" funcType="raised" className="btn" href="/oauth/choerodon/login"  loading={this.state.loading}
                   style={{width: '120px',float: 'right',paddingTop: '4px', marginTop: '80px'}}><span>我知道了</span></Button>
         </div>
     )

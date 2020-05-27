@@ -86,6 +86,9 @@ env:
     HZERO_OAUTH_LOGOUT_CLEAR_TOKEN: true
     # 启用二级域名单点登录
     HZERO_OAUTH_SSO_ENABLED: true
+    # 网关地址
+    HZERO_GATEWAY_URL: http://localhost:8020/
+    HZERO_RESET_PASSWORD_RESETURLEXPIREMINUTES: 10
     # Eureka 注册中心地址
     EUREKA_DEFAULT_ZONE: http://dev.hzero.org:8000/eureka/
     # 服务以IP地址注册

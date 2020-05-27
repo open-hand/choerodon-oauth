@@ -65,7 +65,7 @@ class App extends window.React.Component {
     if (step === 1) {
       this.setState({ loading: true });
       form.validateFields(['username'], {force: true});
-      $.post(`${server}/oauth/password/send_reset_email`, {
+      $.post(`${server}/oauth/choerodon/password/send_reset_email`, {
         emailAddress: currentUsername,
       }, (results) => {
         if (results && results.success === true) {
@@ -140,7 +140,7 @@ class App extends window.React.Component {
             <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={loading}
                     style={{width: '120px',float: 'right', paddingTop: '4px'} } htmlType="submit"
                     disabled={account.validateStatus === 'error' || !currentUsername}><span>下一步</span></Button>
-            <a className="back-to-login" href="${loginPage}" style={{float: 'left'}}>返回登录</a>
+            <a className="back-to-login" href="/oauth/choerodon/login" style={{float: 'left'}}>返回登录</a>
           </FormItem>
         </Form>
       </div>
@@ -154,7 +154,7 @@ class App extends window.React.Component {
                                               style={{fontSize: 30, color: '#3F51B5', marginRight: '23.8px'}}/>发送成功
         </div>
         <div className="change-password-success">重置密码的链接已发送至您的邮箱，请尽快前往查收。该链接30分钟内有效。</div>
-        <Button type="primary" funcType="raised" className="btn" href="${loginPage}"  loading={this.state.loading}
+        <Button type="primary" funcType="raised" className="btn" href="/oauth/choerodon/login"  loading={this.state.loading}
                 style={{width: '120px',float: 'right',paddingTop: '4px', marginTop: '80px'}}><span>我知道了</span></Button>
       </div>
     )
