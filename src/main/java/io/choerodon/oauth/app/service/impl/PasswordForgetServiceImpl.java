@@ -257,7 +257,9 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
         // 消息参数 消息模板中${projectName}
         Map<String,String> argsMap=new HashMap<>();
-        argsMap.put("userName", user.getLoginName());
+        String username = user.getLdap() ? user.getLoginName() : user.getEmail();
+
+        argsMap.put("userName", username);
         messageSender.setArgs(argsMap);
 
 
@@ -280,6 +282,8 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         }
     }
 
+
+    // todo delete???
     private void sendSiteMsg(Long userId, String userName) {
 
         Map<String, Object> paramsMap = new HashMap<>();
