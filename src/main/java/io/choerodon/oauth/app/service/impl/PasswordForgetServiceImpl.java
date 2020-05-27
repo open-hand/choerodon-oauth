@@ -3,16 +3,6 @@ package io.choerodon.oauth.app.service.impl;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import io.choerodon.core.exception.CommonException;
-import io.choerodon.oauth.api.validator.UserValidator;
-import io.choerodon.oauth.api.vo.PasswordForgetDTO;
-import io.choerodon.oauth.api.vo.UserDTO;
-import io.choerodon.oauth.app.service.PasswordForgetService;
-import io.choerodon.oauth.app.service.UserService;
-import io.choerodon.oauth.infra.dto.UserE;
-import io.choerodon.oauth.infra.enums.PasswordFindException;
-import io.choerodon.oauth.infra.util.RedisTokenUtil;
-
 import org.hzero.boot.message.MessageClient;
 import org.hzero.boot.message.entity.MessageSender;
 import org.hzero.boot.message.entity.Receiver;
@@ -22,7 +12,7 @@ import org.hzero.boot.oauth.policy.PasswordPolicyManager;
 import org.hzero.core.user.UserType;
 import org.hzero.oauth.domain.entity.User;
 import org.hzero.oauth.domain.repository.UserRepository;
-import org.hzero.oauth.security.service.UserAccountService;
+import org.hzero.oauth.infra.encrypt.EncryptClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,6 +24,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import io.choerodon.core.exception.CommonException;
+import io.choerodon.oauth.api.validator.UserValidator;
+import io.choerodon.oauth.api.vo.PasswordForgetDTO;
+import io.choerodon.oauth.app.service.PasswordForgetService;
+import io.choerodon.oauth.app.service.UserService;
+import io.choerodon.oauth.infra.enums.PasswordFindException;
+import io.choerodon.oauth.infra.util.RedisTokenUtil;
 
 /**
  * @author wuguokai
@@ -66,6 +64,8 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     private MessageSource messageSource;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private EncryptClient encryptClient;
 
     public PasswordForgetServiceImpl(
             UserService userService,
@@ -209,11 +209,12 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         String email = getEmailByToken(token);
         User user = userRepository.selectLoginUserByEmail(email, UserType.ofDefault());
         PasswordForgetDTO passwordForgetDTO = new PasswordForgetDTO();
+        String decryptPassword = encryptClient.decrypt(password);
         try {
             BaseUser baseUser = new BaseUser();
             BeanUtils.copyProperties(user, baseUser);
-            baseUser.setPassword(password);
-            passwordPolicyManager.passwordValidate(password, user.getOrganizationId(), baseUser);
+            baseUser.setPassword(decryptPassword);
+            passwordPolicyManager.passwordValidate(decryptPassword, user.getOrganizationId(), baseUser);
         } catch (CommonException e) {
             LOGGER.error(e.getMessage());
             passwordForgetDTO.setSuccess(false);
@@ -221,10 +222,9 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return passwordForgetDTO;
         }
-//        user.setPassword(ENCODER.encode(password));
 
         if (user != null) {
-            userPasswordService.updateUserPassword(user.getId(), password);
+            userPasswordService.updateUserPassword(user.getId(), decryptPassword);
             passwordForgetDTO.setSuccess(true);
             redisTokenUtil.expireByKey(token);
             passwordForgetDTO.setUser(user);

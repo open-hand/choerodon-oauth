@@ -3,6 +3,8 @@ package io.choerodon.oauth.api.controller.v1;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
+import org.hzero.oauth.infra.encrypt.EncryptClient;
+import org.hzero.oauth.security.util.LoginUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,8 @@ public class PasswordC7NController {
     private MessageSource messageSource;
     @Autowired
     private SystemSettingService systemSettingService;
+    @Autowired
+    private EncryptClient encryptClient;
 
     /**
      * 进入找回密码页面
@@ -58,6 +62,7 @@ public class PasswordC7NController {
         if (!StringUtils.isEmpty(sysSettingVO.getFavicon())) {
             model.addAttribute("favicon", sysSettingVO.getFavicon());
         }
+
         model.addAttribute("loginPage", loginPage);
         return DEFAULT_PAGE;
     }
@@ -98,6 +103,8 @@ public class PasswordC7NController {
         } else {
             model.addAttribute("success", "true");
         }
+        String publicKey = encryptClient.getPublicKey();
+        model.addAttribute(LoginUtil.FIELD_PUBLIC_KEY, publicKey);
         model.addAttribute("loginPage", loginPage);
         return PageUrlEnum.RESET_URL.value();
     }
