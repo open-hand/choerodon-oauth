@@ -190,6 +190,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             return passwordForgetDTO;
         } catch (CommonException e) {
             passwordForgetDTO.setSuccess(false);
+            passwordForgetDTO.setMsg("发送失败，请重试");
             LOGGER.warn("The mail send error. {} {}", e.getCode(), e);
             return passwordForgetDTO;
         }

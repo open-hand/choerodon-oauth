@@ -65,7 +65,7 @@ class App extends window.React.Component {
     if (step === 1) {
       this.setState({ loading: true });
       form.validateFields(['username'], {force: true});
-      $.post(`${server}/oauth/password/send_reset_email`, {
+      $.post(`${server}/oauth/choerodon/password/send_reset_email`, {
         emailAddress: currentUsername,
       }, (results) => {
         if (results && results.success === true) {
