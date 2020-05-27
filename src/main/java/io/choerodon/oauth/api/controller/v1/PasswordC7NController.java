@@ -46,18 +46,10 @@ public class PasswordC7NController {
     public String find(HttpServletRequest request, Model model) {
         request.getSession().removeAttribute("userId");
         request.getSession().removeAttribute("userName");
-       // todo 数据迁移后恢复
-//        SysSettingVO sysSettingVO = systemSettingService.getSetting();
-//        if (sysSettingVO == null) {
-//            sysSettingVO = new SysSettingVO();
-//        }
-        SysSettingVO sysSettingVO = new SysSettingVO();
-        sysSettingVO.setSystemName("Choerodon");
-        sysSettingVO.setRegisterEnabled(true);
-        sysSettingVO.setSystemLogo("");
-        sysSettingVO.setSystemTitle("Choerodon | 多云应用技术集成平台");
-        sysSettingVO.setFavicon("");
-        sysSettingVO.setRegisterUrl("http://choerodon.staging.saas.hand-china.com/#/base/register-organization");
+        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+        if (sysSettingVO == null) {
+            sysSettingVO = new SysSettingVO();
+        }
         model.addAttribute("systemName", sysSettingVO.getSystemName());
         if (!StringUtils.isEmpty(sysSettingVO.getSystemLogo())) {
             model.addAttribute("systemLogo", sysSettingVO.getSystemLogo());
@@ -89,18 +81,10 @@ public class PasswordC7NController {
     @GetMapping(value = "/reset_page/{token}")
     public String getResetPasswordPage(HttpServletRequest request, Model model,
                                        @PathVariable("token") String token) {
-        // todo 数据迁移后恢复
-//        SysSettingVO sysSettingVO = systemSettingService.getSetting();
-//        if (sysSettingVO == null) {
-//            sysSettingVO = new SysSettingVO();
-//        }
-        SysSettingVO sysSettingVO = new SysSettingVO();
-        sysSettingVO.setSystemName("Choerodon");
-        sysSettingVO.setRegisterEnabled(true);
-        sysSettingVO.setSystemLogo("");
-        sysSettingVO.setSystemTitle("Choerodon | 多云应用技术集成平台");
-        sysSettingVO.setFavicon("");
-        sysSettingVO.setRegisterUrl("http://choerodon.staging.saas.hand-china.com/#/base/register-organization");
+        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+        if (sysSettingVO == null) {
+            sysSettingVO = new SysSettingVO();
+        }
         model.addAttribute("systemName", sysSettingVO.getSystemName());
         if (!StringUtils.isEmpty(sysSettingVO.getSystemLogo())) {
             model.addAttribute("systemLogo", sysSettingVO.getSystemLogo());

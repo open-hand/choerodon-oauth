@@ -1,5 +1,7 @@
 package io.choerodon.oauth.api.vo;
 
+import org.hzero.oauth.domain.entity.User;
+
 /**
  * @author dongfan117@gmail.com
  */
@@ -7,7 +9,7 @@ public class PasswordForgetDTO {
     private Boolean success;
     private String msg;
     private String code;
-    private UserDTO user;
+    private User user;
     private Long disableTime;
 
     public PasswordForgetDTO() {
@@ -43,11 +45,11 @@ public class PasswordForgetDTO {
         this.code = code;
     }
 
-    public UserDTO getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserDTO user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

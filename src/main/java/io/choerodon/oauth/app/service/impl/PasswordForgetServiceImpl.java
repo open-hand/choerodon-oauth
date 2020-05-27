@@ -13,9 +13,16 @@ import io.choerodon.oauth.infra.dto.UserE;
 import io.choerodon.oauth.infra.enums.PasswordFindException;
 import io.choerodon.oauth.infra.util.RedisTokenUtil;
 
+import org.hzero.boot.message.MessageClient;
+import org.hzero.boot.message.entity.MessageSender;
+import org.hzero.boot.message.entity.Receiver;
 import org.hzero.boot.oauth.domain.entity.BaseUser;
 import org.hzero.boot.oauth.domain.service.UserPasswordService;
 import org.hzero.boot.oauth.policy.PasswordPolicyManager;
+import org.hzero.core.user.UserType;
+import org.hzero.oauth.domain.entity.User;
+import org.hzero.oauth.domain.repository.UserRepository;
+import org.hzero.oauth.security.service.UserAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -43,20 +50,22 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
     @Autowired
     private UserPasswordService userPasswordService;
-    @Value("${choerodon.gateway.url: http://localhost:8020/}")
+    @Value("${hzero.gateway.url: http://localhost:8020/}")
     private String gatewayUrl;
-    @Value("${choerodon.reset-password.resetUrlExpireMinutes: 10}")
+    @Value("${hzero.reset-password.resetUrlExpireMinutes: 10}")
     private Long resetUrlExpireMinutes;
     @Autowired
     private PasswordEncoder passwordEncoder;
-//    @Autowired
-//    private NotifyFeignClient notifyFeignClient;
+    @Autowired
+    protected MessageClient messageClient;
     @Autowired
     private RedisTokenUtil redisTokenUtil;
     @Autowired
     private UserValidator userValidator;
     @Autowired
     private MessageSource messageSource;
+    @Autowired
+    private UserRepository userRepository;
 
     public PasswordForgetServiceImpl(
             UserService userService,
@@ -73,8 +82,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             passwordForgetDTO.setCode(PasswordFindException.EMAIL_FORMAT_ILLEGAL.value());
             return passwordForgetDTO;
         }
-
-        UserE user = userService.queryByEmail(email);
+        User user = userRepository.selectLoginUserByEmail(email, UserType.ofDefault());
         if (null == user) {
             passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.ACCOUNT_NOT_EXIST.value(), null, Locale.ROOT));
             passwordForgetDTO.setCode(PasswordFindException.ACCOUNT_NOT_EXIST.value());
@@ -88,7 +96,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         }
 
         passwordForgetDTO.setSuccess(true);
-        passwordForgetDTO.setUser(new UserDTO(user.getId(), user.getLoginName(), user.getEmail()));
+        passwordForgetDTO.setUser(user);
         return passwordForgetDTO;
     }
 
@@ -139,9 +147,9 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         redisTokenUtil.storeByKey(emailKey, tokenKey, resetUrlExpireMinutes, TimeUnit.MINUTES);
         redisTokenUtil.storeByKey(tokenKey, email, resetUrlExpireMinutes, TimeUnit.MINUTES);
 
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("userName", passwordForgetDTO.getUser().getLoginName());
-        variables.put("redirectUrl", redirectUrl);
+//        Map<String, Object> variables = new HashMap<>();
+//        variables.put("userName", passwordForgetDTO.getUser().getLoginName());
+//        variables.put("redirectUrl", redirectUrl);
 
 
 //        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
@@ -152,8 +160,33 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 //        noticeSendDTO.setCode(FORGET);
 //        noticeSendDTO.setTargetUsers(users);
 //        noticeSendDTO.setParams(variables);
+        MessageSender messageSender=new MessageSender();
+        // 消息code
+        messageSender.setMessageCode(FORGET);
+        // 默认为0L,都填0L,可不填写
+        messageSender.setTenantId(0L);
+
+        // 消息参数 消息模板中${projectName}
+        Map<String,String> argsMap=new HashMap<>();
+        argsMap.put("userName", passwordForgetDTO.getUser().getLoginName());
+        argsMap.put("redirectUrl",redirectUrl);
+        messageSender.setArgs(argsMap);
+
+
+        // 接收者
+        List<Receiver> receiverList=new ArrayList<>();
+        Receiver receiver=new Receiver();
+        receiver.setUserId(passwordForgetDTO.getUser().getId());
+        // 发送邮件消息时 必填
+        receiver.setEmail(passwordForgetDTO.getUser().getEmail());
+        // 必填
+        receiver.setTargetUserTenantId(passwordForgetDTO.getUser().getTenantId());
+        receiverList.add(receiver);
+        messageSender.setReceiverAddressList(receiverList);
+
+        // 发送消息
         try {
-//            notifyFeignClient.postNotice(noticeSendDTO);
+           messageClient.async().sendMessage(messageSender);
             return passwordForgetDTO;
         } catch (CommonException e) {
             passwordForgetDTO.setSuccess(false);
@@ -173,7 +206,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     public PasswordForgetDTO resetPassword(String token, String password) {
         // 使用token，查出存在redis里的email,然后再根据email查出用户信息
         String email = getEmailByToken(token);
-        UserE user = userService.queryByEmail(email);
+        User user = userRepository.selectLoginUserByEmail(email, UserType.ofDefault());
         PasswordForgetDTO passwordForgetDTO = new PasswordForgetDTO();
         try {
             BaseUser baseUser = new BaseUser();
@@ -187,15 +220,15 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return passwordForgetDTO;
         }
-        user.setPassword(ENCODER.encode(password));
-        UserE userE = userService.updateSelective(user);
-        if (userE != null) {
+//        user.setPassword(ENCODER.encode(password));
+
+        if (user != null) {
             userPasswordService.updateUserPassword(user.getId(), password);
             passwordForgetDTO.setSuccess(true);
             redisTokenUtil.expireByKey(token);
-            passwordForgetDTO.setUser(new UserDTO(userE.getId(), userE.getLoginName(), user.getEmail()));
+            passwordForgetDTO.setUser(user);
 
-            this.sendSiteMsg(user.getId(), user.getRealName());
+            this.sendSiteMsg(user);
             return passwordForgetDTO;
         }
 
@@ -213,7 +246,40 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         return token;
     }
 
+    private void sendSiteMsg(User user) {
+        MessageSender messageSender=new MessageSender();
+        // 消息code
+        messageSender.setMessageCode(FORGET);
+        // 默认为0L,都填0L,可不填写
+        messageSender.setTenantId(0L);
+
+        // 消息参数 消息模板中${projectName}
+        Map<String,String> argsMap=new HashMap<>();
+        argsMap.put("userName", user.getLoginName());
+        messageSender.setArgs(argsMap);
+
+
+        // 接收者
+        List<Receiver> receiverList=new ArrayList<>();
+        Receiver receiver=new Receiver();
+        receiver.setUserId(user.getId());
+        // 发送邮件消息时 必填
+        receiver.setEmail(user.getEmail());
+        // 必填
+        receiver.setTargetUserTenantId(user.getTenantId());
+        receiverList.add(receiver);
+        messageSender.setReceiverAddressList(receiverList);
+
+        // 发送消息
+        try {
+            messageClient.async().sendMessage(messageSender);
+        } catch (CommonException e) {
+            LOGGER.warn("The site msg send error. {} {}", e.getCode(), e);
+        }
+    }
+
     private void sendSiteMsg(Long userId, String userName) {
+
         Map<String, Object> paramsMap = new HashMap<>();
         paramsMap.put("userName", userName);
 //        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
