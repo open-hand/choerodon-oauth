@@ -43,15 +43,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/choerodon")
 public class OauthC7NController {
     private static final String LOGIN_FILED = "username";
-    private static final String SPRING_SECURITY_LAST_EXCEPTION = "SPRING_SECURITY_LAST_EXCEPTION";
-    private static final String SPRING_SECURITY_LAST_EXCEPTION_PARAMS = "SPRING_SECURITY_LAST_EXCEPTION_PARAMS";
+    private static final String USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG = "usernameNotFoundOrPasswordIsWrong";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OauthC7NController.class);
 
     @Value("${choerodon.oauth.loginPage.profile:default}")
     private String loginProfile;
-    @Value("${choerodon.oauth.loginPage.title:Choerodon}")
-    private String loginTitle;
     private Locale currentLocale = Locale.ROOT;
 
     private MessageSource messageSource;
@@ -107,11 +104,12 @@ public class OauthC7NController {
 
         User user = userLoginService.queryRequestUser(request);
 
-        String errorCode = (String) session.getAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION);
-        Object[] params = (Object[]) session.getAttribute(SPRING_SECURITY_LAST_EXCEPTION_PARAMS);
-        session.removeAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION);
-        session.removeAttribute(SecurityAttributes.SECURITY_LOGIN_USERNAME);
-        session.removeAttribute(SPRING_SECURITY_LAST_EXCEPTION_PARAMS);
+        // 错误消息
+        String exceptionMessage = (String) session.getAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION);
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage)) {
+            model.addAttribute(USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG, exceptionMessage);
+        }
+
         if (icp != null && !icp.equals("")) {
             model.addAttribute("icp", icp);
         }
@@ -120,22 +118,7 @@ public class OauthC7NController {
             return returnPage.fileName();
         }
 
-        Map<String, String> error = new HashMap<>(10);
-        //数据库中无该用户
-        if (user == null) {
-            error.put(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
-                    messageSource.getMessage(LoginException.USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG.value(),
-                            null, currentLocale));
-            model.addAllAttributes(error);
-            return returnPage.fileName();
-        }
         model.addAttribute("isNeedCaptcha",  userLoginService.isNeedCaptcha(user));
-
-
-        if (errorCode != null) {
-            error.put(errorCode, messageSource.getMessage(errorCode, params, "登录失败", currentLocale));
-        }
-        model.addAllAttributes(error);
         return returnPage.fileName();
     }
 
