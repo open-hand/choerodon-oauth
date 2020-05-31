@@ -81,10 +81,6 @@ env:
     EUREKA_DEFAULT_ZONE: http://dev.hzero.org:8000/eureka/
     # 服务以IP地址注册
     EUREKA_INSTANCE_PREFER_IP_ADDRESS: true
-    # 是否启用配置中心
-    SPRING_CLOUD_CONFIG_ENABLED: false
-    # 配置中心地址
-    SPRING_CLOUD_CONFIG_URI: http://dev.hzero.org:8010/
     # 数据库地址
     SPRING_DATASOURCE_URL: jdbc:mysql://db.hzero.org:3306/hzero_platform?useUnicode=true&characterEncoding=utf-8&useSSL=false
     # 数据库用户名
