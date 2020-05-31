@@ -8,18 +8,6 @@ image:
   repository: registry.choerodon.com.cn/hzero-hzero/hzero-oauth
   pullPolicy: Always
 
-preJob:
-  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.2
-  timeout: 120
-  preInitDB:
-    # 是否初始化groovy脚本或excel数据
-    enable: false
-    # 初始化数据库配置
-    datasource:
-      url: jdbc:mysql://db.hzero.org:3306/hzero_platform?useUnicode=true&characterEncoding=utf-8&useSSL=false
-      username: hzero
-      password: hzero
-
 ## Deployment 更新策略
 deploymentUpdate:
   type: RollingUpdate
@@ -163,7 +151,7 @@ resources:
 ## 插件相关配置
 plugins:
   # skywalking agent 镜像地址
-  skywalkingAgentImage: registry.cn-shanghai.aliyuncs.com/c7n/skywalking-agent:6.5.0
+  skywalkingAgentImage: registry.cn-shanghai.aliyuncs.com/c7n/skywalking-agent:6.6.0
 
 ## service 相关设置
 ## ref: http://kubernetes.io/docs/user-guide/services/
