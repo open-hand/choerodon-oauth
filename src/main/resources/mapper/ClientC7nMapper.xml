@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.oauth.infra.mapper.ClientC7nMapper">
+    <select id="getClientByName" resultType="io.choerodon.oauth.infra.dto.ClientE">
+        SELECT oc.*, ocr.source_id, ocr.source_type
+        FROM oauth_client oc
+        INNER JOIN oauth_client_resource ocr ON ocr.client_id = oc.id
+    </select>
+</mapper>
