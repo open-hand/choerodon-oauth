@@ -3,6 +3,7 @@ package io.choerodon.oauth.infra.common.util;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
@@ -50,6 +51,11 @@ public class CustomClientInterceptor implements HandlerInterceptor {
         LOGGER.info("start to handle client:, clientId:{}", clientId);
         if (client == null) {
             throw new NoSuchClientException("No client found : " + clientId);
+        }
+
+        // 没有资源类型的跳过校验
+        if (client.getSourceId() == null || StringUtils.isEmpty(client.getSourceType())) {
+            return true;
         }
         // 不需要做普罗米修斯的客户端权限校验
         if (!ClientTypeEnum.CLUSTER.value().equals(client.getSourceType())) {
