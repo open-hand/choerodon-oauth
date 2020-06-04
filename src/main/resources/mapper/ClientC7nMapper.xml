@@ -4,7 +4,7 @@
     <select id="getClientByName" resultType="io.choerodon.oauth.infra.dto.ClientE">
         SELECT oc.*, ocr.source_id, ocr.source_type
         FROM oauth_client oc
-        INNER JOIN oauth_client_resource ocr ON ocr.client_id = oc.id
+        LEFT JOIN oauth_client_resource ocr ON ocr.client_id = oc.id
         WHERE oc.`name` = #{clientId}
     </select>
 </mapper>
