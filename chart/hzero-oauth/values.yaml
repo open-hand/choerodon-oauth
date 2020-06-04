@@ -113,7 +113,7 @@ env:
     SERVER_UNDERTOW_BUFFER_SIZE: 1024
     # 日志级别
     LOG_LEVEL: info
-    JAVA_OPTS: >
+    JAVA_OPTS: >-
       -Xms1024m
       -Xmx1536m
 
