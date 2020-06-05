@@ -78,7 +78,7 @@ env:
     HZERO_GATEWAY_URL: http://localhost:8020/
     HZERO_RESET_PASSWORD_RESETURLEXPIREMINUTES: 10
     # Eureka 注册中心地址
-    EUREKA_DEFAULT_ZONE: http://dev.hzero.org:8000/eureka/
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://dev.hzero.org:8000/eureka/
     # 服务以IP地址注册
     EUREKA_INSTANCE_PREFER_IP_ADDRESS: true
     # 数据库地址
@@ -113,9 +113,19 @@ env:
     SERVER_UNDERTOW_BUFFER_SIZE: 1024
     # 日志级别
     LOG_LEVEL: info
-    JAVA_OPTS: >-
-      -Xms1024m
-      -Xmx1536m
+
+    # 备案号
+    CHOERODON_DEFAULT_ICP:
+#    JAVA_OPTS: >-
+#      -Xms1024m
+#      -Xmx1536m
+    ## Skywalking 配置参数
+    # SKYWALKING_OPTS: >-
+    #   -javaagent:/agent/skywalking-agent.jar
+    #   -Dskywalking.agent.application_code=asgard-service
+    #   -Dskywalking.agent.sample_n_per_3_secs=-1
+    #   -Dskywalking.collector.backend_service=oap.skywalking:11800
+
 
 
 ## Liveness 和 Readiness 探针相关配置

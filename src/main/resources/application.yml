@@ -161,6 +161,10 @@ hzero:
   reset-password:
     check: true
     resetUrlExpireMinutes: 10
+
+choerodon:
+  default:
+     icp: ""
 logging:
   level: 
     org.hzero: ${LOG_LEVEL:info}
