@@ -70,12 +70,12 @@ env:
     HZERO_OAUTH_LOGIN_DEFAULT_TEMPLATE: slide
     # 默认登录成功跳转地址
     HZERO_OAUTH_LOGIN_SUCCESS_URL: http://dev.hzero.org/workplace
+    # 默认客户端
+    HZERO_OAUTH_LOGIN_DEFAULT_CLIENT_ID: hzero-front-dev
     # 退出时是否清理token
     HZERO_OAUTH_LOGOUT_CLEAR_TOKEN: true
     # 启用二级域名单点登录
     HZERO_OAUTH_SSO_ENABLED: true
-    # 网关地址
-    HZERO_GATEWAY_URL: http://localhost:8020/
     HZERO_RESET_PASSWORD_RESETURLEXPIREMINUTES: 10
     # Eureka 注册中心地址
     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://dev.hzero.org:8000/eureka/
