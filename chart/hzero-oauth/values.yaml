@@ -176,11 +176,11 @@ service:
     # 服务端口
     http:
       port: 8020
-      nodePort: 30102
+      nodePort: 30098
     # 管理端口
     actuator:
       port: 8021
-      nodePort: 30103
+      nodePort: 30099
   ## externalIPs 设置
   # externalIPs:
   #   - externalIp1
