@@ -16,7 +16,7 @@ spring:
     host: ${SPRING_REDIS_HOST:redis.hzero.org}
     port: ${SPRING_REDIS_PORT:6379}
     database: ${SPRING_REDIS_DATABASE:3}
-    jedis:
+    lettuce:
       pool:
         # 资源池中最大连接数
         # 默认8，-1表示无限制；可根据服务并发redis情况及服务端的支持上限调整
@@ -129,8 +129,8 @@ hzero:
       page: ${HZERO_OAUTH_LOGIN_PAGE:/choerodon/login}
       #网关是否启用https
       enable-https: ${HZERO_OAUTH_LOGIN_ENABLE_HTTPS:false}
-      #开放给外部的oauth网关地址，支持https
-      gateway-domain: ${HZERO_OAUTH_LOGIN_GATEWAY_DOMAIN:http://dev.hzero.org:8080/oauth}
+      # 跳转到默认登录成功地址时使用的客户端ID
+      default-client-id: ${HZERO_OAUTH_LOGIN_DEFAULT_CLIENT_ID:hzero-front-dev}
       # 允许使用的登录名，默认有 用户名、邮箱、手机号
       support-fields: ${HZERO_OAUTH_LOGIN_SUPPORT_FIELDS:username,email,phone}
       # 前端默认模板
@@ -161,6 +161,10 @@ hzero:
   reset-password:
     check: true
     resetUrlExpireMinutes: 10
+
+choerodon:
+  default:
+     icp: ""
 logging:
   level: 
     org.hzero: ${LOG_LEVEL:info}

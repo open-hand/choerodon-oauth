@@ -70,15 +70,15 @@ env:
     HZERO_OAUTH_LOGIN_DEFAULT_TEMPLATE: slide
     # 默认登录成功跳转地址
     HZERO_OAUTH_LOGIN_SUCCESS_URL: http://dev.hzero.org/workplace
+    # 默认客户端
+    HZERO_OAUTH_LOGIN_DEFAULT_CLIENT_ID: hzero-front-dev
     # 退出时是否清理token
     HZERO_OAUTH_LOGOUT_CLEAR_TOKEN: true
     # 启用二级域名单点登录
     HZERO_OAUTH_SSO_ENABLED: true
-    # 网关地址
-    HZERO_GATEWAY_URL: http://localhost:8020/
     HZERO_RESET_PASSWORD_RESETURLEXPIREMINUTES: 10
     # Eureka 注册中心地址
-    EUREKA_DEFAULT_ZONE: http://dev.hzero.org:8000/eureka/
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://dev.hzero.org:8000/eureka/
     # 服务以IP地址注册
     EUREKA_INSTANCE_PREFER_IP_ADDRESS: true
     # 数据库地址
@@ -113,9 +113,19 @@ env:
     SERVER_UNDERTOW_BUFFER_SIZE: 1024
     # 日志级别
     LOG_LEVEL: info
-    JAVA_OPTS: >-
-      -Xms1024m
-      -Xmx1536m
+
+    # 备案号
+    CHOERODON_DEFAULT_ICP:
+#    JAVA_OPTS: >-
+#      -Xms1024m
+#      -Xmx1536m
+    ## Skywalking 配置参数
+    # SKYWALKING_OPTS: >-
+    #   -javaagent:/agent/skywalking-agent.jar
+    #   -Dskywalking.agent.application_code=asgard-service
+    #   -Dskywalking.agent.sample_n_per_3_secs=-1
+    #   -Dskywalking.collector.backend_service=oap.skywalking:11800
+
 
 
 ## Liveness 和 Readiness 探针相关配置
@@ -166,11 +176,11 @@ service:
     # 服务端口
     http:
       port: 8020
-      nodePort: 30102
+      nodePort: 30098
     # 管理端口
     actuator:
       port: 8021
-      nodePort: 30103
+      nodePort: 30099
   ## externalIPs 设置
   # externalIPs:
   #   - externalIp1
