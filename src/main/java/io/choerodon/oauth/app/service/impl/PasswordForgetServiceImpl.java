@@ -48,7 +48,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
     @Autowired
     private UserPasswordService userPasswordService;
-    @Value("${hzero.gateway.url: http://localhost:8020/}")
+    @Value("${hzero.gateway.url: http://api.example.com}")
     private String gatewayUrl;
     @Value("${hzero.reset-password.resetUrlExpireMinutes: 10}")
     private Long resetUrlExpireMinutes;

@@ -77,6 +77,8 @@ env:
     # 启用二级域名单点登录
     HZERO_OAUTH_SSO_ENABLED: true
     HZERO_RESET_PASSWORD_RESETURLEXPIREMINUTES: 10
+    # 网关域
+    HZERO_gateway_url: http://api.example.com
     # Eureka 注册中心地址
     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://dev.hzero.org:8000/eureka/
     # 服务以IP地址注册
