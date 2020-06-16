@@ -49,9 +49,7 @@ public class OauthC7NController {
 
     @Value("${choerodon.oauth.loginPage.profile:default}")
     private String loginProfile;
-    private Locale currentLocale = Locale.ROOT;
 
-    private MessageSource messageSource;
     private DefaultKaptcha captchaProducer;
 
     @Autowired
@@ -71,11 +69,9 @@ public class OauthC7NController {
     private final EncryptClient encryptClient;
 
     public OauthC7NController(
-            MessageSource messageSource,
             DefaultKaptcha captchaProducer,
             SecurityProperties securityProperties,
             EncryptClient encryptClient) {
-        this.messageSource = messageSource;
         this.captchaProducer = captchaProducer;
         this.securityProperties = securityProperties;
         this.encryptClient = encryptClient;
