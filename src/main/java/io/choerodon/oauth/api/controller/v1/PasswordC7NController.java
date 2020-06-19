@@ -124,8 +124,8 @@ public class PasswordC7NController {
         PasswordForgetDTO passwordForgetDTO;
         if (!passwordForgetService.checkTokenAvailable(token)) {
             passwordForgetDTO = new PasswordForgetDTO(false);
-            passwordForgetDTO.setCode(PasswordFindException.PASSWORD_NOT_EQUAL.value());
-            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.PASSWORD_NOT_EQUAL.value()).desc());
+            passwordForgetDTO.setCode(PasswordFindException.RESET_URL_INVAILED.value());
+            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.RESET_URL_INVAILED.value()).desc());
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         if(!StringUtils.hasText(pwd)) {
