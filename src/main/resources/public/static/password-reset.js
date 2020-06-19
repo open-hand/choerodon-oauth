@@ -137,7 +137,7 @@ class App extends window.React.Component {
             step: 2,
             email: results.user.email
           });
-        } else if(results.failed === true) {
+        } else if(results.failed === true || results.success === false) {
           this.setState({
             errorMsg: results.message,
             errorState: true,
