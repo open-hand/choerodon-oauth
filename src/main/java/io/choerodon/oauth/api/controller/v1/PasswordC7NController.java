@@ -1,8 +1,8 @@
 package io.choerodon.oauth.api.controller.v1;
 
-import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
+import org.hzero.core.message.MessageAccessor;
 import org.hzero.oauth.infra.encrypt.EncryptClient;
 import org.hzero.oauth.security.util.LoginUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,14 +124,14 @@ public class PasswordC7NController {
         PasswordForgetDTO passwordForgetDTO;
         if (!passwordForgetService.checkTokenAvailable(token)) {
             passwordForgetDTO = new PasswordForgetDTO(false);
-            passwordForgetDTO.setCode(PasswordFindException.PASSWORD_NOT_EQUAL.value());
-            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.PASSWORD_NOT_EQUAL.value(), null, Locale.ROOT));
+            passwordForgetDTO.setCode(PasswordFindException.RESET_URL_INVAILED.value());
+            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.RESET_URL_INVAILED.value()).desc());
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         if(!StringUtils.hasText(pwd)) {
             passwordForgetDTO = new PasswordForgetDTO(false);
             passwordForgetDTO.setCode(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value());
-            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value(), null, Locale.ROOT));
+            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value()).desc());
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         return ResponseEntity.ok(passwordForgetService.resetPassword(token, pwd));

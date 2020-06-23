@@ -131,27 +131,15 @@ class App extends window.React.Component {
         token: token,
         password: this.encryptPwd(form.getFieldValue('password'))
       } ,(results) => {
+      console.log(results)
         if (results && results.success === true) {
           this.setState({
             step: 2,
             email: results.user.email
           });
-        }
-        else if(results.success === false && results.msg === 'error.password.policy.notRecent') {
+        } else if(results.failed === true || results.success === false) {
           this.setState({
-            errorMsg: '与近期密码相同',
-            errorState: true
-          });
-          form.validateFields(['password'], {force: true});
-        } else if(results.success === false && !results.msg ) {
-          this.setState({
-            errorMsg: '未知异常',
-            errorState: true,
-          });
-          form.validateFields(['password'], {force: true});
-        } else if(results.success === false) {
-          this.setState({
-            errorMsg: results.msg,
+            errorMsg: results.message,
             errorState: true,
           });
           form.validateFields(['password'], {force: true});

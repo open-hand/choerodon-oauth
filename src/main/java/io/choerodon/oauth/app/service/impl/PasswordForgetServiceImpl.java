@@ -9,6 +9,7 @@ import org.hzero.boot.message.entity.Receiver;
 import org.hzero.boot.oauth.domain.entity.BaseUser;
 import org.hzero.boot.oauth.domain.service.UserPasswordService;
 import org.hzero.boot.oauth.policy.PasswordPolicyManager;
+import org.hzero.core.message.MessageAccessor;
 import org.hzero.core.user.UserType;
 import org.hzero.oauth.domain.entity.User;
 import org.hzero.oauth.domain.repository.UserRepository;
@@ -48,7 +49,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
 
     @Autowired
     private UserPasswordService userPasswordService;
-    @Value("${hzero.gateway.url: http://localhost:8020/}")
+    @Value("${hzero.gateway.url: http://api.example.com}")
     private String gatewayUrl;
     @Value("${hzero.reset-password.resetUrlExpireMinutes: 10}")
     private Long resetUrlExpireMinutes;
@@ -78,19 +79,19 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     public PasswordForgetDTO checkUserByEmail(String email) {
         PasswordForgetDTO passwordForgetDTO = new PasswordForgetDTO(false);
         if (!userValidator.emailValidator(email)) {
-            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.EMAIL_FORMAT_ILLEGAL.value(), null, Locale.ROOT));
+            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.EMAIL_FORMAT_ILLEGAL.value()).desc());
             passwordForgetDTO.setCode(PasswordFindException.EMAIL_FORMAT_ILLEGAL.value());
             return passwordForgetDTO;
         }
         User user = userRepository.selectLoginUserByEmail(email, UserType.ofDefault());
         if (null == user) {
-            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.ACCOUNT_NOT_EXIST.value(), null, Locale.ROOT));
+            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.ACCOUNT_NOT_EXIST.value()).desc());
             passwordForgetDTO.setCode(PasswordFindException.ACCOUNT_NOT_EXIST.value());
             return passwordForgetDTO;
         }
 
         if (Boolean.TRUE.equals(user.getLdap())) {
-            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.LDAP_CANNOT_CHANGE_PASSWORD.value(), null, Locale.ROOT));
+            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.LDAP_CANNOT_CHANGE_PASSWORD.value()).desc());
             passwordForgetDTO.setCode(PasswordFindException.LDAP_CANNOT_CHANGE_PASSWORD.value());
             return passwordForgetDTO;
         }
@@ -109,7 +110,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         if (time != null) {
             passwordForgetDTO.setSuccess(false);
             passwordForgetDTO.setDisableTime(time);
-            passwordForgetDTO.setMsg(messageSource.getMessage(PasswordFindException.DISABLE_SEND.value(), null, Locale.ROOT));
+            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.DISABLE_SEND.value()).desc());
             passwordForgetDTO.setCode(PasswordFindException.DISABLE_SEND.value());
         }
         return passwordForgetDTO;
