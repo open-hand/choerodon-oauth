@@ -68,17 +68,10 @@ choerodon.io/metrics-path: {{ .Values.metrics.path | quote }}
 参数名 | 含义 
 --- |  --- 
 service.enable|是否创建service
-preJob.preConfig.mysql{}|初始化配置所需manager_service数据库信息
-preJob.preInitDB.mysql{}|初始化数据库所需数据库信息
 env.open.SPRING_DATASOURCE_URL|数据库链接地址
 env.open.SPRING_DATASOURCE_USERNAME|数据库用户名
 env.open.SPRING_DATASOURCE_PASSWORD|数据库密码
-env.open.SPRING_CLOUD_CONFIG_ENABLED|启用配置中心
-env.open.SPRING_CLOUD_CONFIG_URI|配置中心地址
-env.open.EUREKA_CLIENT_SERVICEURL_DEFAULTZONE|注册服务地址
-env.open.SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS|kafka地址
-env.open.SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES|zookeeper地址
-env.open.SERVICES_GITLAB_URL|gitlab地址
-persistence.enabled|是否启用持久化存储
-persistence.existingClaim|绑定的pvc名称
+env.open.EUREKA_CLIENT_SERVICEURL_DEFAULTZONE|注册中心地址
+
+
 
