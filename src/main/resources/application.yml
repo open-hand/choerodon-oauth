@@ -112,38 +112,23 @@ hzero:
     custom-resource-matcher: ${HZERO_OAUTH_CUSTOM_RESOURCE_MATCHER:false}
     # 验证 client 时不检查 client 的一致性
     not-check-client-equals: ${HZERO_OAUTH_NOT_CHECK_CLIENT_EQUALS:false}
-    # 移动设备ID参数
-    device-id-parameter: ${HZERO_OAUTH_DEVICE_ID_PARAMETER:device_id}
-    # 登录设备来源参数
-    source-type-parameter: ${HZERO_OAUTH_SOURCE_TYPE_PARAMETER:source_type}
-    # 移动端开启图形验证码校验，默认不开启
-    enable-app-captcha: ${HZERO_OAUTH_ENABLE_APP_CAPTCHA:false}
     # 始终开启图形验证码校验，默认否
     enable-always-captcha: ${HZERO_OAUTH_ENABLE_ALWAYS_CAPTCHA:false}
     # client_credentials 模式是否返回 refresh_token
     credentials-allow-refresh: ${HZERO_OAUTH_CREDENTIALS_ALLOW_REFRESH:false}
-    # 标题
-    title: ${HZERO_OAUTH_TITLE:HZERO}
-    # 版权信息
-    copyright: ${HZERO_OAUTH_COPYRIGHT:Copyright © The HZERO Author®. All rights reserved.}
-    # Logo URL
-    logo-url: ${HZERO_OAUTH_LOGO_URL:/oauth/static/main/img/logo.svg}
-    # 登录页面默认语言
-    default-language: ${HZERO_OAUTH_DEFAULT_LANGUAGE:zh_CN}
-    # 是否显示切换语言
-    show-language: ${HZERO_OAUTH_SHOW_LANGUAGE:true}
+
     login:
       page: ${HZERO_OAUTH_LOGIN_PAGE:/choerodon/login}
       #网关是否启用https
       enable-https: ${HZERO_OAUTH_LOGIN_ENABLE_HTTPS:false}
       # 跳转到默认登录成功地址时使用的客户端ID
-      default-client-id: ${HZERO_OAUTH_LOGIN_DEFAULT_CLIENT_ID:hzero-front-dev}
+      default-client-id: ${HZERO_OAUTH_LOGIN_DEFAULT_CLIENT_ID:choerodonparent}
       # 允许使用的登录名，默认有 用户名、邮箱、手机号
       support-fields: ${HZERO_OAUTH_LOGIN_SUPPORT_FIELDS:username,email,phone}
       # 前端默认模板
       default-template: ${HZERO_OAUTH_LOGIN_DEFAULT_TEMPLATE:main}
       # 默认登录成功跳转地址
-      success-url: ${HZERO_OAUTH_LOGIN_SUCCESS_URL:http://dev.hzero.org/workplace}
+      success-url: ${HZERO_OAUTH_LOGIN_SUCCESS_URL:http://api.example/com}
     social:
       # 三方登录启用 https
       enable-https: ${HZERO_OAUTH_LOGIN_ENABLE_HTTPS:false}
@@ -165,8 +150,8 @@ hzero:
         certificate: MIIDEzCCAfugAwIBAgIJAKoK/heBjcOYMA0GCSqGSIb3DQEBBQUAMCAxHjAcBgNVBAoMFU9yZ2FuaXphdGlvbiwgQ049T0lEQzAeFw0xNTExMTExMDEyMTVaFw0yNTExMTAxMDEyMTVaMCAxHjAcBgNVBAoMFU9yZ2FuaXphdGlvbiwgQ049T0lEQzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANBGwJ/qpTQNiSgUglSE2UzEkUow+wS8r67etxoEhlzJZfgK/k5TfG1wICDqapHAxEVgUM10aBHRctNocA5wmlHtxdidhzRZroqHwpKy2BmsKX5Z2oK25RLpsyusB1KroemgA/CjUnI6rIL1xxFn3KyOFh1ZBLUQtKNQeMS7HFGgSDAp+sXuTFujz12LFDugX0T0KB5a1+0l8y0PEa0yGa1oi6seONx849ZHxM0PRvUunWkuTM+foZ0jZpFapXe02yWMqhc/2iYMieE/3GvOguJchJt6R+cut8VBb6ubKUIGK7pmoq/TB6DVXpvsHqsDJXechxcicu4pdKVDHSec850CAwEAAaNQME4wHQYDVR0OBBYEFK7RqjoodSYVXGTVEdLf3kJflP/sMB8GA1UdIwQYMBaAFK7RqjoodSYVXGTVEdLf3kJflP/sMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBADNZkxlFXh4F45muCbnQd+WmaXlGvb9tkUyAIxVL8AIu8J18F420vpnGpoUAE+Hy3evBmp2nkrFAgmr055fAjpHeZFgDZBAPCwYd3TNMDeSyMta3Ka+oS7GRFDePkMEm+kH4/rITNKUF1sOvWBTSowk9TudEDyFqgGntcdu/l/zRxvx33y3LMG5USD0x4X4IKjRrRN1BbcKgi8dq10C3jdqNancTuPoqT3WWzRvVtB/q34B7F74/6JzgEoOCEHufBMp4ZFu54P0yEGtWfTwTzuoZobrChVVBt4w/XZagrRtUCDNwRpHNbpjxYudbqLqpi1MQpV9oht/BpTHVJG2i0ro=
   gateway:
     url: http://api.example.com
+
   reset-password:
-    check: true
     resetUrlExpireMinutes: 10
 
 choerodon:
