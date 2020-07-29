@@ -42,24 +42,8 @@ env:
     HZERO_OAUTH_CUSTOM_RESOURCE_MATCHER: false
     # 验证 client 时不检查 client 的一致性
     HZERO_OAUTH_NOT_CHECK_CLIENT_EQUALS: false
-    # 移动设备ID参数
-    HZERO_OAUTH_DEVICE_ID_PARAMETER: device_id
-    # 登录设备来源参数
-    HZERO_OAUTH_SOURCE_TYPE_PARAMETER: source_type
-    # 移动端开启图形验证码校验，默认不开启
-    HZERO_OAUTH_ENABLE_APP_CAPTCHA: false
     # 始终开启图形验证码校验，默认否
     HZERO_OAUTH_ENABLE_ALWAYS_CAPTCHA: false
-    # 标题
-    HZERO_OAUTH_TITLE: HZERO
-    # 版权信息
-    HZERO_OAUTH_COPYRIGHT: Copyright © The HZERO Author®. All rights reserved.
-    # Logo URL
-    HZERO_OAUTH_LOGO_URL: /oauth/static/main/img/logo.svg
-    # 登录页面默认语言
-    HZERO_OAUTH_DEFAULT_LANGUAGE: zh_CN
-    # 是否显示切换语言
-    HZERO_OAUTH_SHOW_LANGUAGE: true
     # 登录页面
     HZERO_OAUTH_LOGIN_PAGE: /choerodon/login
     #网关是否启用https
@@ -69,14 +53,13 @@ env:
     # 前端默认模板
     HZERO_OAUTH_LOGIN_DEFAULT_TEMPLATE: slide
     # 默认登录成功跳转地址
-    HZERO_OAUTH_LOGIN_SUCCESS_URL: http://dev.hzero.org/workplace
+    HZERO_OAUTH_LOGIN_SUCCESS_URL: http://api.example.com
     # 默认客户端
-    HZERO_OAUTH_LOGIN_DEFAULT_CLIENT_ID: hzero-front-dev
+    HZERO_OAUTH_LOGIN_DEFAULT_CLIENT_ID: choerodonparent
     # 退出时是否清理token
     HZERO_OAUTH_LOGOUT_CLEAR_TOKEN: true
     # 启用二级域名单点登录
     HZERO_OAUTH_SSO_ENABLED: true
-    HZERO_RESET_PASSWORD_RESETURLEXPIREMINUTES: 10
     # 网关域
     HZERO_GATEWAY_URL: http://api.example.com
     # Eureka 注册中心地址
