@@ -35,6 +35,8 @@ public class SysSettingVO extends AuditDomain {
 
     private String themeColor;
 
+    private Boolean enableUpdateDefaultPwd;
+
     public Long getId() {
         return id;
     }
@@ -137,5 +139,13 @@ public class SysSettingVO extends AuditDomain {
 
     public void setThemeColor(String themeColor) {
         this.themeColor = themeColor;
+    }
+
+    public Boolean getEnableUpdateDefaultPwd() {
+        return enableUpdateDefaultPwd;
+    }
+
+    public void setEnableUpdateDefaultPwd(Boolean enableUpdateDefaultPwd) {
+        this.enableUpdateDefaultPwd = enableUpdateDefaultPwd;
     }
 }

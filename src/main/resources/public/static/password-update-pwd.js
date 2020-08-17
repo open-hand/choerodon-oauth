@@ -127,7 +127,7 @@ class App extends window.React.Component {
     if (step === 1 && form.getFieldValue('password') === form.getFieldValue('password1') && policyPassed) {
       form.validateFields(['password'], {force: true});
       form.validateFields(['password1'], {force: true});
-      $.post(`${server}/oauth/choerodon/password/reset_password`,{
+      $.post(`${server}/oauth/choerodon/password/update_password`,{
         token: token,
         password: this.encryptPwd(form.getFieldValue('password'))
       } ,(results) => {
@@ -275,7 +275,7 @@ class App extends window.React.Component {
     const {getFieldDecorator} = form;
     return (
       <div>
-        <span className="loginSpan">忘记密码</span>
+        <span className="loginSpan">修改默认密码</span>
         <Form layout="vertical" className="form-vertical login-form">
           <FormItem
             {...formItemLayout}
@@ -306,7 +306,7 @@ class App extends window.React.Component {
             )}
           </FormItem>
           <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
-                  style={{paddingTop: '4px', marginTop: '38px'}}><span>下一步</span></Button>
+                  style={{paddingTop: '4px', marginTop: '38px'}}><span>确定</span></Button>
         </Form>
       </div>
     )
@@ -319,21 +319,10 @@ class App extends window.React.Component {
         <div className="congratulation"><Icon type="done"
                                               style={{fontSize: 30, color: '#3F51B5', marginRight: '23.8px'}}/>恭喜
         </div>
-        <div className="change-password-success">{`您的账号“${email}”重置密码成功`}</div>
+        <div className="change-password-success">{`您的账号“${email}”修改密码成功`}</div>
         <Button type="primary" funcType="raised" className="btn" onClick={this.handleButtonClick} loading={this.state.loading}
                 style={{paddingTop: '4px', marginTop: '80px'}}><span>直接登录</span></Button>
       </div>
-    )
-  }
-  renderStep3 = () => {
-    return (
-        <div>
-          <div className="congratulation">链接已失效
-          </div>
-          <div className="change-password-success">该链接已失效，请重新获取。</div>
-          <Button type="primary" funcType="raised" className="btn" href="/oauth/choerodon/login"  loading={this.state.loading}
-                  style={{width: '120px',float: 'right',paddingTop: '4px', marginTop: '80px'}}><span>我知道了</span></Button>
-        </div>
     )
   }
 
@@ -344,8 +333,6 @@ class App extends window.React.Component {
         return this.renderStep1();
       case 2:
         return this.renderStep2();
-      case 3:
-        return this.renderStep3();
     }
   }
 }
