@@ -49,7 +49,7 @@ public class ChoerodonUserAccountServiceImpl extends DefaultUserAccountService {
             if (Boolean.TRUE.equals(passwordPolicy.getEnablePassword())
                     && Boolean.TRUE.equals(passwordPolicy.getForceModifyPassword())
                     && StringUtils.isNotBlank(passwordPolicy.getOriginalPassword())) {
-                return this.passwordEncoder.matches(setting.getDefaultPassword(), user.getPassword()) && this.passwordEncoder.matches(passwordPolicy.getOriginalPassword(), user.getPassword());
+                return this.passwordEncoder.matches(setting.getDefaultPassword(), user.getPassword()) || this.passwordEncoder.matches(passwordPolicy.getOriginalPassword(), user.getPassword());
             } else {
                 return this.passwordEncoder.matches(setting.getDefaultPassword(), user.getPassword());
             }
