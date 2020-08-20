@@ -79,19 +79,19 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     public PasswordForgetDTO checkUserByEmail(String email) {
         PasswordForgetDTO passwordForgetDTO = new PasswordForgetDTO(false);
         if (!userValidator.emailValidator(email)) {
-            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.EMAIL_FORMAT_ILLEGAL.value()).desc());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(PasswordFindException.EMAIL_FORMAT_ILLEGAL.value()).desc());
             passwordForgetDTO.setCode(PasswordFindException.EMAIL_FORMAT_ILLEGAL.value());
             return passwordForgetDTO;
         }
         User user = userRepository.selectLoginUserByEmail(email, UserType.ofDefault());
         if (null == user) {
-            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.ACCOUNT_NOT_EXIST.value()).desc());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(PasswordFindException.ACCOUNT_NOT_EXIST.value()).desc());
             passwordForgetDTO.setCode(PasswordFindException.ACCOUNT_NOT_EXIST.value());
             return passwordForgetDTO;
         }
 
         if (Boolean.TRUE.equals(user.getLdap())) {
-            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.LDAP_CANNOT_CHANGE_PASSWORD.value()).desc());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(PasswordFindException.LDAP_CANNOT_CHANGE_PASSWORD.value()).desc());
             passwordForgetDTO.setCode(PasswordFindException.LDAP_CANNOT_CHANGE_PASSWORD.value());
             return passwordForgetDTO;
         }
@@ -110,7 +110,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         if (time != null) {
             passwordForgetDTO.setSuccess(false);
             passwordForgetDTO.setDisableTime(time);
-            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.DISABLE_SEND.value()).desc());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(PasswordFindException.DISABLE_SEND.value()).desc());
             passwordForgetDTO.setCode(PasswordFindException.DISABLE_SEND.value());
         }
         return passwordForgetDTO;
@@ -192,7 +192,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             return passwordForgetDTO;
         } catch (CommonException e) {
             passwordForgetDTO.setSuccess(false);
-            passwordForgetDTO.setMsg("发送失败，请重试");
+            passwordForgetDTO.setMessage("发送失败，请重试");
             LOGGER.warn("The mail send error. {} {}", e.getCode(), e);
             return passwordForgetDTO;
         }
@@ -220,7 +220,7 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         } catch (CommonException e) {
             LOGGER.error(e.getMessage());
             passwordForgetDTO.setSuccess(false);
-            passwordForgetDTO.setMsg(e.getMessage());
+            passwordForgetDTO.setMessage(e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return passwordForgetDTO;
         }

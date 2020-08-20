@@ -7,7 +7,7 @@ import org.hzero.oauth.domain.entity.User;
  */
 public class PasswordForgetDTO {
     private Boolean success;
-    private String msg;
+    private String message;
     private String code;
     private User user;
     private Long disableTime;
@@ -29,12 +29,12 @@ public class PasswordForgetDTO {
         this.success = success;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getCode() {
