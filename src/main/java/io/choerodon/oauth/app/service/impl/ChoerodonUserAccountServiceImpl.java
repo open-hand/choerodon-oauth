@@ -47,7 +47,7 @@ public class ChoerodonUserAccountServiceImpl extends DefaultUserAccountService {
         }
         // 1.校验平台层密码策略
         SysSettingVO setting = systemSettingService.getSetting();
-        if (Boolean.TRUE.equals(setting.getEnableUpdateDefaultPwd())) {
+        if (Boolean.TRUE.equals(setting.getForceModifyPassword())) {
             // 1.校验组织是否开启密码策略和强制修改默认密码
             // 为 0 的时候校验密码策略是否开启了强制修改初始密码的配置
             if (Boolean.TRUE.equals(passwordPolicy.getEnablePassword())

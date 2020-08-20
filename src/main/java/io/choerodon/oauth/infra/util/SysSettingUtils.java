@@ -52,7 +52,7 @@ public class SysSettingUtils {
         sysSettingVO.setRegisterUrl(settingDTOMap.get(SysSettingEnum.REGISTER_URL.value()));
         sysSettingVO.setResetGitlabPasswordUrl(settingDTOMap.get(SysSettingEnum.RESET_GITLAB_PASSWORD_URL.value()));
         sysSettingVO.setThemeColor(settingDTOMap.get(SysSettingEnum.THEME_COLOR.value()));
-        sysSettingVO.setEnableUpdateDefaultPwd(Boolean.valueOf(settingDTOMap.get(SysSettingEnum.ENABLE_UPDATE_DEFAULT_PWD.value())));
+        sysSettingVO.setForceModifyPassword(Boolean.valueOf(settingDTOMap.get(SysSettingEnum.FORCE_MODIFY_PASSWORD.value())));
         String registerEnabled = settingDTOMap.get(SysSettingEnum.REGISTER_ENABLED.value());
         if (!ObjectUtils.isEmpty(registerEnabled)) {
             sysSettingVO.setRegisterEnabled(Boolean.valueOf(registerEnabled));

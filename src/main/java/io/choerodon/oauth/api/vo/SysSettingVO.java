@@ -35,7 +35,7 @@ public class SysSettingVO extends AuditDomain {
 
     private String themeColor;
 
-    private Boolean enableUpdateDefaultPwd;
+    private Boolean forceModifyPassword;
 
     public Long getId() {
         return id;
@@ -141,11 +141,11 @@ public class SysSettingVO extends AuditDomain {
         this.themeColor = themeColor;
     }
 
-    public Boolean getEnableUpdateDefaultPwd() {
-        return enableUpdateDefaultPwd;
+    public Boolean getForceModifyPassword() {
+        return forceModifyPassword;
     }
 
-    public void setEnableUpdateDefaultPwd(Boolean enableUpdateDefaultPwd) {
-        this.enableUpdateDefaultPwd = enableUpdateDefaultPwd;
+    public void setForceModifyPassword(Boolean forceModifyPassword) {
+        this.forceModifyPassword = forceModifyPassword;
     }
 }

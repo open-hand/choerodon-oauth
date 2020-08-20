@@ -52,7 +52,7 @@ public enum SysSettingEnum {
     /**
      * 是否启用强制修改默认密码
      */
-    ENABLE_UPDATE_DEFAULT_PWD("enableUpdateDefaultPwd"),
+    FORCE_MODIFY_PASSWORD("forceModifyPassword"),
     /**
      * 平台主题色
      */
