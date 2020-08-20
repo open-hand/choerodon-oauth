@@ -164,14 +164,14 @@ public class PasswordC7NController {
         if (decryptPassword.equals(defaultPassword) || basePasswordPolicy.getOriginalPassword().equals(decryptPassword)) {
             passwordForgetDTO = new PasswordForgetDTO(false);
             passwordForgetDTO.setCode(PasswordFindException.PASSWORD_EQUAL_DEFAULT_ERROR.value());
-            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.PASSWORD_EQUAL_DEFAULT_ERROR.value()).desc());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(PasswordFindException.PASSWORD_EQUAL_DEFAULT_ERROR.value()).desc());
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
 
         if(!StringUtils.hasText(decryptPassword)) {
             passwordForgetDTO = new PasswordForgetDTO(false);
             passwordForgetDTO.setCode(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value());
-            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value()).desc());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value()).desc());
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         userPasswordService.updateUserPassword(user.getId(), decryptPassword);
@@ -197,13 +197,13 @@ public class PasswordC7NController {
         if (!passwordForgetService.checkTokenAvailable(token)) {
             passwordForgetDTO = new PasswordForgetDTO(false);
             passwordForgetDTO.setCode(PasswordFindException.RESET_URL_INVAILED.value());
-            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.RESET_URL_INVAILED.value()).desc());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(PasswordFindException.RESET_URL_INVAILED.value()).desc());
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         if(!StringUtils.hasText(pwd)) {
             passwordForgetDTO = new PasswordForgetDTO(false);
             passwordForgetDTO.setCode(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value());
-            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value()).desc());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value()).desc());
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         return ResponseEntity.ok(passwordForgetService.resetPassword(token, pwd));

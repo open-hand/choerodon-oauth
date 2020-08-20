@@ -139,7 +139,7 @@ class App extends window.React.Component {
           });
         } else if(results.failed === true || results.success === false) {
           this.setState({
-            errorMsg: results.msg,
+            errorMsg: results.message,
             errorState: true,
           });
           form.validateFields(['password'], {force: true});
