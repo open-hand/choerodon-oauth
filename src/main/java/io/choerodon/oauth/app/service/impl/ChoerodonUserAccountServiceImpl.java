@@ -41,6 +41,10 @@ public class ChoerodonUserAccountServiceImpl extends DefaultUserAccountService {
 
     @Override
     public boolean isNeedForceModifyPassword(BasePasswordPolicy passwordPolicy, User user) {
+
+        if (Boolean.TRUE.equals(user.getLdap())) {
+            return false;
+        }
         // 1.校验平台层密码策略
         SysSettingVO setting = systemSettingService.getSetting();
         if (Boolean.TRUE.equals(setting.getEnableUpdateDefaultPwd())) {
