@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+
 import io.choerodon.oauth.api.vo.SysSettingVO;
 import io.choerodon.oauth.infra.dto.SysSettingDTO;
 import io.choerodon.oauth.infra.enums.SysSettingEnum;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 public class SysSettingUtils {
 
@@ -52,7 +53,6 @@ public class SysSettingUtils {
         sysSettingVO.setRegisterUrl(settingDTOMap.get(SysSettingEnum.REGISTER_URL.value()));
         sysSettingVO.setResetGitlabPasswordUrl(settingDTOMap.get(SysSettingEnum.RESET_GITLAB_PASSWORD_URL.value()));
         sysSettingVO.setThemeColor(settingDTOMap.get(SysSettingEnum.THEME_COLOR.value()));
-        sysSettingVO.setForceModifyPassword(Boolean.valueOf(settingDTOMap.get(SysSettingEnum.FORCE_MODIFY_PASSWORD.value())));
         String registerEnabled = settingDTOMap.get(SysSettingEnum.REGISTER_ENABLED.value());
         if (!ObjectUtils.isEmpty(registerEnabled)) {
             sysSettingVO.setRegisterEnabled(Boolean.valueOf(registerEnabled));
