@@ -50,10 +50,6 @@ public enum SysSettingEnum {
      */
     RESET_GITLAB_PASSWORD_URL("resetGitlabPasswordUrl"),
     /**
-     * 是否启用强制修改默认密码
-     */
-    FORCE_MODIFY_PASSWORD("forceModifyPassword"),
-    /**
      * 平台主题色
      */
     THEME_COLOR("themeColor");
