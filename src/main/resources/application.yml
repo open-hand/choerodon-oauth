@@ -93,6 +93,13 @@ mybatis:
   mapperLocations: classpath*:/mapper/*.xml
   configuration:
     mapUnderscoreToCamelCase: true
+    key-generator: snowflake
+    snowflake:
+      start-timestamp: 1577808000000
+      meta-provider: redis
+      meta-provider-redis-db: ${SPRING_REDIS_DATABASE:1}
+      meta-provider-redis-refresh-interval: 540000
+      meta-provider-redis-expire: 600000
 
 hzero:
   user:
@@ -122,6 +129,8 @@ hzero:
       default-template: ${HZERO_OAUTH_LOGIN_DEFAULT_TEMPLATE:main}
       # 默认登录成功跳转地址
       success-url: ${HZERO_OAUTH_LOGIN_SUCCESS_URL:http://api.example/com}
+      # 强制修改默认密码页面
+      passForceModifyPage: ${HZERO_OAUTH_PASS_FORCE_MODIFY_PAGE:/choerodon/password/update_default_pwd_page}
     social:
       # 三方登录启用 https
       enable-https: ${HZERO_OAUTH_LOGIN_ENABLE_HTTPS:false}

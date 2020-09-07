@@ -1,9 +1,15 @@
 package io.choerodon.oauth.api.controller.v1;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
+import org.hzero.boot.oauth.domain.entity.BasePasswordPolicy;
+import org.hzero.boot.oauth.domain.repository.BasePasswordPolicyRepository;
+import org.hzero.boot.oauth.domain.service.UserPasswordService;
 import org.hzero.core.message.MessageAccessor;
+import org.hzero.oauth.domain.entity.User;
 import org.hzero.oauth.infra.encrypt.EncryptClient;
+import org.hzero.oauth.security.constant.SecurityAttributes;
 import org.hzero.oauth.security.util.LoginUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -40,6 +46,10 @@ public class PasswordC7NController {
     private SystemSettingService systemSettingService;
     @Autowired
     private EncryptClient encryptClient;
+    @Autowired
+    BasePasswordPolicyRepository basePasswordPolicyRepository;
+    @Autowired
+    UserPasswordService userPasswordService;
 
     /**
      * 进入找回密码页面
@@ -110,6 +120,68 @@ public class PasswordC7NController {
     }
 
     /**
+     * 进入修改默认密码页面
+     *
+     * @return path
+     */
+    @GetMapping(value = "/update_default_pwd_page")
+    public String getUpdateDefaultPwdPage(HttpServletRequest request, Model model) {
+        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+        if (sysSettingVO == null) {
+            sysSettingVO = new SysSettingVO();
+        }
+        model.addAttribute("systemName", sysSettingVO.getSystemName());
+        if (!StringUtils.isEmpty(sysSettingVO.getSystemLogo())) {
+            model.addAttribute("systemLogo", sysSettingVO.getSystemLogo());
+        }
+        model.addAttribute("systemTitle", sysSettingVO.getSystemTitle());
+        if (!StringUtils.isEmpty(sysSettingVO.getFavicon())) {
+            model.addAttribute("favicon", sysSettingVO.getFavicon());
+        }
+
+        String publicKey = encryptClient.getPublicKey();
+        model.addAttribute(LoginUtil.FIELD_PUBLIC_KEY, publicKey);
+        model.addAttribute("loginPage", loginPage);
+        return PageUrlEnum.UPDATE_DEFAULT_PWD_PAGE.value();
+    }
+
+    /**
+     * 修改密码
+     * @param pwd
+     * @return
+     */
+    @PostMapping(value = "/update_password")
+    @ResponseBody
+    public ResponseEntity<PasswordForgetDTO> resetPassword(HttpSession session, @RequestParam("password") String pwd) {
+        PasswordForgetDTO passwordForgetDTO;
+        String decryptPassword = encryptClient.decrypt(pwd);
+        SysSettingVO setting = systemSettingService.getSetting();
+        String defaultPassword = setting.getDefaultPassword();
+
+        User user = (User) session.getAttribute(SecurityAttributes.SECURITY_LOGIN_USER);
+        BasePasswordPolicy basePasswordPolicy = basePasswordPolicyRepository.selectPasswordPolicy(user.getTenantId());
+
+        if (decryptPassword.equals(defaultPassword) || basePasswordPolicy.getOriginalPassword().equals(decryptPassword)) {
+            passwordForgetDTO = new PasswordForgetDTO(false);
+            passwordForgetDTO.setCode(PasswordFindException.PASSWORD_EQUAL_DEFAULT_ERROR.value());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(PasswordFindException.PASSWORD_EQUAL_DEFAULT_ERROR.value()).desc());
+            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
+        }
+
+        if(!StringUtils.hasText(decryptPassword)) {
+            passwordForgetDTO = new PasswordForgetDTO(false);
+            passwordForgetDTO.setCode(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value()).desc());
+            return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
+        }
+        userPasswordService.updateUserPassword(user.getId(), decryptPassword);
+        passwordForgetDTO = new PasswordForgetDTO();
+        passwordForgetDTO.setSuccess(true);
+        passwordForgetDTO.setUser(user);
+        return ResponseEntity.ok(passwordForgetDTO);
+    }
+
+    /**
      * 重置密码
      * @param token
      * @param pwd
@@ -125,13 +197,13 @@ public class PasswordC7NController {
         if (!passwordForgetService.checkTokenAvailable(token)) {
             passwordForgetDTO = new PasswordForgetDTO(false);
             passwordForgetDTO.setCode(PasswordFindException.RESET_URL_INVAILED.value());
-            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.RESET_URL_INVAILED.value()).desc());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(PasswordFindException.RESET_URL_INVAILED.value()).desc());
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         if(!StringUtils.hasText(pwd)) {
             passwordForgetDTO = new PasswordForgetDTO(false);
             passwordForgetDTO.setCode(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value());
-            passwordForgetDTO.setMsg(MessageAccessor.getMessage(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value()).desc());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(PasswordFindException.PASSWORD_DOES_NOT_HAVE_TEXT.value()).desc());
             return new ResponseEntity<>(passwordForgetDTO, HttpStatus.OK);
         }
         return ResponseEntity.ok(passwordForgetService.resetPassword(token, pwd));

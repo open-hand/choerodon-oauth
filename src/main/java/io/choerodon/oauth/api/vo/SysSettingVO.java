@@ -138,4 +138,5 @@ public class SysSettingVO extends AuditDomain {
     public void setThemeColor(String themeColor) {
         this.themeColor = themeColor;
     }
+
 }

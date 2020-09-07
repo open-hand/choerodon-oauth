@@ -76,7 +76,7 @@ class App extends window.React.Component {
           this.setState({
             account: {
               validateStatus: 'error',
-              errorMsg: results.msg,
+              errorMsg: results.message,
             },
           })
         }

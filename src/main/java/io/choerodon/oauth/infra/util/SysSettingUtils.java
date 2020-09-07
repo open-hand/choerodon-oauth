@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+
 import io.choerodon.oauth.api.vo.SysSettingVO;
 import io.choerodon.oauth.infra.dto.SysSettingDTO;
 import io.choerodon.oauth.infra.enums.SysSettingEnum;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 public class SysSettingUtils {
 

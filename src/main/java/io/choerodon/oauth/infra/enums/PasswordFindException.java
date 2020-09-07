@@ -13,6 +13,7 @@ public enum PasswordFindException {
     PASSWORD_DOES_NOT_HAVE_TEXT("passwordDoesNotHaveText"),
     CAPTCHA_ERROR("captchaError"),
     DISABLE_SEND("disableSend"),
+    PASSWORD_EQUAL_DEFAULT_ERROR("password.equal.default.error"),
     RESET_URL_INVAILED("resetUrlInvailed"),
     ;
 
