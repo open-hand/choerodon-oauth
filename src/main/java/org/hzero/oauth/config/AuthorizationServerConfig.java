@@ -4,15 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 
-import org.hzero.oauth.security.config.SecurityProperties;
-import org.hzero.oauth.security.custom.CustomAuthorizationCodeTokenGranter;
-import org.hzero.oauth.security.custom.CustomClientDetailsService;
-import org.hzero.oauth.security.custom.CustomRedirectResolver;
-import org.hzero.oauth.security.custom.CustomUserDetailsService;
-import org.hzero.oauth.security.custom.processor.authorize.AuthorizeSuccessProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -30,6 +25,13 @@ import org.springframework.security.oauth2.provider.password.ResourceOwnerPasswo
 import org.springframework.security.oauth2.provider.refresh.RefreshTokenGranter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
+import org.hzero.oauth.security.config.SecurityProperties;
+import org.hzero.oauth.security.custom.CustomAuthorizationCodeTokenGranter;
+import org.hzero.oauth.security.custom.CustomClientCredentialsTokenGranter;
+import org.hzero.oauth.security.custom.CustomClientDetailsService;
+import org.hzero.oauth.security.custom.CustomRedirectResolver;
+import org.hzero.oauth.security.service.ClientDetailsWrapper;
+
 import io.choerodon.oauth.infra.common.util.CustomClientInterceptor;
 
 /**
@@ -41,9 +43,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
-    private CustomClientDetailsService clientDetailsService;
+    private CustomClientDetailsService customClientDetailsService;
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private UserDetailsService userDetailsService;
     @Autowired
     private CustomClientInterceptor customClientInterceptor;
     @Autowired
@@ -53,7 +55,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private SecurityProperties securityProperties;
     @Autowired
-    private List<AuthorizeSuccessProcessor> authorizeSuccessProcessors = new ArrayList<>();
+    private ClientDetailsWrapper clientDetailsWrapper;
 
     /**
      * 用来配置授权（authorization）以及令牌（token）的访问端点和令牌服务(token services)。
@@ -68,12 +70,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         endpoints
                 .authorizationCodeServices(new JdbcAuthorizationCodeServices(dataSource))
                 .tokenStore(tokenStore)
-                .addInterceptor(customClientInterceptor)
                 .userDetailsService(userDetailsService)
                 .authenticationManager(authenticationManager)
+                .addInterceptor(customClientInterceptor)
                 .redirectResolver(new CustomRedirectResolver())
-                .setClientDetailsService(clientDetailsService)
-                .setAuthorizeSuccessProcessors(authorizeSuccessProcessors)
+                .setClientDetailsService(customClientDetailsService)
         ;
 
         endpoints.tokenGranter(tokenGranter(endpoints));
@@ -84,7 +85,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.withClientDetails(clientDetailsService);
+        clients.withClientDetails(customClientDetailsService);
     }
 
     /**
@@ -135,7 +136,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         tokenGranters.add(new ImplicitTokenGranter(endpoints.getTokenServices(),
                 endpoints.getClientDetailsService(), endpoints.getOAuth2RequestFactory()));
 
-        ClientCredentialsTokenGranter credentialsTokenGranter = new ClientCredentialsTokenGranter(endpoints.getTokenServices(), endpoints.getClientDetailsService(), endpoints.getOAuth2RequestFactory());
+        ClientCredentialsTokenGranter credentialsTokenGranter = new CustomClientCredentialsTokenGranter(endpoints.getTokenServices(),
+                endpoints.getClientDetailsService(), endpoints.getOAuth2RequestFactory(), clientDetailsWrapper);
+
         credentialsTokenGranter.setAllowRefresh(securityProperties.isCredentialsAllowRefresh());
         tokenGranters.add(credentialsTokenGranter);
 
