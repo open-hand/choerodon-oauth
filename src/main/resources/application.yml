@@ -116,7 +116,8 @@ hzero:
     enable-always-captcha: ${HZERO_OAUTH_ENABLE_ALWAYS_CAPTCHA:false}
     # client_credentials 模式是否返回 refresh_token
     credentials-allow-refresh: ${HZERO_OAUTH_CREDENTIALS_ALLOW_REFRESH:false}
-
+    # oauth 服务基础地址
+    base-url: ${HZERO_OAUTH_BASE_URL:http://dev.hzero.org:8080/oauth}
     login:
       page: ${HZERO_OAUTH_LOGIN_PAGE:/choerodon/login}
       #网关是否启用https
