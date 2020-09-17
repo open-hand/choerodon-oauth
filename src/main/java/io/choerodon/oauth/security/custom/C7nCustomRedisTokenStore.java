@@ -72,6 +72,7 @@ public class C7nCustomRedisTokenStore extends CustomRedisTokenStore {
 
     @Override
     public void renewalAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication, int accessTokenValiditySeconds) {
+        LOGGER.info("======test!!!!!!!! ====================");
         // 未开启自动续期 并且 自动下线也未开启
         if (!accessTokenAutoRenewal) {
             return;
