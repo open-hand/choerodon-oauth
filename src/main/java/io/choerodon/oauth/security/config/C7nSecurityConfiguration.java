@@ -37,7 +37,6 @@ public class C7nSecurityConfiguration {
 
     @Bean
     @Primary
-    @ConditionalOnMissingBean(TokenStore.class)
     public TokenStore tokenStore() {
         C7nCustomRedisTokenStore redisTokenStore = new C7nCustomRedisTokenStore(redisConnectionFactory, loginUtil, sessionRepository,
                 securityProperties.isAccessTokenAutoRenewal());
