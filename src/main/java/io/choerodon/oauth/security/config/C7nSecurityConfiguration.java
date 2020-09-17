@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.oauth2.provider.token.AuthenticationKeyGenerator;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -35,6 +36,7 @@ public class C7nSecurityConfiguration {
     private SessionRepository<?> sessionRepository;
 
     @Bean
+    @Primary
     @ConditionalOnMissingBean(TokenStore.class)
     public TokenStore tokenStore() {
         C7nCustomRedisTokenStore redisTokenStore = new C7nCustomRedisTokenStore(redisConnectionFactory, loginUtil, sessionRepository,
