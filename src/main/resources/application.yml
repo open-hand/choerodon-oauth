@@ -108,6 +108,8 @@ hzero:
     # 是否启用验证码
     enable: true
   oauth:
+    # token续期
+    access-token-auto-renewal: true
     # 认证服务器 自定义资源匹配器
     custom-resource-matcher: ${HZERO_OAUTH_CUSTOM_RESOURCE_MATCHER:false}
     # 验证 client 时不检查 client 的一致性
