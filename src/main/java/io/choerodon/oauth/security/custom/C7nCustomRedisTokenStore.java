@@ -72,7 +72,6 @@ public class C7nCustomRedisTokenStore extends CustomRedisTokenStore {
 
     @Override
     public void renewalAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication, int accessTokenValiditySeconds) {
-        LOGGER.info("======test!!!!!!!! ====================");
         // 未开启自动续期 并且 自动下线也未开启
         if (!accessTokenAutoRenewal) {
             return;
@@ -108,8 +107,9 @@ public class C7nCustomRedisTokenStore extends CustomRedisTokenStore {
                 }
                 // 如果 refresh token 未过期 && 开启了 access token 续期 = 刷新 access token
                 if (!refreshTokenExpired && accessTokenAutoRenewal) {
-                    if (token.getExpiration().getTime() > new Date(System.currentTimeMillis() - (30 * 60 * 1000L)).getTime()) {
-                        LOGGER.info("======time ====================");
+                    LOGGER.info("=====Open the renewal!====");
+                    if (token.getExpiration().getTime() <= new Date(System.currentTimeMillis() + (30 * 60 * 1000L)).getTime()) {
+                        LOGGER.info("=====Automatic renewal!====");
                         Date expireDate = new Date(System.currentTimeMillis() + (accessTokenValiditySeconds * 1000L));
                         ((DefaultOAuth2AccessToken) token).setExpiration(expireDate);
                         byte[] serializedAccessToken = serialize(token);
