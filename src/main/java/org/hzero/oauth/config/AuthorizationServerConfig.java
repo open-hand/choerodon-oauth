@@ -18,7 +18,6 @@ import org.springframework.security.oauth2.provider.CompositeTokenGranter;
 import org.springframework.security.oauth2.provider.TokenGranter;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenGranter;
-import org.springframework.security.oauth2.provider.code.AuthorizationCodeTokenGranter;
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.implicit.ImplicitTokenGranter;
 import org.springframework.security.oauth2.provider.password.ResourceOwnerPasswordTokenGranter;
@@ -26,10 +25,11 @@ import org.springframework.security.oauth2.provider.refresh.RefreshTokenGranter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 import org.hzero.oauth.security.config.SecurityProperties;
-import org.hzero.oauth.security.custom.granter.CustomAuthorizationCodeTokenGranter;
-import org.hzero.oauth.security.custom.granter.CustomClientCredentialsTokenGranter;
 import org.hzero.oauth.security.custom.CustomClientDetailsService;
 import org.hzero.oauth.security.custom.CustomRedirectResolver;
+import org.hzero.oauth.security.custom.granter.ClientNotCheckAuthorizationCodeTokenGranter;
+import org.hzero.oauth.security.custom.granter.CustomAuthorizationCodeTokenGranter;
+import org.hzero.oauth.security.custom.granter.CustomClientCredentialsTokenGranter;
 import org.hzero.oauth.security.service.ClientDetailsWrapper;
 
 import io.choerodon.oauth.infra.common.util.CustomClientInterceptor;
@@ -47,8 +47,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private UserDetailsService userDetailsService;
     @Autowired
-    private CustomClientInterceptor customClientInterceptor;
-    @Autowired
     private DataSource dataSource;
     @Autowired
     private TokenStore tokenStore;
@@ -56,6 +54,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private SecurityProperties securityProperties;
     @Autowired
     private ClientDetailsWrapper clientDetailsWrapper;
+    @Autowired
+    private CustomClientInterceptor customClientInterceptor;
 
     /**
      * 用来配置授权（authorization）以及令牌（token）的访问端点和令牌服务(token services)。
@@ -71,8 +71,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .authorizationCodeServices(new JdbcAuthorizationCodeServices(dataSource))
                 .tokenStore(tokenStore)
                 .userDetailsService(userDetailsService)
-                .authenticationManager(authenticationManager)
                 .addInterceptor(customClientInterceptor)
+                .authenticationManager(authenticationManager)
                 .redirectResolver(new CustomRedirectResolver())
                 .setClientDetailsService(customClientDetailsService)
         ;
@@ -123,10 +123,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         // 使用自定义的 AuthorizationCodeTokenGranter
         // 不检查 clientId 一致性
         if (securityProperties.isNotCheckClientEquals()) {
-            tokenGranters.add(new CustomAuthorizationCodeTokenGranter(endpoints.getTokenServices(),
+            tokenGranters.add(new ClientNotCheckAuthorizationCodeTokenGranter(endpoints.getTokenServices(),
                     endpoints.getAuthorizationCodeServices(), endpoints.getClientDetailsService(), endpoints.getOAuth2RequestFactory()));
         } else {
-            tokenGranters.add(new AuthorizationCodeTokenGranter(endpoints.getTokenServices(),
+            tokenGranters.add(new CustomAuthorizationCodeTokenGranter(endpoints.getTokenServices(),
                     endpoints.getAuthorizationCodeServices(), endpoints.getClientDetailsService(), endpoints.getOAuth2RequestFactory()));
         }
 
