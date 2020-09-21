@@ -26,8 +26,8 @@ import org.springframework.security.oauth2.provider.refresh.RefreshTokenGranter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 import org.hzero.oauth.security.config.SecurityProperties;
-import org.hzero.oauth.security.custom.CustomAuthorizationCodeTokenGranter;
-import org.hzero.oauth.security.custom.CustomClientCredentialsTokenGranter;
+import org.hzero.oauth.security.custom.granter.CustomAuthorizationCodeTokenGranter;
+import org.hzero.oauth.security.custom.granter.CustomClientCredentialsTokenGranter;
 import org.hzero.oauth.security.custom.CustomClientDetailsService;
 import org.hzero.oauth.security.custom.CustomRedirectResolver;
 import org.hzero.oauth.security.service.ClientDetailsWrapper;
