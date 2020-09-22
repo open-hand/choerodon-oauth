@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.provider.CompositeTokenGranter;
 import org.springframework.security.oauth2.provider.TokenGranter;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenGranter;
+import org.springframework.security.oauth2.provider.code.AuthorizationCodeTokenGranter;
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.implicit.ImplicitTokenGranter;
 import org.springframework.security.oauth2.provider.password.ResourceOwnerPasswordTokenGranter;
@@ -27,7 +28,6 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.hzero.oauth.security.config.SecurityProperties;
 import org.hzero.oauth.security.custom.CustomClientDetailsService;
 import org.hzero.oauth.security.custom.CustomRedirectResolver;
-import org.hzero.oauth.security.custom.granter.ClientNotCheckAuthorizationCodeTokenGranter;
 import org.hzero.oauth.security.custom.granter.CustomAuthorizationCodeTokenGranter;
 import org.hzero.oauth.security.custom.granter.CustomClientCredentialsTokenGranter;
 import org.hzero.oauth.security.service.ClientDetailsWrapper;
@@ -123,10 +123,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         // 使用自定义的 AuthorizationCodeTokenGranter
         // 不检查 clientId 一致性
         if (securityProperties.isNotCheckClientEquals()) {
-            tokenGranters.add(new ClientNotCheckAuthorizationCodeTokenGranter(endpoints.getTokenServices(),
+            tokenGranters.add(new CustomAuthorizationCodeTokenGranter(endpoints.getTokenServices(),
                     endpoints.getAuthorizationCodeServices(), endpoints.getClientDetailsService(), endpoints.getOAuth2RequestFactory()));
         } else {
-            tokenGranters.add(new CustomAuthorizationCodeTokenGranter(endpoints.getTokenServices(),
+            tokenGranters.add(new AuthorizationCodeTokenGranter(endpoints.getTokenServices(),
                     endpoints.getAuthorizationCodeServices(), endpoints.getClientDetailsService(), endpoints.getOAuth2RequestFactory()));
         }
 
