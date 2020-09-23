@@ -109,11 +109,9 @@ public class C7nCustomRedisTokenStore extends CustomRedisTokenStore {
                 if (!refreshTokenExpired && accessTokenAutoRenewal) {
                     LOGGER.info("=====Open the renewal!====");
                     if (token.getExpiration().getTime() <= new Date(System.currentTimeMillis() + (30 * 60 * 1000L)).getTime()) {
-                        LOGGER.info("================",token.toString());
                         LOGGER.info("=====Automatic renewal!====");
                         Date expireDate = new Date(System.currentTimeMillis() + (accessTokenValiditySeconds * 1000L));
                         ((DefaultOAuth2AccessToken) token).setExpiration(expireDate);
-                        LOGGER.info("---------------",token.toString());
                         byte[] serializedAccessToken = serialize(token);
                         conn.set(accessKey, serializedAccessToken);
                         conn.set(authToAccessKey, serializedAccessToken);
