@@ -1,11 +1,11 @@
-# Default values for hzero-oauth.
+# Default values for choerodon-oauth.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: registry.choerodon.com.cn/hzero-hzero/hzero-oauth
+  repository: registry.choerodon.com.cn/hzero-hzero/choerodon-oauth
   pullPolicy: Always
 
 ## Deployment 更新策略
@@ -151,7 +151,7 @@ service:
   # 是否启用 service 暴露本服务
   enabled: true
   # Service 名称
-  name: hzero-oauth
+  name: choerodon-oauth
   # Service 类型
   type: ClusterIP
   # 指定 service 的 clusterIP

@@ -13,7 +13,7 @@ helm repo update
 ## Installing the Chart
 
 ```bash
-$ helm install c7n/hzero-oauth --name hzero-oauth
+$ helm install c7n/choerodon-oauth --name choerodon-oauth
 ```
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
@@ -21,7 +21,7 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 ## Uninstalling the Chart
 
 ```bash
-$ helm delete hzero-oauth
+$ helm delete choerodon-oauth
 ```
 
 ## Configuration
@@ -29,7 +29,7 @@ $ helm delete hzero-oauth
 Parameter | Description	| Default
 --- |  ---  |  ---  
 `replicaCount` | pod运行数量 | `1`
-`image.repository` | 镜像库地址 | `registry.choerodon.com.cn/choerodon/hzero-oauth`
+`image.repository` | 镜像库地址 | `registry.choerodon.com.cn/choerodon/choerodon-oauth`
 `image.pullPolicy` | 镜像拉取策略 | `IfNotPresent`
 `preJob.timeout` | job超时时间 | `300`
 `preJob.image` | job镜像库地址 | `registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.7.1`
@@ -54,7 +54,7 @@ Parameter | Description	| Default
 `service.enabled` | 是否创建k8s service | `false`
 `service.type` |  service类型 | `ClusterIP`
 `service.port` | service端口 | `8260`
-`service.name` | service名称 | `hzero-oauth`
+`service.name` | service名称 | `choerodon-oauth`
 `resources.limits` | k8s中容器能使用资源的资源最大值 | `3Gi`
 `resources.requests` | k8s中容器使用的最小资源需求 | `2Gi`
 
@@ -72,14 +72,14 @@ Parameter | Description
 `skywalking.collector.backend_service` | SkyWalking OAP 服务地址和端口配置
 
 ```bash
-$ helm install c7n/hzero-oauth \
-    --set env.open.SKYWALKING_OPTS="-javaagent:/agent/skywalking-agent.jar -Dskywalking.agent.application_code=hzero-oauth  -Dskywalking.agent.sample_n_per_3_secs=-1 -Dskywalking.collector.backend_service=oap.skywalking:11800" \
-    --name hzero-oauth
+$ helm install c7n/choerodon-oauth \
+    --set env.open.SKYWALKING_OPTS="-javaagent:/agent/skywalking-agent.jar -Dskywalking.agent.application_code=choerodon-oauth  -Dskywalking.agent.sample_n_per_3_secs=-1 -Dskywalking.collector.backend_service=oap.skywalking:11800" \
+    --name choerodon-oauth
 ```
 
 ## 验证部署
 ```bash
-curl -s $(kubectl get po -n c7n-system -l choerodon.io/release=hzero-oauth -o jsonpath="{.items[0].status.podIP}"):8261/actuator/health | jq -r .status
+curl -s $(kubectl get po -n c7n-system -l choerodon.io/release=choerodon-oauth -o jsonpath="{.items[0].status.podIP}"):8261/actuator/health | jq -r .status
 ```
 出现以下类似信息即为成功部署
 
