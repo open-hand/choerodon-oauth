@@ -46,3 +46,5 @@ package-lock.json
 **/lib/fonts/
 
 /liquibase
+
+application-default.yml
