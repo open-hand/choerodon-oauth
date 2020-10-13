@@ -5,11 +5,9 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.hzero.oauth.security.config.SecurityProperties;
-import org.hzero.oauth.security.custom.CustomAuthorizationCodeTokenGranter;
+
 import org.hzero.oauth.security.custom.CustomClientDetailsService;
-import org.hzero.oauth.security.custom.CustomRedirectResolver;
-import org.hzero.oauth.security.custom.CustomUserDetailsService;
-import org.hzero.oauth.security.custom.processor.authorize.AuthorizeSuccessProcessor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
