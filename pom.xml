@@ -50,6 +50,22 @@
             <groupId>org.hzero.starter</groupId>
             <artifactId>hzero-starter-config-client</artifactId>
         </dependency>
+
+        <dependency>
+            <artifactId>hzero-starter-sso-oauth</artifactId>
+            <groupId>org.hzero.starter</groupId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-sso-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-sso-cas</artifactId>
+        </dependency>
+
     </dependencies>
 
     <repositories>
