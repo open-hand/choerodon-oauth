@@ -107,7 +107,6 @@ public class C7nCustomRedisTokenStore extends CustomRedisTokenStore {
                 }
                 // 如果 refresh token 未过期 && 开启了 access token 续期 = 刷新 access token
                 if (!refreshTokenExpired && accessTokenAutoRenewal) {
-                    LOGGER.info("=====Open the renewal!====");
                     if (token.getExpiration().getTime() <= new Date(System.currentTimeMillis() + (30 * 60 * 1000L)).getTime()) {
                         LOGGER.info("=====Automatic renewal!====");
                         Date expireDate = new Date(System.currentTimeMillis() + (accessTokenValiditySeconds * 1000L));
