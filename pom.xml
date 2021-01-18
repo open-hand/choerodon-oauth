@@ -29,6 +29,7 @@
         <dependency>
             <groupId>org.hzero</groupId>
             <artifactId>hzero-oauth</artifactId>
+            <version>1.5.3.RELEASE</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.hzero.starter</groupId>
