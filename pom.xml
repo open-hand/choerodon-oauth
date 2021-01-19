@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.choerodon</groupId>
         <artifactId>choerodon-framework-parent</artifactId>
-        <version>0.18.1.RELEASE</version>
+        <version>0.18.2.RELEASE</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -29,7 +29,6 @@
         <dependency>
             <groupId>org.hzero</groupId>
             <artifactId>hzero-oauth</artifactId>
-            <version>1.5.3.RELEASE</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.hzero.starter</groupId>
