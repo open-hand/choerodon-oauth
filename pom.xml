@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.choerodon</groupId>
         <artifactId>choerodon-framework-parent</artifactId>
-        <version>0.18.1.RELEASE</version>
+        <version>0.18.2.RELEASE</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
