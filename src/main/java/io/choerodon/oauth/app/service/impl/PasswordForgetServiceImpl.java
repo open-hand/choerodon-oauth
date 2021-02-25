@@ -3,10 +3,13 @@ package io.choerodon.oauth.app.service.impl;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import groovy.lang.Lazy;
 import org.hzero.boot.message.MessageClient;
 import org.hzero.boot.message.entity.MessageSender;
 import org.hzero.boot.message.entity.Receiver;
+import org.hzero.boot.oauth.domain.entity.BasePasswordPolicy;
 import org.hzero.boot.oauth.domain.entity.BaseUser;
+import org.hzero.boot.oauth.domain.repository.BasePasswordPolicyRepository;
 import org.hzero.boot.oauth.domain.service.UserPasswordService;
 import org.hzero.boot.oauth.policy.PasswordPolicyManager;
 import org.hzero.core.message.MessageAccessor;
@@ -67,6 +70,10 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
     private UserRepository userRepository;
     @Autowired
     private EncryptClient encryptClient;
+    @Autowired
+    @Lazy
+    private  BasePasswordPolicyRepository basePasswordPolicyRepository;
+
 
     public PasswordForgetServiceImpl(
             UserService userService,
@@ -216,7 +223,9 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
             BaseUser baseUser = new BaseUser();
             BeanUtils.copyProperties(user, baseUser);
             baseUser.setPassword(decryptPassword);
-            passwordPolicyManager.passwordValidate(decryptPassword, user.getOrganizationId(), baseUser);
+            BasePasswordPolicy passwordPolicy = basePasswordPolicyRepository.selectPasswordPolicy(user.getOrganizationId());
+            Long tenantId = passwordPolicy.getEnablePassword() ? user.getOrganizationId() : 0L;
+            passwordPolicyManager.passwordValidate(decryptPassword, tenantId, baseUser);
         } catch (CommonException e) {
             LOGGER.error(e.getMessage());
             passwordForgetDTO.setSuccess(false);
