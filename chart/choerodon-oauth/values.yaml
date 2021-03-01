@@ -99,6 +99,8 @@ env:
     # 日志级别
     LOG_LEVEL: info
     HZERO_OAUTH_BASE_URL: http://api.example.com/oauth
+    CHOERODON_COOKIE_SAMESITE: lax
+    CHOERODON_COOKIE_SECURE: false
 
     # 备案号
     CHOERODON_DEFAULT_ICP:

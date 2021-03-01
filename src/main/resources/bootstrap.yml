@@ -4,8 +4,8 @@ server:
     context-path: /oauth
     session:
       cookie:
-        sameSite: none
-        secure: true
+        sameSite: ${CHOERODON_COOKIE_SAMESITE:lax}
+        secure: ${CHOERODON_COOKIE_SECURE:false}
 
 management:
   server:
