@@ -18,6 +18,7 @@ public class C7nSecurityConfig {
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
         cookieSerializer.setSameSite("None");
+        cookieSerializer.setUseSecureCookie(true);
         return cookieSerializer;
     }
 
