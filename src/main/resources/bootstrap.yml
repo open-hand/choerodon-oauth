@@ -2,6 +2,11 @@ server:
   port: 8020
   servlet:
     context-path: /oauth
+    session:
+      cookie:
+        sameSite: none
+        secure: true
+
 management:
   server:
     port: 8021
