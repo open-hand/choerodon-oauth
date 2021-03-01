@@ -15,6 +15,10 @@ import org.springframework.context.annotation.ComponentScan;
 public class OauthApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(OauthApplication.class, args);
+        try {
+            SpringApplication.run(OauthApplication.class, args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
