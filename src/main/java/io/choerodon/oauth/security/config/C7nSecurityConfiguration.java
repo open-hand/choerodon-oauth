@@ -1,6 +1,5 @@
 package io.choerodon.oauth.security.config;
 
-import io.choerodon.oauth.security.custom.C7nCustomRedisTokenStore;
 import org.hzero.oauth.infra.constant.Constants;
 import org.hzero.oauth.security.config.SecurityProperties;
 import org.hzero.oauth.security.custom.CustomAuthenticationKeyGenerator;
@@ -14,6 +13,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.oauth2.provider.token.AuthenticationKeyGenerator;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.session.SessionRepository;
+
+import io.choerodon.oauth.security.custom.C7nCustomRedisTokenStore;
 
 /**
  * @author scp

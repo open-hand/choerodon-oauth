@@ -182,6 +182,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+
     private RequestCache getRequestCache(HttpSecurity http) {
         RequestCache result = http.getSharedObject(RequestCache.class);
         if (result != null) {

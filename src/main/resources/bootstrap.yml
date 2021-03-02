@@ -2,6 +2,11 @@ server:
   port: 8020
   servlet:
     context-path: /oauth
+    session:
+      cookie:
+        sameSite: ${CHOERODON_COOKIE_SAMESITE:lax}
+        secure: ${CHOERODON_COOKIE_SECURE:false}
+
 management:
   server:
     port: 8021

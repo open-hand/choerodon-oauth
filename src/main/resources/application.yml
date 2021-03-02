@@ -180,6 +180,7 @@ hzero:
 
 choerodon:
   default:
+     company: ""
      icp: ""
 logging:
   level: 
