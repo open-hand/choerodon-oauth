@@ -64,6 +64,9 @@ public class OauthC7NController {
     @Value("${choerodon.default.icp: }")
     private String icp;
 
+    @Value("${choerodon.default.company: }")
+    private String company;
+
     private final SecurityProperties securityProperties;
 
     private final EncryptClient encryptClient;
@@ -108,6 +111,10 @@ public class OauthC7NController {
 
         if (icp != null && !icp.equals("")) {
             model.addAttribute("icp", icp);
+        }
+
+        if (company != null && !company.equals("")) {
+            model.addAttribute("company", company);
         }
 
         if (user == null) {
