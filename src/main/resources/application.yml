@@ -165,7 +165,7 @@ hzero:
       provider:
         # 用于cas
         key: ${HZERO_OAUTH_SSO_PROVIDER_KEY:hzero}
-      service: 
+      service:
         baseUrl: ${hzero.oauth.login.gateway-domain}
       saml:
         entity_id: hzero:org:sp
@@ -180,10 +180,10 @@ hzero:
 
 choerodon:
   default:
-     company: ""
-     icp: ""
+     company: ${CHOERODON_DEFAULT_COMPANY:Copyright © The choerodon Author®. All rights reserved. }
+     icp: ${CHOERODON_DEFAULT_ICP:}
 logging:
-  level: 
+  level:
     org.hzero: ${LOG_LEVEL:info}
     io.choerodon: ${LOG_LEVEL:info}
     org.springframework.security: ${LOG_LEVEL:info}
