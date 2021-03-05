@@ -102,10 +102,10 @@ env:
     CHOERODON_COOKIE_SAMESITE: lax
     CHOERODON_COOKIE_SECURE: false
 
-    # 备案号
-    CHOERODON_DEFAULT_ICP:
-    # 公司
-    CHOERODON_DEFAULT_COMPANY:
+#    # 备案号
+#    CHOERODON_DEFAULT_ICP:
+#    # 公司
+#    CHOERODON_DEFAULT_COMPANY:
 #    JAVA_OPTS: >-
 #      -Xms1024m
 #      -Xmx1536m
