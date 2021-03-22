@@ -42,7 +42,7 @@ eureka:
     leaseExpirationDurationInSeconds: 30
     # 服务的一些元数据信息
     metadata-map:
-      VERSION: 0.24.0-alpha.1.RELEASE
+      VERSION: ${CHART_VERSION:0.24.0-alpha.2-SNAPSHOT}
       CONTEXT: /oauth
   client:
     serviceUrl:
