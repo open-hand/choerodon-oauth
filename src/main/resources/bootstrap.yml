@@ -38,8 +38,11 @@ eureka:
   instance:
     # 以IP注册到注册中心
     preferIpAddress: ${EUREKA_INSTANCE_PREFER_IP_ADDRESS:true}
-    leaseRenewalIntervalInSeconds: 10
-    leaseExpirationDurationInSeconds: 30
+    # 续约间隔时间，默认30秒
+    leaseRenewalIntervalInSeconds: ${EUREKA_INSTANCE_LEASE_RENEWAL_INTERVAL_IN_SECONDS:30}
+    # 实例故障摘除时间，默认90秒，实际是90*2=180秒，配置45就是90秒
+    leaseExpirationDurationInSeconds: ${EUREKA_INSTANCE_LEASE_EXPIRATION_DURATION_IN_SECONDS:45}
+    # 服务的一些元数据信息
     # 服务的一些元数据信息
     metadata-map:
       VERSION: ${CHART_VERSION:0.24.0-alpha.2-SNAPSHOT}
