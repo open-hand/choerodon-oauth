@@ -147,6 +147,7 @@ hzero:
     base-url: ${HZERO_OAUTH_BASE_URL:http://api.example.com/oauth}
     login:
       page: ${HZERO_OAUTH_LOGIN_PAGE:/choerodon/login}
+      processing-url: ${HZERO_OAUTH_LOGIN_PAGE:/choerodon/login}
       #网关是否启用https
       enable-https: ${HZERO_OAUTH_LOGIN_ENABLE_HTTPS:false}
       # 跳转到默认登录成功地址时使用的客户端ID
