@@ -229,7 +229,8 @@ public class PasswordForgetServiceImpl implements PasswordForgetService {
         } catch (CommonException e) {
             LOGGER.error(e.getMessage());
             passwordForgetDTO.setSuccess(false);
-            passwordForgetDTO.setMessage(e.getMessage());
+            passwordForgetDTO.setCode(e.getMessage());
+            passwordForgetDTO.setMessage(MessageAccessor.getMessage(e.getMessage()).desc());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return passwordForgetDTO;
         }
