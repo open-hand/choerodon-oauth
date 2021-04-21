@@ -48,7 +48,12 @@
                     <groupId>org.hzero.starter</groupId>
                     <artifactId>hzero-starter-hitoa</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.hzero.starter</groupId>
+                    <artifactId>hzero-starter-mybatis-mapper</artifactId>
+                </exclusion>
             </exclusions>
+            <version>1.6.2.RELEASE</version>
         </dependency>
 
 
