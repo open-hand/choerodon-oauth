@@ -149,18 +149,19 @@ public class OAuth2Authentication extends AbstractAuthenticationToken {
 			return false;
 		}
 
-		org.springframework.security.oauth2.provider.OAuth2Authentication that = (org.springframework.security.oauth2.provider.OAuth2Authentication) o;
+		OAuth2Authentication that = (OAuth2Authentication) o;
 
 		if (!storedRequest.equals(that.storedRequest)) {
 			return false;
 		}
-		if (!Objects.equals(userAuthentication, that.userAuthentication)) {
+		if (userAuthentication != null ? !userAuthentication.equals(that.userAuthentication)
+				: that.userAuthentication != null) {
 			return false;
 		}
 
-		//if (getDetails()!=null ? !getDetails().equals(that.getDetails()) : that.getDetails()!=null) {
-		//	// return false;
-		//}
+		if (getDetails()!=null ? !getDetails().equals(that.getDetails()) : that.getDetails()!=null) {
+			// return false;
+		}
 
 		return true;
 	}
