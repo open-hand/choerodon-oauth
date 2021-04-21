@@ -1,15 +1,12 @@
-package springframework.security.oauth2.provider;
+package org.springframework.security.oauth2.provider;
 
 import java.security.Principal;
-import java.util.Objects;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.OAuth2Request;
 
 /**
  * An OAuth 2 authentication token can contain two authentications: one for the client and one for the user. Since some
