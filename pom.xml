@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.choerodon</groupId>
         <artifactId>choerodon-framework-parent</artifactId>
-        <version>0.19.1.RELEASE</version>
+        <version>0.19.2.RELEASE</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -43,12 +43,7 @@
                     <groupId>org.hzero.starter</groupId>
                     <artifactId>hzero-starter-hitoa</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>org.hzero.starter</groupId>
-                    <artifactId>hzero-starter-mybatis-mapper</artifactId>
-                </exclusion>
             </exclusions>
-            <version>1.6.2.RELEASE</version>
         </dependency>
 
         <dependency>
