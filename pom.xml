@@ -47,7 +47,6 @@
                     <artifactId>hzero-starter-mybatis-mapper</artifactId>
                 </exclusion>
             </exclusions>
-            <version>1.6.2.RELEASE</version>
         </dependency>
 
 
