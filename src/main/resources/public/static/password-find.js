@@ -44,7 +44,8 @@ class App extends window.React.Component {
     this.setState({
       currentUsername: e.target.value
     })
-    const p = /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/;
+
+    const p = /^\w+([.-]?)\w+@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/;
     if (e.target.value && !p.test(e.target.value)) {
       this.setState({
         account: {
