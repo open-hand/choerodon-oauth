@@ -12,4 +12,6 @@ public interface UserService {
     UserE updateSelective(UserE userE);
 
     UserE queryByEmail(String email);
+
+    void bindUserPhone(String phone, String captcha, String bindUserPhone);
 }
