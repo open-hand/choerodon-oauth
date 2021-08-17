@@ -177,14 +177,6 @@ public class OauthC7NController {
         }
     }
 
-//    /**
-//     * 判断用户是否登录
-//     * @return
-//     */
-//    @ResponseBody
-//    @GetMapping(value = "/is_login")
-//    public Boolean isLogin() {
-//        CustomUserDetails userDetails = DetailsHelper.getUserDetails();
-//        return userDetails != null;
-//    }
+
+
 }
