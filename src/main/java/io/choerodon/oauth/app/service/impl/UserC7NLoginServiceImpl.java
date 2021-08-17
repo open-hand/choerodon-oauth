@@ -24,12 +24,14 @@ import org.hzero.starter.captcha.domain.sms.pre.SmsPreResult;
 import org.hzero.starter.captcha.infra.builder.CaptchaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.choerodon.oauth.infra.mapper.UserMapper;
 
 /**
  * Created by wangxiang on 2021/8/17
  */
 public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
+
+    private static final String LDAP_PHONE_ERROR_MSG = "ldap.users.please.log.in.with.an.account";
+
 
     @Autowired
     private BaseUserRepository baseUserRepository;
@@ -62,8 +64,8 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
                 return SmsPreResult.failure(MessageAccessor.getMessage(LoginExceptions.PHONE_NOT_FOUND.value(), LoginUtil.getLanguageLocale()).desc());
             } else {
                 //判断是不是ldap用户
-                if (user.getLdap()){
-                    return SmsPreResult.failure(MessageAccessor.getMessage("ldap用户请使用账号登录", LoginUtil.getLanguageLocale()).desc());
+                if (user.getLdap()) {
+                    return SmsPreResult.failure(MessageAccessor.getMessage(LDAP_PHONE_ERROR_MSG, LoginUtil.getLanguageLocale()).desc());
                 }
             }
         }
@@ -84,8 +86,8 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
         Map<String, String> params = new HashMap<>(2);
         params.put(CaptchaResult.FIELD_CAPTCHA, captchaPreResult.getCaptcha());
         try {
-//            messageClient.async().sendMessage(BaseConstants.DEFAULT_TENANT_ID, configGetter.getValue(ProfileCode.MSG_CODE_MOBILE_LOGIN), null,
-//                    Collections.singletonList(new Receiver().setPhone(phone).setIdd(internationalTelCode)), params, Collections.singletonList("SMS"));
+            messageClient.async().sendMessage(BaseConstants.DEFAULT_TENANT_ID, configGetter.getValue(ProfileCode.MSG_CODE_MOBILE_LOGIN), null,
+                    Collections.singletonList(new Receiver().setPhone(phone).setIdd(internationalTelCode)), params, Collections.singletonList("SMS"));
         } catch (Exception e) {
             // 消息发送异常
             captchaPreResult = SmsPreResult.failure(MessageAccessor.getMessage("hoth.warn.captcha.sendPhoneCaptchaError", LoginUtil.getLanguageLocale()).desc());

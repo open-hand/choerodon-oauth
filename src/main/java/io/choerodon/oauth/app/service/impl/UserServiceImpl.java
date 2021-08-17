@@ -9,15 +9,36 @@ import io.choerodon.oauth.api.validator.UserValidator;
 import io.choerodon.oauth.app.service.UserService;
 import io.choerodon.oauth.infra.dto.UserE;
 import io.choerodon.oauth.infra.mapper.UserMapper;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hzero.common.HZeroService;
+import org.hzero.core.user.PlatformUserType;
+import org.hzero.core.user.UserType;
+import org.hzero.core.util.AssertUtils;
+import org.hzero.oauth.domain.entity.User;
+import org.hzero.oauth.domain.repository.UserRepository;
+import org.hzero.oauth.security.exception.CustomAuthenticationException;
+import org.hzero.oauth.security.exception.ErrorWithTimesException;
+import org.hzero.oauth.security.exception.LoginExceptions;
+import org.hzero.oauth.security.sms.SmsAuthenticationDetails;
+import org.hzero.starter.captcha.domain.sms.valid.SmsValidResult;
+import org.hzero.starter.captcha.infra.builder.CaptchaBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 /**
  * @author dongfan117@gmail.com
  */
 @Service("userService")
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Value("${choerodon.oauth.login.field:mail,phone}")
     private String[] queryField;
@@ -25,6 +46,8 @@ public class UserServiceImpl implements UserService{
     private UserMapper userMapper;
     @Autowired
     private UserValidator userValidator;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public UserE queryByLoginField(String field) {
@@ -75,5 +98,39 @@ public class UserServiceImpl implements UserService{
         UserE user = new UserE();
         user.setEmail(email);
         return userMapper.selectOne(user);
+    }
+
+    @Override
+    public void bindUserPhone(String phone, String inputCaptcha, String captchaKey) {
+        // 检查验证码
+        validSmsCode(phone, inputCaptcha, captchaKey);
+        //2.跟新数据库
+        User user = userRepository.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
+        AssertUtils.notNull(user, "error.user.is.null");
+        user.setPhone(phone);
+        userRepository.updateByPrimaryKey(user);
+    }
+
+    private void validSmsCode(String phone, String inputCaptcha, String captchaKey) {
+        String businessScope = "";
+        if (StringUtils.isAnyEmpty(inputCaptcha, captchaKey)) {
+            LOGGER.info("Sms authentication failure, captcha incorrect. mobile: [{}], captcha: [{}]", phone, inputCaptcha);
+            throw new CustomAuthenticationException(LoginExceptions.LOGIN_MOBILE_CAPTCHA_NULL.value());
+        }
+
+        // 短信校验
+        SmsValidResult smsValidResult = CaptchaBuilder.Valid.Sms.of(captchaKey, inputCaptcha)
+                .setPrefix(HZeroService.Oauth.CODE)
+                .setUserType("P")
+                .setBusinessScope(businessScope)
+                .setCheckMobile(phone)
+                .execute();
+
+        if (smsValidResult.isFailure()) {
+            ErrorWithTimesException ex = new ErrorWithTimesException(smsValidResult.getMessage());
+            ex.setErrorTimes(smsValidResult.getErrorTimes());
+            ex.setSurplusTimes(smsValidResult.getSurplusTimes());
+            throw ex;
+        }
     }
 }
