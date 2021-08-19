@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Objects;
 import org.hzero.boot.message.MessageClient;
 import org.hzero.boot.message.entity.Receiver;
-import org.hzero.boot.oauth.domain.repository.BaseUserRepository;
-import org.hzero.boot.platform.profile.getter.ConfigGetter;
 import org.hzero.common.HZeroService;
 import org.hzero.core.base.BaseConstants;
 import org.hzero.core.captcha.CaptchaResult;
@@ -16,7 +14,6 @@ import org.hzero.core.user.UserType;
 import org.hzero.oauth.domain.entity.User;
 import org.hzero.oauth.domain.repository.UserRepository;
 import org.hzero.oauth.domain.service.impl.UserLoginServiceImpl;
-import org.hzero.oauth.domain.utils.ProfileCode;
 import org.hzero.oauth.security.exception.LoginExceptions;
 import org.hzero.oauth.security.util.LoginUtil;
 import org.hzero.starter.captcha.domain.core.pre.CaptchaPreResult;
@@ -32,15 +29,12 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
 
     private static final String LDAP_PHONE_ERROR_MSG = "ldap.users.please.log.in.with.an.account";
 
+    private static final String SMS_MESSAGE_CODE = "SMS_CAPTCHA_NOTICE";
 
-    @Autowired
-    private BaseUserRepository baseUserRepository;
 
     @Autowired
     private MessageClient messageClient;
 
-    @Autowired
-    private ConfigGetter configGetter;
 
     @Autowired
     private UserRepository userRepository;
@@ -86,7 +80,7 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
         Map<String, String> params = new HashMap<>(2);
         params.put(CaptchaResult.FIELD_CAPTCHA, captchaPreResult.getCaptcha());
         try {
-            messageClient.async().sendMessage(BaseConstants.DEFAULT_TENANT_ID, configGetter.getValue(ProfileCode.MSG_CODE_MOBILE_LOGIN), null,
+            messageClient.async().sendMessage(BaseConstants.DEFAULT_TENANT_ID, SMS_MESSAGE_CODE, null,
                     Collections.singletonList(new Receiver().setPhone(phone).setIdd(internationalTelCode)), params, Collections.singletonList("SMS"));
         } catch (Exception e) {
             // 消息发送异常
