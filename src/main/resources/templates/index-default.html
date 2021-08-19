@@ -413,7 +413,7 @@
     </div>
   </form>
 </div>
-<div style="position:absolute;z-index:999;bottom:10px;color:#555;font-size: 12px;text-align: center;"><span th:text="${company}|"></span><a href=" " target="_blank" th:text="${icp}!=null?'&nbsp;&nbsp;'+${icp}:''"></a>
+<div style="position:absolute;z-index:999;bottom:10px;color:#555;font-size: 12px;text-align: center;"><span th:text="${company}|"></span><a th:href="${icpUrl}" target="_blank" th:text="${icp}!=null?'&nbsp;&nbsp;'+${icp}:''"></a>
 </div>
 
 </body>
