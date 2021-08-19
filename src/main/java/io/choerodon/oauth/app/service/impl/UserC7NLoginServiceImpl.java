@@ -78,7 +78,7 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
         }
 
         Map<String, String> params = new HashMap<>(2);
-        params.put(CaptchaResult.FIELD_CAPTCHA, captchaPreResult.getCaptcha());
+        params.put("code", captchaPreResult.getCaptcha());
         try {
             messageClient.async().sendMessage(BaseConstants.DEFAULT_TENANT_ID, SMS_MESSAGE_CODE, null,
                     Collections.singletonList(new Receiver().setPhone(phone).setIdd(internationalTelCode)), params, Collections.singletonList("SMS"));
