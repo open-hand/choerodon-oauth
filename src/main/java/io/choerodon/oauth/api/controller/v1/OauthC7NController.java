@@ -116,7 +116,7 @@ public class OauthC7NController {
         }
 
         if (icpUrl != null && !icpUrl.equals("")) {
-            model.addAttribute("icpUrl", icp);
+            model.addAttribute("icpUrl", icpUrl);
         }
 
         if (company != null && !company.equals("")) {
