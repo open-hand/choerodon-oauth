@@ -5,15 +5,19 @@ import org.hzero.boot.oauth.domain.repository.BasePasswordPolicyRepository;
 import org.hzero.boot.oauth.domain.service.BaseUserService;
 import org.hzero.boot.oauth.policy.PasswordPolicyManager;
 import org.hzero.oauth.domain.repository.UserRepository;
+import org.hzero.oauth.domain.service.UserLoginService;
+import org.hzero.oauth.domain.service.impl.UserLoginServiceImpl;
 import org.hzero.oauth.security.config.SecurityProperties;
 import org.hzero.oauth.security.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
 import io.choerodon.oauth.app.service.impl.C7nUserAccountService;
+import io.choerodon.oauth.app.service.impl.UserC7NLoginServiceImpl;
 import io.choerodon.oauth.infra.mapper.MemberRoleMapper;
 import io.choerodon.oauth.infra.mapper.TenantMapper;
 
@@ -49,6 +53,11 @@ public class C7nSecurityConfig {
                                                  BaseClientRepository baseClientRepository,
                                                  SecurityProperties securityProperties) {
         return new C7nUserAccountService(userRepository, baseUserService, passwordPolicyManager, basePasswordPolicyRepository, baseClientRepository, securityProperties, memberRoleMapper, tenantMapper);
+    }
+
+    @Bean
+    public UserLoginService userLoginService() {
+        return new UserC7NLoginServiceImpl();
     }
 
 }

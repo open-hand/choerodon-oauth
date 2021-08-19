@@ -30,7 +30,16 @@ spring:
   resources:
     # 资源缓存时间，单位秒
     cache:
-      period: 3600
+      cachecontrol:
+        max-age: 604800
+      period: 604800
+    static-locations: classpath:/public/,classpath:/templates/
+    chain:
+      strategy:
+        content:
+          paths: /public/**,/templates/**,/css/**,/js/**,/img/**
+          enabled: true
+
     # 开启gzip压缩
     chain.gzipped: true
     # 启用缓存
@@ -130,6 +139,13 @@ hzero:
   captcha:
     # 是否启用验证码
     enable: true
+    sms:
+      # 验证码过期时长一分钟
+      expire: ${HZERO_CAPTCHA_SMS_EXPIRE:1}
+      # 验证码间隔发送时间60s
+      interval: ${HZERO_CAPTCHA_SMS_INTERVAL:60}
+      #验证码长度6位
+      char-length: ${HZERO_CAPTCHA_SMS_CHAR_LENGTH:6}
   oauth:
     # token续期
     access-token-auto-renewal: true
