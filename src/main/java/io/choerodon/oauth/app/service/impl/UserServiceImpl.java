@@ -111,20 +111,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void bindUserPhone(String phone, String inputCaptcha, String captchaKey) {
+    public Boolean bindUserPhone(String phone, String inputCaptcha, String captchaKey) {
         // 检查验证码
         validSmsCode(phone, inputCaptcha, captchaKey);
         //2.跟新数据库
         User user = userRepository.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
         AssertUtils.notNull(user, "error.user.is.null");
-        user.setPhone(phone);
-        userRepository.updateByPrimaryKey(user);
-
         UserInfoE userInfoE = userInfoMapper.selectByPrimaryKey(user.getId());
+
         if (!Objects.isNull(userInfoE)) {
-            userInfoE.setPhoneCheckFlag(BaseConstants.Flag.NO);
-            userInfoMapper.updateByPrimaryKey(userInfoE);
+            if (userInfoE.getPhoneCheckFlag().intValue() == BaseConstants.Flag.YES.intValue()) {
+                throw new CommonException("phone.number.has.been.bound");
+            }
+            userInfoE.setPhoneCheckFlag(BaseConstants.Flag.YES);
+            if (userInfoMapper.updateByPrimaryKey(userInfoE) == 1) {
+                return Boolean.TRUE;
+            }
         }
+        return Boolean.FALSE;
     }
 
     private void validSmsCode(String phone, String inputCaptcha, String captchaKey) {
