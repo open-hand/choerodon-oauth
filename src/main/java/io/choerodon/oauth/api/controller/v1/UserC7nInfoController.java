@@ -2,6 +2,7 @@ package io.choerodon.oauth.api.controller.v1;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.hzero.core.util.Results;
 import org.hzero.oauth.config.SwaggerApiConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,11 +31,11 @@ public class UserC7nInfoController {
     @ApiOperation(value = "非ldap用户绑定手机号的接口")
     @PostMapping("/bind/user/phone")
     @Permission(level = ResourceLevel.ORGANIZATION)
-    public ResponseEntity<Void> bindUserPhone(@RequestParam String phone,
+    public ResponseEntity<Boolean> bindUserPhone(@RequestParam String phone,
                                               @RequestParam String captcha,
                                               @RequestParam String captchaKey) {
 
-        userService.bindUserPhone(phone, captcha, captchaKey);
-        return ResponseEntity.ok().build();
+
+        return Results.success(userService.bindUserPhone(phone, captcha, captchaKey));
     }
 }
