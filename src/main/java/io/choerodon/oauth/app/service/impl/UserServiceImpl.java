@@ -1,6 +1,7 @@
 package io.choerodon.oauth.app.service.impl;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import io.choerodon.core.exception.CommonException;
@@ -8,10 +9,15 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.api.validator.UserValidator;
 import io.choerodon.oauth.app.service.UserService;
 import io.choerodon.oauth.infra.dto.UserE;
+import io.choerodon.oauth.infra.dto.UserInfoE;
+import io.choerodon.oauth.infra.mapper.UserInfoMapper;
 import io.choerodon.oauth.infra.mapper.UserMapper;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hzero.boot.oauth.domain.entity.BaseUserInfo;
+import org.hzero.boot.oauth.infra.mapper.BaseUserInfoMapper;
 import org.hzero.common.HZeroService;
+import org.hzero.core.base.BaseConstants;
 import org.hzero.core.user.PlatformUserType;
 import org.hzero.core.user.UserType;
 import org.hzero.core.util.AssertUtils;
@@ -30,6 +36,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
@@ -48,6 +55,8 @@ public class UserServiceImpl implements UserService {
     private UserValidator userValidator;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserInfoMapper userInfoMapper;
 
     @Override
     public UserE queryByLoginField(String field) {
@@ -101,6 +110,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void bindUserPhone(String phone, String inputCaptcha, String captchaKey) {
         // 检查验证码
         validSmsCode(phone, inputCaptcha, captchaKey);
@@ -109,6 +119,12 @@ public class UserServiceImpl implements UserService {
         AssertUtils.notNull(user, "error.user.is.null");
         user.setPhone(phone);
         userRepository.updateByPrimaryKey(user);
+
+        UserInfoE userInfoE = userInfoMapper.selectByPrimaryKey(user.getId());
+        if (!Objects.isNull(userInfoE)) {
+            userInfoE.setPhoneCheckFlag(BaseConstants.Flag.NO);
+            userInfoMapper.updateByPrimaryKey(userInfoE);
+        }
     }
 
     private void validSmsCode(String phone, String inputCaptcha, String captchaKey) {
