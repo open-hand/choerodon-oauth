@@ -116,13 +116,14 @@ public class UserServiceImpl implements UserService {
     public BindReMsgVO bindUserPhone(String phone, String inputCaptcha, String captchaKey) {
         BindReMsgVO bindReMsgVO = new BindReMsgVO();
         try {
+            AssertUtils.notNull(phone,"hoth.warn.captcha.phoneNotNull");
             // 检查验证码
             validSmsCode(phone, inputCaptcha, captchaKey);
             //2.跟新数据库
             User user = userRepository.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
             AssertUtils.notNull(user, "error.user.is.null");
             UserInfoE userInfoE = userInfoMapper.selectByPrimaryKey(user.getId());
-            AssertUtils.isTrue(!user.getLdap(),"ldap.account.not.support.binding.phone");
+            AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
 
             if (!Objects.isNull(userInfoE)) {
                 if (userInfoE.getPhoneCheckFlag().intValue() == BaseConstants.Flag.YES.intValue()) {
@@ -133,19 +134,18 @@ public class UserServiceImpl implements UserService {
             }
             bindReMsgVO.setStatus(Boolean.TRUE);
         } catch (Exception e) {
-            bindReMsgVO.setStatus(Boolean.FALSE);
-            bindReMsgVO.setMessage(e.getMessage());
+            throw new CommonException(e.getMessage());
         }
-
         return bindReMsgVO;
 
     }
 
     private void validSmsCode(String phone, String inputCaptcha, String captchaKey) {
+
         String businessScope = "";
         if (StringUtils.isAnyEmpty(inputCaptcha, captchaKey)) {
             LOGGER.info("Sms authentication failure, captcha incorrect. mobile: [{}], captcha: [{}]", phone, inputCaptcha);
-            throw new CustomAuthenticationException(LoginExceptions.LOGIN_MOBILE_CAPTCHA_NULL.value());
+            throw new CommonException("choerodon.hoth.warn.captcha.null");
         }
 
         // 短信校验
