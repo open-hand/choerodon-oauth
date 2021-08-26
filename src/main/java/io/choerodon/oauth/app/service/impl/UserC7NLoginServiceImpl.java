@@ -82,7 +82,6 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
         try {
             messageClient.async().sendMessage(BaseConstants.DEFAULT_TENANT_ID, SMS_MESSAGE_CODE, null,
                     Collections.singletonList(new Receiver().setPhone(phone).setIdd(internationalTelCode)), params, Collections.singletonList("SMS"));
-            System.out.println(captchaPreResult.getCaptcha());
         } catch (Exception e) {
             // 消息发送异常
             captchaPreResult = SmsPreResult.failure(MessageAccessor.getMessage("hoth.warn.captcha.sendPhoneCaptchaError", LoginUtil.getLanguageLocale()).desc());
