@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import io.choerodon.core.exception.CommonException;
 
 import io.choerodon.oauth.api.validator.UserValidator;
+import io.choerodon.oauth.api.vo.BindReMsgVO;
 import io.choerodon.oauth.app.service.UserService;
 import io.choerodon.oauth.infra.dto.UserE;
 import io.choerodon.oauth.infra.dto.UserInfoE;
@@ -35,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -111,24 +113,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean bindUserPhone(String phone, String inputCaptcha, String captchaKey) {
-        // 检查验证码
-        validSmsCode(phone, inputCaptcha, captchaKey);
-        //2.跟新数据库
-        User user = userRepository.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
-        AssertUtils.notNull(user, "error.user.is.null");
-        UserInfoE userInfoE = userInfoMapper.selectByPrimaryKey(user.getId());
+    public BindReMsgVO bindUserPhone(String phone, String inputCaptcha, String captchaKey) {
+        BindReMsgVO bindReMsgVO = new BindReMsgVO();
+        try {
+            // 检查验证码
+            validSmsCode(phone, inputCaptcha, captchaKey);
+            //2.跟新数据库
+            User user = userRepository.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
+            AssertUtils.notNull(user, "error.user.is.null");
+            UserInfoE userInfoE = userInfoMapper.selectByPrimaryKey(user.getId());
+            AssertUtils.isTrue(!user.getLdap(),"ldap.account.not.support.binding.phone");
 
-        if (!Objects.isNull(userInfoE)) {
-            if (userInfoE.getPhoneCheckFlag().intValue() == BaseConstants.Flag.YES.intValue()) {
-                throw new CommonException("phone.number.has.been.bound");
+            if (!Objects.isNull(userInfoE)) {
+                if (userInfoE.getPhoneCheckFlag().intValue() == BaseConstants.Flag.YES.intValue()) {
+                    throw new CommonException("phone.number.has.been.bound");
+                }
+                userInfoE.setPhoneCheckFlag(BaseConstants.Flag.YES);
+                userInfoMapper.updateByPrimaryKey(userInfoE);
             }
-            userInfoE.setPhoneCheckFlag(BaseConstants.Flag.YES);
-            if (userInfoMapper.updateByPrimaryKey(userInfoE) == 1) {
-                return Boolean.TRUE;
-            }
+            bindReMsgVO.setStatus(Boolean.TRUE);
+        } catch (Exception e) {
+            bindReMsgVO.setStatus(Boolean.FALSE);
+            bindReMsgVO.setMessage(e.getMessage());
         }
-        return Boolean.FALSE;
+
+        return bindReMsgVO;
+
     }
 
     private void validSmsCode(String phone, String inputCaptcha, String captchaKey) {

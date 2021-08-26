@@ -1,6 +1,7 @@
 package io.choerodon.oauth.app.service;
 
 
+import io.choerodon.oauth.api.vo.BindReMsgVO;
 import io.choerodon.oauth.infra.dto.UserE;
 
 /**
@@ -13,5 +14,5 @@ public interface UserService {
 
     UserE queryByEmail(String email);
 
-    Boolean bindUserPhone(String phone, String captcha, String bindUserPhone);
+    BindReMsgVO bindUserPhone(String phone, String captcha, String bindUserPhone);
 }

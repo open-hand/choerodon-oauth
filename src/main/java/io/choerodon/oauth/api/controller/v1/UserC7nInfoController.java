@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.oauth.api.vo.BindReMsgVO;
 import io.choerodon.oauth.app.service.UserService;
 import io.choerodon.swagger.annotation.Permission;
 
@@ -30,10 +31,9 @@ public class UserC7nInfoController {
 
     @ApiOperation(value = "非ldap用户绑定手机号的接口")
     @PostMapping("/bind/user/phone")
-    @Permission(level = ResourceLevel.ORGANIZATION)
-    public ResponseEntity<Boolean> bindUserPhone(@RequestParam String phone,
-                                              @RequestParam String captcha,
-                                              @RequestParam String captchaKey) {
+    public ResponseEntity<BindReMsgVO> bindUserPhone(@RequestParam String phone,
+                                                     @RequestParam String captcha,
+                                                     @RequestParam String captchaKey) {
 
 
         return Results.success(userService.bindUserPhone(phone, captcha, captchaKey));
