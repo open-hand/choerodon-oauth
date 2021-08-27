@@ -20,7 +20,8 @@
       type="image/x-icon"
     />
     <link href="../public/static/choerodon-ui.min.css" rel="stylesheet" />
-    <!--<link href="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.css" rel="stylesheet"/>-->
+    <link href="../public/static/choerodon-ui-pro.min.css" rel="stylesheet" />
+    <!-- <link href="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.css" rel="stylesheet"/> -->
 
     <script src="../public/static/polyfill.min.js"></script>
     <script src="../public/static/jquery.min.js"></script>
@@ -33,7 +34,7 @@
     <script src="../public/static/jsencrypt.min.js"></script>
     <!--<script src="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.js"></script>-->
     <!--<script src="../public/static/choerodon-ui.min.js"></script>-->
-    <!--<script src="../public/static/choerodon-ui-pro.min.js"></script>-->
+    <script src="../public/static/choerodon-ui-pro.min.js"></script>
     <script src="../public/static/login.js" type="text/babel"></script>
     <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
     <title th:unless="${systemTitle}" th:text="Choerodon"></title>
@@ -53,6 +54,9 @@
         align-items: center;
         background-image: url("../public/static/bg.svg");
         background-size: cover;
+      }
+      .phone-login-form table tbody tr:nth-child(3) {
+        display: none;
       }
 
       .c7n-input:-webkit-autofill {
@@ -319,16 +323,17 @@
         font-weight: 400;
         color: #0f1358;
         margin-top: 29px;
+        margin-bottom: 26px;
       }
-      #loginTypeTabs div span {
+      #loginTypeTabs span {
         cursor: pointer;
         transition: color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
       }
-      #loginTypeTabs div .tabs-active {
+      #loginTypeTabs .tabs-active {
         position: relative;
         color: #5365ea;
       }
-      #loginTypeTabs div .tabs-active::before {
+      #loginTypeTabs .tabs-active::before {
         content: "";
         width: 130%;
         height: 2px;
@@ -392,7 +397,8 @@
       </div> -->
       <span class="loginSpan">登录猪齿鱼</span>
       <div id="loginTypeTabs"></div>
-      <form  class="form-vertical login-form" method="post" autocomplete="off">
+      <div id="form-content"></div>
+      <form class="form-vertical login-form" method="post" autocomplete="off">
         <div class="control-group">
           <div class="controls">
             <div
