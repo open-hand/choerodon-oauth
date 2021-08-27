@@ -74,8 +74,6 @@ class LoginButton extends window.React.Component {
       valueSecondLine = $.trim($("#verificationCode").val());
     }
 
-    // var username = $.trim($("#username").val());
-    var password = $.trim($("#password").val());
     if (valueFirstLine == "") {
       $("#usernameIsNullMsg").css("display", "block");
       if (activeKey === "1") {
@@ -97,16 +95,18 @@ class LoginButton extends window.React.Component {
       return;
     }
     if (activeKey === "1") {
-      $(".login-form").action = 'login'
+      $(".login-form").attr("action", "login");
       $("#md5_password").val(this.encryptPwd(valueSecondLine));
     } else {
-      $(".login-form").action = 'login/sms'
+      $(".login-form").attr("action", "login/sms");
     }
     $(".login-form").submit();
   };
 
   encryptPwd = (password) => {
     var publickey = $("#templateData").data("publickey");
+    publickey = 123;
+    console.log(publickey, "publickey");
     /* 有公钥 使用 rsa 加密, 否则使用 md5 加密 */
     if (publickey) {
       // 初始化加密器
@@ -295,15 +295,20 @@ class PasswordInput extends window.React.Component {
     // document.getElementById('password').parentNode.appendChild(elem);
   }
   getVerificationCode() {
-    let phone = $.trim($("#username").val());
+    let phone = $.trim($("#phone").val());
     fetch(
       `http://172.23.16.154:30094/oauth/public/send-phone-captcha?phone=${phone}`
     )
       .then(function (response) {
         return response.json();
       })
-      .then(function (myJson) {
-        console.log(myJson);
+      .then(function (res) {
+        console.log(res);
+        let myform = $(".login-form"); //得到form对象
+        let tmpInput = $("<input type='text' name='captchaKey'/>");
+        tmpInput.style.display= 'none'
+        tmpInput.attr("value", res.captchaKey);
+        myform.append(tmpInput);
       });
   }
 
