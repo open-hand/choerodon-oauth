@@ -373,6 +373,7 @@ class Content extends window.React.Component {
       time: 0,
       // kkk: $("#test").data("isNeedCaptcha"),
       kkk: true,
+      imgSrc: "/oauth/public/captcha",
     };
   }
 
@@ -399,6 +400,12 @@ class Content extends window.React.Component {
     document
       .getElementsByClassName("tabs")
       [+key - 1].classList.add("tabs-active");
+  }
+  refreshImg() {
+    let timestamp = new Date().valueOf();
+    this.setState({
+      imgSrc: "/oauth/public/captcha?code=" + timestamp,
+    });
   }
   submit() {
     document.getElementById("myForm").submit();
@@ -541,18 +548,19 @@ class Content extends window.React.Component {
             )}
             {/* 验证码 */}
 
-            {this.state.kkk && (
+            {this.state.kkk && this.state.activeKey !== "2" && (
               <div newLine colSpan={3}>
                 <div className="cccc">
                   <TextField
                     id="captchaKeyInput"
+                    label='验证码'
                     // colSpan={3}
                     name="captchaKey"
                     required
                   />
                   <img
                     id="imgObj"
-                    src="/oauth/public/captcha"
+                    src={this.state.imgSrc}
                     style={{
                       border: "1px solid #ccc",
                       // float: "right",
@@ -578,7 +586,7 @@ class Content extends window.React.Component {
                 }}
                 // onclick="changeImg()"
               ></i> */}
-                  <div>刷新</div>
+                  <div onClick={this.refreshImg.bind(this)}>刷新</div>
                 </div>
               </div>
             )}
@@ -597,7 +605,7 @@ class Content extends window.React.Component {
                   marginRight: 6,
                 }}
               >
-                |
+                <span>|</span>
               </span>
               <a href="./password/find">忘记密码</a>
             </div>
