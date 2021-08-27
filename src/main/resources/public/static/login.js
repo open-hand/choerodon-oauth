@@ -371,10 +371,13 @@ class Content extends window.React.Component {
       loading: false,
       text: "获取验证码",
       time: 0,
+      // kkk: $("#test").data("isNeedCaptcha"),
+      kkk: true,
     };
   }
 
   onChange(key) {
+    console.log(this.state.kkk);
     if (key === this.state.activeKey) {
       return;
     }
@@ -536,6 +539,50 @@ class Content extends window.React.Component {
                 />
               </div>
             )}
+            {/* 验证码 */}
+
+            {this.state.kkk && (
+              <div newLine colSpan={3}>
+                <div className="cccc">
+                  <TextField
+                    id="captchaKeyInput"
+                    // colSpan={3}
+                    name="captchaKey"
+                    required
+                  />
+                  <img
+                    id="imgObj"
+                    src="/oauth/public/captcha"
+                    style={{
+                      border: "1px solid #ccc",
+                      // float: "right",
+                      width: 88,
+                      height: 32,
+                    }}
+                    // onclick="changeImg()"
+                  />
+                  {/* <i
+                className="fa fa-refresh"
+                title="刷新验证码"
+                style={{
+                  cursor: "pointer",
+                  color: "#999",
+                  // float: "right",
+                  // position: "static !important",
+                  border: "1px solid #ccc",
+                  height: 32,
+                  lineHeight: 32,
+                  padding: "0px 6px",
+                  margin: 0,
+                  marginLeft: 5,
+                }}
+                // onclick="changeImg()"
+              ></i> */}
+                  <div>刷新</div>
+                </div>
+              </div>
+            )}
+
             {/* 注册 忘记密码 */}
 
             <div
@@ -554,7 +601,7 @@ class Content extends window.React.Component {
               </span>
               <a href="./password/find">忘记密码</a>
             </div>
-
+            {/* 登录 */}
             <div newLine colSpan={3}>
               <Button
                 type="primary"
@@ -580,14 +627,16 @@ class Content extends window.React.Component {
 // ReactDOM.render(<UsernameInupt />, document.getElementById("usernameInupt"));
 // ReactDOM.render(<PasswordInput />, document.getElementById("passwordInupt"));
 // ReactDOM.render(<LoginButton />, document.getElementById("loginButton"));
+
 ReactDOM.render(<Content />, document.getElementById("form-content"));
-if (document.getElementById("captchaInupt"))
-  ReactDOM.render(
-    <Input
-      label="验证码"
-      type="text"
-      style={{ width: "200px" }}
-      name="captcha"
-    />,
-    document.getElementById("captchaInupt")
-  );
+
+// if (document.getElementById("captchaInupt"))
+//   ReactDOM.render(
+//     <Input
+//       label="验证码"
+//       type="text"
+//       style={{ width: "200px" }}
+//       name="captcha"
+//     />,
+//     document.getElementById("captchaInupt")
+//   );
