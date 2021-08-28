@@ -1,4 +1,4 @@
-const { Input, Button } = window["choerodon-ui.min"];
+const { Input, Button, message } = window["choerodon-ui.min"];
 const { Form, TextField, Password } = window["choerodon-ui-pro.min"];
 
 class LoginTypeTabs extends window.React.Component {
@@ -365,22 +365,29 @@ let timer = null;
 class Content extends window.React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       action: "/oauth/choerodon/login",
       activeKey: "1",
       loading: false,
       text: "获取验证码",
       time: 0,
-      // kkk: $("#test").data("isNeedCaptcha"),
-      kkk: true,
+      captchaKey: '',
+      publicKey: $("#publicKeyTemplateData").data("publicKey"),
+      isNeedCaptcha: $("#isNeedCaptchaTemplateData").data("isNeedCaptcha"),
+      registerUrl: $("#isNeedCaptchaTemplateData").data("registerUrl"),
+      // isNeedCaptcha: true,
       imgSrc: "/oauth/public/captcha",
     };
   }
 
-  onChange(key) {
-    console.log(this.state.kkk);
+  tabOnChange(key) {
     if (key === this.state.activeKey) {
       return;
+    }
+    let list = document.getElementsByClassName("c7n-pro-validation-message");
+    for (let i = 0; i < list.length; i++) {
+      list[i].style.display = "none";
     }
     let obj = {
       1: "/oauth/choerodon/login",
@@ -407,16 +414,10 @@ class Content extends window.React.Component {
       imgSrc: "/oauth/public/captcha?code=" + timestamp,
     });
   }
-  submit() {
-    document.getElementById("myForm").submit();
-  }
-  getVerificationCode() {
-    if (this.state.time > 0) {
-      return;
-    }
+  forTime(time) {
     this.setState(
       {
-        time: 5,
+        time: time,
       },
       () => {
         timer = setInterval(() => {
@@ -430,19 +431,37 @@ class Content extends window.React.Component {
         }, 1000);
       }
     );
+  }
+  getVerificationCode() {
     let phone = document.getElementById("phoneInput").value;
+    if (!phone) {
+      return;
+    }
+    if (this.state.time > 0) {
+      return;
+    }
+    this.forTime(60);
     fetch(
       `http://172.23.16.154:30094/oauth/public/send-phone-captcha?phone=${phone}`
     )
-      .then(function (response) {
+      .then((response) => {
         return response.json();
       })
-      .then(function (res) {
+      .then((res) => {
         console.log(res);
-        let captchaKeyInput = $("#captchaKeyInput");
-        captchaKeyInput.attr("value", res.captchaKey);
+        if (res.success) {
+          message.success(res.message);
+          this.setState({
+            captchaKey: res.captchaKey
+          })
+        } else {
+          clearInterval(timer);
+          this.forTime(res.interval);
+          message.warning(res.message);
+        }
       });
   }
+
   render() {
     return (
       <div>
@@ -450,7 +469,7 @@ class Content extends window.React.Component {
           <span
             className="tabs tabs-active"
             onClick={() => {
-              this.onChange("1");
+              this.tabOnChange("1");
             }}
             style={{ marginRight: 32 }}
           >
@@ -459,7 +478,7 @@ class Content extends window.React.Component {
           <span
             className="tabs"
             onClick={() => {
-              this.onChange("2");
+              this.tabOnChange("2");
             }}
           >
             手机验证码
@@ -468,6 +487,7 @@ class Content extends window.React.Component {
 
         <div>
           <Form
+            target="_self"
             className={+this.state.activeKey === 2 ? "phone-login-form" : ""}
             id="myForm"
             method="post"
@@ -475,8 +495,10 @@ class Content extends window.React.Component {
             columns={3}
             labelLayout="float"
           >
+            {/* 登录名/邮箱登录 */}
             {this.state.activeKey === "1" && (
               <TextField
+                key={1}
                 colSpan={3}
                 width="100%"
                 label="登录名/邮箱"
@@ -495,9 +517,12 @@ class Content extends window.React.Component {
               />
             )}
 
+            {/* 手机验证登陆 */}
             {this.state.activeKey === "2" && (
               <TextField
+                key={2}
                 id="phoneInput"
+                pattern="1[3-9]\d{9}"
                 colSpan={3}
                 label="手机号"
                 name="phone"
@@ -510,6 +535,13 @@ class Content extends window.React.Component {
               <div colSpan={3} style={{ position: "relative" }}>
                 <TextField
                   style={{ width: "100%" }}
+                  validator={(value) => {
+                    const reg = /^\d{6}$/;
+                    if (reg.test(value)) {
+                      return true;
+                    }
+                    return "验证码应为6位数字";
+                  }}
                   label="验证码"
                   name="captcha"
                   required
@@ -539,6 +571,7 @@ class Content extends window.React.Component {
                 style={{ display: "none", height: "0px !important" }}
               >
                 <TextField
+                value={this.state.captchaKey}
                   id="captchaKeyInput"
                   colSpan={3}
                   name="captchaKey"
@@ -546,47 +579,53 @@ class Content extends window.React.Component {
                 />
               </div>
             )}
-            {/* 验证码 */}
 
-            {this.state.kkk && this.state.activeKey !== "2" && (
+            {/* 连续输入多次错误验证码 */}
+
+            {this.state.isNeedCaptcha && this.state.activeKey !== "2" && (
               <div newLine colSpan={3}>
-                <div className="cccc">
-                  <TextField
-                    id="captchaKeyInput"
-                    label='验证码'
-                    // colSpan={3}
-                    name="captchaKey"
-                    required
-                  />
-                  <img
-                    id="imgObj"
-                    src={this.state.imgSrc}
-                    style={{
-                      border: "1px solid #ccc",
-                      // float: "right",
-                      width: 88,
-                      height: 32,
-                    }}
-                    // onclick="changeImg()"
-                  />
-                  {/* <i
-                className="fa fa-refresh"
-                title="刷新验证码"
-                style={{
-                  cursor: "pointer",
-                  color: "#999",
-                  // float: "right",
-                  // position: "static !important",
-                  border: "1px solid #ccc",
-                  height: 32,
-                  lineHeight: 32,
-                  padding: "0px 6px",
-                  margin: 0,
-                  marginLeft: 5,
-                }}
-                // onclick="changeImg()"
-              ></i> */}
-                  <div onClick={this.refreshImg.bind(this)}>刷新</div>
+                <div className="line-container-captcha">
+                  <div>
+                    <TextField
+                      label="验证码"
+                      // colSpan={3}
+                      name="captcha"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <img
+                      id="imgObj"
+                      src={this.state.imgSrc}
+                      style={{
+                        border: "1px solid #ccc",
+                        width: 88,
+                        height: 32,
+                      }}
+                      onClick={this.refreshImg.bind(this)}
+                    />
+                    <span
+                      style={{
+                        marginLeft: 6,
+                        width: 16,
+                        height: 34,
+                        border: "1px solid #ccc",
+                        display: "inline-block",
+                        position: "relative",
+                        // top: 2,
+                        cursor: "pointer",
+                      }}
+                      onClick={this.refreshImg.bind(this)}
+                    >
+                      <img
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                        }}
+                        src="../public/static/refresh.svg"
+                      />
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
@@ -598,23 +637,27 @@ class Content extends window.React.Component {
               style={{ color: "#5365EA", textAlign: "right" }}
               colSpan={3}
             >
-              <a href="./password/find">注册</a>
-              <span
-                style={{
-                  marginLeft: 6,
-                  marginRight: 6,
-                }}
-              >
-                <span>|</span>
-              </span>
+              {this.state.registerUrl && (
+                <a href={this.state.registerUrl}>注册</a>
+              )}
+              {this.state.registerUrl && (
+                <span
+                  style={{
+                    marginLeft: 6,
+                    marginRight: 6,
+                  }}
+                >
+                  <span>|</span>
+                </span>
+              )}
               <a href="./password/find">忘记密码</a>
             </div>
             {/* 登录 */}
             <div newLine colSpan={3}>
               <Button
+                htmlType="submit"
                 type="primary"
                 className="btn"
-                onClick={this.submit}
                 funcType="raised"
                 loading={this.state.loading}
                 htmlStyle="padding-top:4px"
