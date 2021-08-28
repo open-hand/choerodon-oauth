@@ -24,10 +24,6 @@ class Content extends window.React.Component {
     if (key === this.state.activeKey) {
       return;
     }
-    let list = document.getElementsByClassName("c7n-pro-validation-message");
-    for (let i = 0; i < list.length; i++) {
-      list[i].style.display = "none";
-    }
     let obj = {
       1: "/oauth/choerodon/login",
       2: "/oauth/choerodon/login/sms",
