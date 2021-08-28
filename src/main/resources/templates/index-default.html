@@ -257,7 +257,7 @@
         display: block;
         height: 10px;
       }
-      .cccc {
+      .line-container-captcha {
         position: relative;
         display: flex;
         justify-content: space-between;
@@ -379,16 +379,36 @@
       .ant-btn-flat:hover {
         background: #3f51b5;
       }
+      .login {
+        position: relative;
+      }
+      .container-des {
+        position: absolute;
+        left: 24px;
+        top: 24px;
+      }
     </style>
-    <template id="templateData" th:attr="data-publicKey=${publicKey}">
+    <template id="publicKeyTemplateData" th:attr="data-publicKey=${publicKey}">
     </template>
-    <template id="test" th:attr="data-test=${isNeedCaptcha}">
+    <template
+      id="isNeedCaptchaTemplateData"
+      th:attr="data-isNeedCaptcha=${isNeedCaptcha}"
+    >
+    </template>
+    <template
+      id="registerUrlTemplateData"
+      th:attr="data-registerUrl=${registerUrl}"
+    >
     </template>
   </head>
   <body class="login">
     <script
       th:src="@{../public/static/captcha.js(t=${new java.util.Date().getTime()})}"
     ></script>
+    <div class='container-des'>
+      <img style='width:38px;height:28px;margin-right: 6px;' src="../public/static/logo.png" alt="">
+      <span style='font-size: 22px;font-weight: 600;position: relative;top: 4px;'>Choerodon</span>
+    </div>
 
     <div th:class="${isNeedCaptcha} ? 'content1' : 'content2'" id="content">
       <!-- <div style="display: flex; justify-content: center; margin-top: 50px">
@@ -550,6 +570,7 @@
           <div style="clear: both"></div>
         </div>
       </form> -->
+      
     </div>
     <div
       style="
