@@ -12,9 +12,15 @@ class Content extends window.React.Component {
       text: "获取验证码",
       time: 0,
       captchaKey: "",
-      publicKey: $("#publicKeyTemplateData").data("publicKey"),
-      isNeedCaptcha: $("#isNeedCaptchaTemplateData").data("isNeedCaptcha"),
-      registerUrl: $("#isNeedCaptchaTemplateData").data("registerUrl"),
+      publicKey: document
+        .getElementById("publicKeyTemplateData")
+        .getAttribute("data-publicKey"),
+      isNeedCaptcha: document
+        .getElementById("isNeedCaptchaTemplateData")
+        .getAttribute("data-isNeedCaptcha"),
+      registerUrl: document
+        .getElementById("registerUrlTemplateData")
+        .getAttribute("data-registerUrl"),
       // isNeedCaptcha: true,
       imgSrc: "/oauth/public/captcha",
     };
@@ -76,9 +82,7 @@ class Content extends window.React.Component {
       return;
     }
     this.forTime(60);
-    fetch(
-      `http://172.23.16.154:30094/oauth/public/send-phone-captcha?phone=${phone}`
-    )
+    fetch(`/oauth/public/send-phone-captcha?phone=${phone}`)
       .then((response) => {
         return response.json();
       })
