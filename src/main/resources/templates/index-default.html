@@ -1,420 +1,437 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8"/>
-  <meta http-equiv="Expires" content="0"/>
-  <meta http-equiv="Pragma" content="no-cache"/>
-  <meta http-equiv="Cache-control" content="no-cache"/>
-  <meta http-equiv="Cache" content="no-cache"/>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-  <link rel="shortcut icon" th:if="${favicon != null}" th:href="${favicon}"  type="image/x-icon"/>
-  <link rel="shortcut icon" th:unless="${favicon != null}" th:href="${'../static/icon.ico'}"  type="image/x-icon"/>
-  <link href="../static/choerodon-ui.min.css" rel="stylesheet"/>
-  <!--<link href="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.css" rel="stylesheet"/>-->
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Cache-control" content="no-cache" />
+    <meta http-equiv="Cache" content="no-cache" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <link
+      rel="shortcut icon"
+      th:if="${favicon != null}"
+      th:href="${favicon}"
+      type="image/x-icon"
+    />
+    <link
+      rel="shortcut icon"
+      th:unless="${favicon != null}"
+      th:href="${'../static/icon.ico'}"
+      type="image/x-icon"
+    />
+    <link href="../static/choerodon-ui.min.css" rel="stylesheet" />
+    <link href="../static/choerodon-ui-pro.min.css" rel="stylesheet" />
+    <!-- <link href="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.css" rel="stylesheet"/> -->
 
-  <script src="../static/polyfill.min.js"></script>
-  <script src="../static/jquery.min.js"></script>
-  <script src="../static/react.production.min.js"></script>
-  <script src="../static/react-dom.min.js"></script>
-  <script src="../static/babel.min.js"></script>
-  <script src="../static/mobx.umd.min.js"></script>
-  <script src="../static/moment.min.js"></script>
-  <script src="../static/choerodon-ui.min.js"></script>
-  <script src="../static/jsencrypt.min.js"></script>
-  <!--<script src="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.js"></script>-->
-  <!--<script src="../static/choerodon-ui.min.js"></script>-->
-  <!--<script src="../static/choerodon-ui-pro.min.js"></script>-->
-  <script src="../static/login.js" type="text/babel"></script>
-  <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
-  <title th:unless="${systemTitle}" th:text="Choerodon"></title>
-  <style>
-    html, body {
-      padding: 0px;
-      margin: 0px;
-      overflow: hidden;
-      font-family: 'Microsoft YaHei', arial;
-      // font-size: 13px;
-      line-height: 20px;
-      direction: ltr;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-image: url('../static/bg.svg');
-      background-size: cover;
-    }
+    <script src="../static/polyfill.min.js"></script>
+    <script src="../static/jquery.min.js"></script>
+    <script src="../static/react.production.min.js"></script>
+    <script src="../static/react-dom.min.js"></script>
+    <script src="../static/babel.min.js"></script>
+    <script src="../static/mobx.umd.min.js"></script>
+    <script src="../static/moment.min.js"></script>
+    <script src="../static/choerodon-ui.min.js"></script>
+    <script src="../static/jsencrypt.min.js"></script>
+    <!--<script src="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.js"></script>-->
+    <!--<script src="../static/choerodon-ui.min.js"></script>-->
+    <script src="../static/choerodon-ui-pro.min.js"></script>
+    <script src="../static/login.js" type="text/babel"></script>
+    <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
+    <title th:unless="${systemTitle}" th:text="Choerodon"></title>
+    <style>
+      html,
+      body {
+        padding: 0px;
+        margin: 0px;
+        overflow: hidden;
+        font-family: "Microsoft YaHei", arial;
+        line-height: 20px;
+        direction: ltr;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-image: url("../static/bg.svg");
+        background-size: cover;
+      }
+      .phone-login-form table tbody tr:nth-child(3) {
+        display: none;
+      }
 
-    .c7n-input:-webkit-autofill {
-      text-indent: 0 !important;
-    }
+      .c7n-input:-webkit-autofill {
+        text-indent: 0 !important;
+      }
 
-    .logoleft {
-      width: 85%;
-      height: 100%;
-      position: absolute;
-    }
+      .logoleft {
+        width: 85%;
+        height: 100%;
+        position: absolute;
+      }
 
-    .login .logo {
-      font-size: 30px;
-      width: 279px;
-      margin: 50px auto;
-      padding: 15px;
-      text-align: start;
-      position: relative;
-      color: #0366D6;
-      word-break: break-all;
-    }
+      .login .logo {
+        font-size: 30px;
+        width: 279px;
+        margin: 50px auto;
+        padding: 15px;
+        text-align: start;
+        position: relative;
+        color: #0366d6;
+        word-break: break-all;
+      }
 
-    .login #content {
-      padding-left: 42px;
-      background-color: #fff;
-      width: 454px;
-      min-height: 434px;
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.20);
-      padding-right: 42px;
-      border-radius: 2px;
-    }
+      .login #content {
+        padding-top: 52px;
+        padding-left: 42px;
+        background-color: #fff;
+        width: 454px;
+        min-height: 434px;
+        padding-right: 42px;
+        box-shadow: 0px 1px 12px 0px rgba(15, 19, 88, 0.14);
+        border-radius: 6px;
+      }
 
-    .login #content .form-title {
-      font-weight: 300;
-      margin-bottom: 25px;
-      font-size: 24.5px;
-    }
+      .login #content .form-title {
+        font-weight: 300;
+        margin-bottom: 25px;
+        font-size: 24.5px;
+      }
 
-    .login #content .login-form {
-      padding: 0px;
-      margin: 0px;
-    }
+      .login #content .login-form {
+        padding: 0px;
+        margin: 0px;
+      }
 
-    .alert-error {
-      color: #f92e2d;
-      position: absolute;
-      width: 270px;
-      margin-top: 16px;
-    }
+      .alert-error {
+        color: #f92e2d;
+        position: absolute;
+        width: 270px;
+        margin-top: 16px;
+      }
 
-    .login #content .control-group {
-      margin-top: 30px;
-    }
+      .login #content .control-group {
+        margin-top: 30px;
+      }
 
-    .control-label {
-      margin-top: 2px;
-      display: block;
-      margin-bottom: 5px;
-      font-size: 14px;
-      font-weight: normal;
-      line-height: 20px;
-      color: rgba(0, 0, 0, 0.87);
-    }
-
-    .registry-org::after {
-      content: '';
-      position: absolute;
-      top: 2px;
-      right: -10px;
-      height: 16px;
-      width: 0;
-      border-right: 1px solid rgba(0,0,0,.54);
-      border-bottom-width: 1px;
-    }
-
-    .input-icon {
-      border-width: 0px;
-      border-style: solid;
-      position: relative;
-    }
-
-    .ml {
-      margin-left: 10px;
-    }
-
-    .mr {
-      margin-right: 10px;
-    }
-
-    .login #content .input-icon .m-wrap {
-      margin: 0px !important;
-      position: relative;
-      left: 10px;
-    }
-
-    .login #content .m-wrap {
-      width: calc(100% - 10px);
-    }
-
-    select {
-      width: 220px;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      height: 30px;
-      line-height: 30px;
-    }
-
-    input.m-wrap {
-      border: 0;
-    }
-
-    input[type="text"].m-wrap, input[type="password"].m-wrap {
-      -webkit-appearance: none !important;
-      outline: 0;
-      padding: 6px 0px !important;
-      line-height: 20px;
-      font-size: 14px;
-      font-weight: normal;
-      vertical-align: top;
-      background-color: #ffffff;
-      background-image: none !important;
-      filter: none !important;
-      -webkit-box-shadow: none !important;
-      -moz-box-shadow: none !important;
-      box-shadow: none !important;
-      -webkit-border-radius: 0px;
-      -moz-border-radius: 0px;
-      border-radius: 0px;
-      background: transparent;
-    }
-
-    .login #content .form-actions {
-      clear: both;
-      margin-top: 20px;
-    }
-
-    input.error {
-      background: #fff0f0 !important;
-      border-color: #A90329;
-    }
-
-    .btn {
-      background-color: #3F51B5;
-      background-image: none;
-      filter: none;
-      border: 0;
-      text-shadow: none;
-      font-size: 14px;
-      color: #ffffff;
-      cursor: pointer;
-      outline: none;
-      -webkit-box-shadow: none !important;
-      -moz-box-shadow: none !important;
-      -webkit-border-radius: 0 !important;
-      -moz-border-radius: 0 !important;
-      box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.20), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12) !important;
-      border-radius: 2px !important;
-      width: 100%;
-      height: 38px;
-      margin-bottom: 52px;
-    }
-
-
-
-    @font-face {
-      font-family: 'FontAwesome';
-      src: url("../static/fontawesome-webfont.woff2") format('woff2');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    .ant-btn>div.btn-loading>span {
-      background: #fff;
-      border-color: #fff;
-      display: inline-block;
-      border-radius: 50%;
-      width: 7px;
-      height: 7px;
-    }
-
-
-    .fa {
-      display: inline-block;
-      font: normal normal normal 14px/1 FontAwesome;
-      font-size: inherit;
-      text-rendering: auto;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    .fa-refresh:before {
-      content: "\f021";
-    }
-
-    .arrow {
-      float: right;
-      font-size: 1.6rem;
-    }
-
-    #list {
-      float: right;
-      margin-top: 10px;
-      margin-right: 10px;
-      font-size: 2rem;
-    }
-
-    .remember {
-      text-align: right;
-    }
-
-    .resigter {
-      text-decoration: none;
-      margin-right: 10px;
-      font-size: 13px;
-      color: #999;
-    }
-
-    .forget {
-      text-decoration: none;
-      margin-left: 10px;
-      font-size: 13px;
-      color: #999;
-    }
-
-    .forget-passwd {
-      font-size: 10px;
-      color: #3F51B5;
-      float: right;
-      margin-top: 16px;
-      display: inline-block;
-      position: relative;
-    }
-
-    .registry-org {
-      font-size: 10px;
-      color: #3F51B5;
-      float: right;
-      margin-top: 16px;
-      display: inline-block;
-      position: relative;
-    }
-
-    .pIcon {
-      color: #3F51B5;
-      width: 38px;
-      height: 38px;
-    }
-    .pText {
+      .control-label {
+        margin-top: 2px;
         display: block;
-        font-family: Monospaced Number,Chinese Quote,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif;
+        margin-bottom: 5px;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 20px;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .registry-org::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        right: -10px;
+        height: 16px;
+        width: 0;
+        border-right: 1px solid rgba(0, 0, 0, 0.54);
+        border-bottom-width: 1px;
+      }
+
+      .input-icon {
+        border-width: 0px;
+        border-style: solid;
+        position: relative;
+      }
+
+      .ml {
+        margin-left: 10px;
+      }
+
+      .mr {
+        margin-right: 10px;
+      }
+
+      .login #content .input-icon .m-wrap {
+        margin: 0px !important;
+        position: relative;
+        left: 10px;
+      }
+
+      .login #content .m-wrap {
+        width: calc(100% - 10px);
+      }
+
+      select {
+        width: 220px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        height: 30px;
+        line-height: 30px;
+      }
+
+      input.m-wrap {
+        border: 0;
+      }
+
+      input[type="text"].m-wrap,
+      input[type="password"].m-wrap {
+        -webkit-appearance: none !important;
+        outline: 0;
+        padding: 6px 0px !important;
+        line-height: 20px;
+        font-size: 14px;
+        font-weight: normal;
+        vertical-align: top;
+        background-color: #ffffff;
+        background-image: none !important;
+        filter: none !important;
+        -webkit-box-shadow: none !important;
+        -moz-box-shadow: none !important;
+        box-shadow: none !important;
+        -webkit-border-radius: 0px;
+        -moz-border-radius: 0px;
+        border-radius: 0px;
+        background: transparent;
+      }
+
+      .login #content .form-actions {
+        clear: both;
+        margin-top: 20px;
+      }
+
+      input.error {
+        background: #fff0f0 !important;
+        border-color: #a90329;
+      }
+
+      .btn {
+        background-color: #3f51b5;
+        background-image: none;
+        filter: none;
+        border: 0;
+        text-shadow: none;
+        font-size: 14px;
+        color: #ffffff;
+        cursor: pointer;
+        outline: none;
+        -webkit-box-shadow: none !important;
+        -moz-box-shadow: none !important;
+        -webkit-border-radius: 0 !important;
+        -moz-border-radius: 0 !important;
+        box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+          0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12) !important;
+        border-radius: 2px !important;
+        width: 100%;
+        height: 38px;
+        margin-bottom: 52px;
+      }
+
+      @font-face {
+        font-family: "FontAwesome";
+        src: url("../static/fontawesome-webfont.woff2") format("woff2");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      .ant-btn > div.btn-loading > span {
+        background: #fff;
+        border-color: #fff;
+        display: inline-block;
+        border-radius: 50%;
+        width: 7px;
+        height: 7px;
+      }
+
+      .fa {
+        display: inline-block;
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        /* position: relative; */
+      }
+
+      .fa-refresh:before {
+        content: "\f021";
+        position: absolute;
+        left: 0;
+        top: 0;
+        display: block;
+        height: 10px;
+      }
+      .line-container-captcha {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .arrow {
+        float: right;
+        font-size: 1.6rem;
+      }
+
+      #list {
+        float: right;
+        margin-top: 10px;
+        margin-right: 10px;
+        font-size: 2rem;
+      }
+
+      .remember {
+        text-align: right;
+      }
+
+      .resigter {
+        text-decoration: none;
+        margin-right: 10px;
+        font-size: 13px;
+        color: #999;
+      }
+
+      .forget {
+        text-decoration: none;
+        margin-left: 10px;
+        font-size: 13px;
+        color: #999;
+      }
+
+      .forget-passwd {
+        font-size: 10px;
+        color: #3f51b5;
+        float: right;
+        margin-top: 16px;
+        display: inline-block;
+        position: relative;
+      }
+
+      .registry-org {
+        font-size: 10px;
+        color: #3f51b5;
+        float: right;
+        margin-top: 16px;
+        display: inline-block;
+        position: relative;
+      }
+
+      .pIcon {
+        color: #3f51b5;
+        width: 38px;
+        height: 38px;
+      }
+      .pText {
+        display: block;
+        font-family: Monospaced Number, Chinese Quote, -apple-system,
+          BlinkMacSystemFont, Segoe UI, Roboto, PingFang SC, Hiragino Sans GB,
+          Microsoft YaHei, Helvetica Neue, Helvetica, Arial, sans-serif;
         font-weight: 400;
         line-height: 36px;
         height: 38px;
         margin-left: 8px;
         font-size: 24px;
         color: rgba(0, 0, 0, 0.65);
-    }
+      }
+      #loginTypeTabs {
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #0f1358;
+        margin-top: 29px;
+        margin-bottom: 26px;
+      }
+      #loginTypeTabs span {
+        cursor: pointer;
+        transition: color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+      }
+      #loginTypeTabs .tabs-active {
+        position: relative;
+        color: #5365ea;
+      }
+      #loginTypeTabs .tabs-active::before {
+        content: "";
+        width: 130%;
+        height: 2px;
+        background: rgb(104, 135, 232);
+        bottom: -8px;
+        position: absolute;
+        left: -10%;
+      }
 
-    .loginSpan {
-      font-size: 20px;
-      text-align: center;
-      display: block;
-      margin-top: 22px;
-      color: rgba(0, 0, 0, 0.65);
-    }
+      .loginSpan {
+        font-size: 20px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 500;
+        color: #0f1358;
+      }
 
-    .login #content .form-actions a {
-      color: #3F51B5;
-    }
+      .login #content .form-actions a {
+        color: #3f51b5;
+      }
 
-    input:-webkit-autofill {
-      -webkit-box-shadow: 0 0 0px 1000px white inset;
-      border: 0px solid #CCC !important;
-    }
+      input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0px 1000px white inset;
+        border: 0px solid #ccc !important;
+      }
 
-    input:-webkit-autofill + span + .ant-input-label {
-      -webkit-transform: scale(.75) translateY(-20px) translateZ(.001px);
-      transform: scale(.75) translateY(-20px) translateZ(.001px);
-    }
+      input:-webkit-autofill + span + .ant-input-label {
+        -webkit-transform: scale(0.75) translateY(-20px) translateZ(0.001px);
+        transform: scale(0.75) translateY(-20px) translateZ(0.001px);
+      }
 
-    .ant-btn-flat:hover {
-      background: #3F51B5;
-    }
-
-  </style>
-  <template id="templateData"
-            th:attr="data-publicKey=${publicKey}">
-  </template>
-</head>
-<body class="login">
-<script th:src="@{../static/captcha.js(t=${new java.util.Date().getTime()})}"></script>
-
-<div th:class="${isNeedCaptcha} ? 'content1' : 'content2'" id="content">
-  <div style="display: flex;justify-content: center;margin-top: 50px">
-      <img th:if="${favicon != null}" th:src="${favicon}"  class="pIcon"/>
-      <img th:unless="${favicon != null}" src="../static/logo.png" style="width: 52px; height: 38px;"/>
-      <span th:if="${systemName != null}" th:text="${systemName}" class="pText" ></span>
-      <img th:unless="${systemName != null}" src="../static/title.png" style="height: 38px;"/>
-  </div>
-  <span class="loginSpan">登录</span>
-  <form class="form-vertical login-form" action="login" method="post" autocomplete="off">
-    <div class="control-group">
-      <div class="controls">
-        <div id="usernameInupt" th:value="${param.username != null ? param.username[0] : ''}"
-             th:class="${usernameNotFound}? 'input-icon left inputError' : 'input-icon left inputNormal'">
-        </div>
-      </div>
+      .ant-btn-flat:hover {
+        background: #3f51b5;
+      }
+      .login {
+        position: relative;
+      }
+      .container-des {
+        position: absolute;
+        left: 24px;
+        top: 24px;
+      }
+    </style>
+    <template id="publicKeyTemplateData" th:attr="data-publicKey=${publicKey}">
+    </template>
+    <template
+      id="isNeedCaptchaTemplateData"
+      th:attr="data-isNeedCaptcha=${isNeedCaptcha}"
+    >
+    </template>
+    <template
+      id="registerUrlTemplateData"
+      th:attr="data-registerUrl=${registerUrl}"
+    >
+    </template>
+  </head>
+  <body class="login">
+    <script
+      th:src="@{../static/captcha.js(t=${new java.util.Date().getTime()})}"
+    ></script>
+    <div class='container-des'>
+      <img style='width:38px;height:28px;margin-right: 6px;' src="../static/logo.png" alt="">
+      <span style='font-size: 22px;font-weight: 600;position: relative;top: 4px;'>Choerodon</span>
     </div>
 
-    <div class="control-group" style="margin-top: 34px">
-      <div class="controls">
-        <div
-          th:class="${usernameNotFoundOrPasswordIsWrong}? 'placeholder input-icon left inputError' : 'placeholder input-icon left inputNormal'">
-          <div id="passwordInupt"></div>
-          <a class="forget-passwd ml" href="./password/find" th:test="${isNeedCaptcha}">忘记密码？</a>
-        </div>
-
-        <div th:if="${registerUrl} != null"
-             th:class="${usernameNotFoundOrPasswordIsWrong}? 'input-icon left inputError' : 'input-icon left inputNormal'">
-          <div id="passwordInupt"></div>
-          <a class="registry-org mr" th:href="${registerUrl}" th:test="${isNeedCaptcha}">注册</a>
-        </div>
-      </div>
-      <div th:text="${usernameNotFound}" class="alert alert-error"></div>
-      <div th:text="${userNotActive}" class="alert alert-error"></div>
-      <div th:text="${accountLocked}" class="alert alert-error"></div>
-      <div th:text="${organizationNotEnable}" class="alert alert-error"></div>
-      <div th:text="${ldapIsDisable}" class="alert alert-error"></div>
-      <div th:text="${organizationNotExist}" class="alert alert-error"></div>
-      <div th:text="${organizationNotEnable}" class="alert alert-error"></div>
-      <div th:text="${usernameNotFoundOrPasswordIsWrong}" class="alert alert-error"
-           id="usernameOrPasswordNotFoundMsg"></div>
-      <div th:text="${passwordExpire}" class="alert alert-error"></div>
-      <div class="alert alert-error" id="usernameIsNullMsg" style="display: none">请输入登录账号</div>
-      <div class="alert alert-error" id="passwordIsNullMsg" style="display: none">请输入密码</div>
-      <!-- 是否开启验证码-->
-      <div th:if="${isNeedCaptcha}" class="control-group">
-        <label class="control-label ">
-
-        </label>
-        <div class="controls">
-          <div style="display: flex; justify-content: space-between; margin-top: 42px;">
-            <div style="border-color: rgba(0,0,0,0.26)" class="input-icon left">
-              <div id="captchaInupt"></div>
-              <!--<input class="m-wrap " type="text" style="width: 200px; border: 1px solid #ccc;" name="captcha"/>-->
-            </div>
-            <div style="display: flex; align-items: center; margin-left: 52px;">
-              <img id="imgObj" src="/oauth/public/captcha"
-                   style="border: 1px solid #ccc; float: right ; width: 88px;height: 32px;"
-                   onclick="changeImg()"/>
-              <i class="fa fa-refresh" title="刷新验证码"
-                 style="cursor: pointer; color: #999; float: right; position: static !important; border: 1px solid #ccc; height: 32px; line-height: 32px; padding: 0px 6px; margin: 0px; margin-left: 5px;"
-                 onclick="changeImg()"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div th:text="${captchaWrong}" class="alert alert-error"></div>
-      <div th:text="${captchaNull}" class="alert alert-error"></div>
-      <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
-      <input id="md5_password" type="hidden" name="password"/>
-      <div id="loginButton" class="form-actisons" style="margin-top: 62px">
-
-      </div>
-
-      <div style="clear:both"></div>
+    <div th:class="${isNeedCaptcha} ? 'content1' : 'content2'" id="content">
+      <span class="loginSpan">登录猪齿鱼</span>
+      <div id="loginTypeTabs"></div>
+      <div id="form-content"></div>
     </div>
-  </form>
-</div>
-<div style="position:absolute;z-index:999;bottom:10px;color:#555;font-size: 12px;text-align: center;"><span th:text="${company}|"></span><a th:href="${icpUrl}" target="_blank" th:text="${icp}!=null?'&nbsp;&nbsp;'+${icp}:''"></a>
-</div>
 
-</body>
+    <div
+      style="
+        position: absolute;
+        z-index: 999;
+        bottom: 10px;
+        color: #555;
+        font-size: 12px;
+        text-align: center;
+      "
+    >
+      <span th:text="${company}|"></span
+      ><a
+        th:href="${icpUrl}"
+        target="_blank"
+        th:text="${icp}!=null?'&nbsp;&nbsp;'+${icp}:''"
+      ></a>
+    </div>
+  </body>
 </html>
