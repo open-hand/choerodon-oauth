@@ -16,26 +16,26 @@
     <link
       rel="shortcut icon"
       th:unless="${favicon != null}"
-      th:href="${'../public/static/icon.ico'}"
+      th:href="${'../static/icon.ico'}"
       type="image/x-icon"
     />
-    <link href="../public/static/choerodon-ui.min.css" rel="stylesheet" />
-    <link href="../public/static/choerodon-ui-pro.min.css" rel="stylesheet" />
+    <link href="../static/choerodon-ui.min.css" rel="stylesheet" />
+    <link href="../static/choerodon-ui-pro.min.css" rel="stylesheet" />
     <!-- <link href="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.css" rel="stylesheet"/> -->
 
-    <script src="../public/static/polyfill.min.js"></script>
-    <script src="../public/static/jquery.min.js"></script>
-    <script src="../public/static/react.production.min.js"></script>
-    <script src="../public/static/react-dom.min.js"></script>
-    <script src="../public/static/babel.min.js"></script>
-    <script src="../public/static/mobx.umd.min.js"></script>
-    <script src="../public/static/moment.min.js"></script>
-    <script src="../public/static/choerodon-ui.min.js"></script>
-    <script src="../public/static/jsencrypt.min.js"></script>
+    <script src="../static/polyfill.min.js"></script>
+    <script src="../static/jquery.min.js"></script>
+    <script src="../static/react.production.min.js"></script>
+    <script src="../static/react-dom.min.js"></script>
+    <script src="../static/babel.min.js"></script>
+    <script src="../static/mobx.umd.min.js"></script>
+    <script src="../static/moment.min.js"></script>
+    <script src="../static/choerodon-ui.min.js"></script>
+    <script src="../static/jsencrypt.min.js"></script>
     <!--<script src="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.js"></script>-->
-    <!--<script src="../public/static/choerodon-ui.min.js"></script>-->
-    <script src="../public/static/choerodon-ui-pro.min.js"></script>
-    <script src="../public/static/login.js" type="text/babel"></script>
+    <!--<script src="../static/choerodon-ui.min.js"></script>-->
+    <script src="../static/choerodon-ui-pro.min.js"></script>
+    <script src="../static/login.js" type="text/babel"></script>
     <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
     <title th:unless="${systemTitle}" th:text="Choerodon"></title>
     <style>
@@ -52,7 +52,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-image: url("../public/static/bg.svg");
+        background-image: url("../static/bg.svg");
         background-size: cover;
       }
       .phone-login-form table tbody tr:nth-child(3) {
@@ -225,7 +225,7 @@
 
       @font-face {
         font-family: "FontAwesome";
-        src: url("../public/static/fontawesome-webfont.woff2") format("woff2");
+        src: url("../static/fontawesome-webfont.woff2") format("woff2");
         font-weight: normal;
         font-style: normal;
       }
@@ -403,175 +403,19 @@
   </head>
   <body class="login">
     <script
-      th:src="@{../public/static/captcha.js(t=${new java.util.Date().getTime()})}"
+      th:src="@{../static/captcha.js(t=${new java.util.Date().getTime()})}"
     ></script>
     <div class='container-des'>
-      <img style='width:38px;height:28px;margin-right: 6px;' src="../public/static/logo.png" alt="">
+      <img style='width:38px;height:28px;margin-right: 6px;' src="../static/logo.png" alt="">
       <span style='font-size: 22px;font-weight: 600;position: relative;top: 4px;'>Choerodon</span>
     </div>
 
     <div th:class="${isNeedCaptcha} ? 'content1' : 'content2'" id="content">
-      <!-- <div style="display: flex; justify-content: center; margin-top: 50px">
-        <img th:if="${favicon != null}" th:src="${favicon}" class="pIcon" />
-        <img
-          th:unless="${favicon != null}"
-          src="../public/static/logo.png"
-          style="width: 52px; height: 38px"
-        />
-        <span
-          th:if="${systemName != null}"
-          th:text="${systemName}"
-          class="pText"
-        ></span>
-        <img
-          th:unless="${systemName != null}"
-          src="../public/static/title.png"
-          style="height: 38px"
-        />
-      </div> -->
       <span class="loginSpan">登录猪齿鱼</span>
       <div id="loginTypeTabs"></div>
       <div id="form-content"></div>
-      <!-- <form class="form-vertical login-form" method="post" autocomplete="off">
-        <div class="control-group">
-          <div class="controls">
-            <div
-              id="usernameInupt"
-              th:value="${param.username != null ? param.username[0] : ''}"
-              th:class="${usernameNotFound}? 'input-icon left inputError' : 'input-icon left inputNormal'"
-            ></div>
-          </div>
-        </div>
-
-        <div class="control-group" style="margin-top: 34px">
-          <div class="controls">
-            <div
-              th:class="${usernameNotFoundOrPasswordIsWrong}? 'placeholder input-icon left inputError' : 'placeholder input-icon left inputNormal'"
-            >
-              <div id="passwordInupt"></div>
-              <a
-                class="forget-passwd ml"
-                href="./password/find"
-                th:test="${isNeedCaptcha}"
-                >忘记密码？</a
-              >
-            </div>
-
-            <div
-              th:if="${registerUrl} != null"
-              th:class="${usernameNotFoundOrPasswordIsWrong}? 'input-icon left inputError' : 'input-icon left inputNormal'"
-            >
-              <div id="passwordInupt"></div>
-              <a
-                class="registry-org mr"
-                th:href="${registerUrl}"
-                th:test="${isNeedCaptcha}"
-                >注册</a
-              >
-            </div>
-          </div>
-          <div th:text="${usernameNotFound}" class="alert alert-error"></div>
-          <div th:text="${userNotActive}" class="alert alert-error"></div>
-          <div th:text="${accountLocked}" class="alert alert-error"></div>
-          <div
-            th:text="${organizationNotEnable}"
-            class="alert alert-error"
-          ></div>
-          <div th:text="${ldapIsDisable}" class="alert alert-error"></div>
-          <div
-            th:text="${organizationNotExist}"
-            class="alert alert-error"
-          ></div>
-          <div
-            th:text="${organizationNotEnable}"
-            class="alert alert-error"
-          ></div>
-          <div
-            th:text="${usernameNotFoundOrPasswordIsWrong}"
-            class="alert alert-error"
-            id="usernameOrPasswordNotFoundMsg"
-          ></div>
-          <div th:text="${passwordExpire}" class="alert alert-error"></div>
-          <div
-            class="alert alert-error"
-            id="usernameIsNullMsg"
-            style="display: none"
-          >
-            请输入登录账号
-          </div>
-          <div
-            class="alert alert-error"
-            id="passwordIsNullMsg"
-            style="display: none"
-          >
-            请输入密码
-          </div>
-          <div th:if="${isNeedCaptcha}" class="control-group">
-            <label class="control-label"> </label>
-            <div class="controls">
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  margin-top: 42px;
-                "
-              >
-                <div
-                  style="border-color: rgba(0, 0, 0, 0.26)"
-                  class="input-icon left"
-                >
-                  <div id="captchaInupt"></div>
-                </div>
-                <div
-                  style="display: flex; align-items: center; margin-left: 52px"
-                >
-                  <img
-                    id="imgObj"
-                    src="/oauth/public/captcha"
-                    style="
-                      border: 1px solid #ccc;
-                      float: right;
-                      width: 88px;
-                      height: 32px;
-                    "
-                    onclick="changeImg()"
-                  />
-                  <i
-                    class="fa fa-refresh"
-                    title="刷新验证码"
-                    style="
-                      cursor: pointer;
-                      color: #999;
-                      float: right;
-                      position: static !important;
-                      border: 1px solid #ccc;
-                      height: 32px;
-                      line-height: 32px;
-                      padding: 0px 6px;
-                      margin: 0px;
-                      margin-left: 5px;
-                    "
-                    onclick="changeImg()"
-                  ></i>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div th:text="${captchaWrong}" class="alert alert-error"></div>
-          <div th:text="${captchaNull}" class="alert alert-error"></div>
-
-          <input id="md5_password" type="hidden" name="password" />
-          <div
-            id="loginButton"
-            class="form-actisons"
-            style="margin-top: 62px"
-          ></div>
-
-          <div style="clear: both"></div>
-        </div>
-      </form> -->
-      
     </div>
+
     <div
       style="
         position: absolute;
