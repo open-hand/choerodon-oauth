@@ -4,7 +4,6 @@ let timer = null;
 class Content extends window.React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       action: "/oauth/choerodon/login",
       activeKey: "1",
@@ -17,13 +16,27 @@ class Content extends window.React.Component {
         .getAttribute("data-publicKey"),
       isNeedCaptcha: document
         .getElementById("isNeedCaptchaTemplateData")
-        .getAttribute("data-isNeedCaptcha"),
+        .getAttribute("data-isNeedCaptcha")
+        ? JSON.parse(
+            document
+              .getElementById("isNeedCaptchaTemplateData")
+              .getAttribute("data-isNeedCaptcha")
+          )
+        : false,
       registerUrl: document
         .getElementById("registerUrlTemplateData")
         .getAttribute("data-registerUrl"),
+      messageInfo: document
+        .getElementById("messageTemplateData")
+        .getAttribute("data-messageTemplateData"),
       // isNeedCaptcha: true,
       imgSrc: "/oauth/public/captcha",
     };
+  }
+  componentDidMount() {
+    if (this.state.messageInfo) {
+      message.warning(this.state.messageInfo);
+    }
   }
 
   tabOnChange(key) {
