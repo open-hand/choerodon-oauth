@@ -287,7 +287,7 @@ class Content extends window.React.Component {
                       width: "100%",
                       height: "100%",
                     }}
-                    src="../public/static/refresh.svg"
+                    src="../static/refresh.svg"
                   />
                 </span>
               </div>
