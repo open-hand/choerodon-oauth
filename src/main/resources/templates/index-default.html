@@ -16,26 +16,26 @@
     <link
       rel="shortcut icon"
       th:unless="${favicon != null}"
-      th:href="${'../static/icon.ico'}"
+      th:href="${'../public/static/icon.ico'}"
       type="image/x-icon"
     />
-    <link href="../static/choerodon-ui.min.css" rel="stylesheet" />
-    <link href="../static/choerodon-ui-pro.min.css" rel="stylesheet" />
+    <link href="../public/static/choerodon-ui.min.css" rel="stylesheet" />
+    <link href="../public/static/choerodon-ui-pro.min.css" rel="stylesheet" />
     <!-- <link href="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.css" rel="stylesheet"/> -->
 
-    <script src="../static/polyfill.min.js"></script>
-    <script src="../static/jquery.min.js"></script>
-    <script src="../static/react.production.min.js"></script>
-    <script src="../static/react-dom.min.js"></script>
-    <script src="../static/babel.min.js"></script>
-    <script src="../static/mobx.umd.min.js"></script>
-    <script src="../static/moment.min.js"></script>
-    <script src="../static/choerodon-ui.min.js"></script>
-    <script src="../static/choerodon-ui-pro.min.js"></script>
-    <script src="../static/jsencrypt.min.js"></script>
+    <script src="../public/static/polyfill.min.js"></script>
+    <script src="../public/static/jquery.min.js"></script>
+    <script src="../public/static/react.production.min.js"></script>
+    <script src="../public/static/react-dom.min.js"></script>
+    <script src="../public/static/babel.min.js"></script>
+    <script src="../public/static/mobx.umd.min.js"></script>
+    <script src="../public/static/moment.min.js"></script>
+    <script src="../public/static/choerodon-ui.min.js"></script>
+    <script src="../public/static/choerodon-ui-pro.min.js"></script>
+    <script src="../public/static/jsencrypt.min.js"></script>
     <!--<script src="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.js"></script>-->
-    <!--<script src="../static/choerodon-ui.min.js"></script>-->
-    <script src="../static/login.js" type="text/babel"></script>
+    <!--<script src="../public/static/choerodon-ui.min.js"></script>-->
+    <script src="../public/static/login.js" type="text/babel"></script>
     <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
     <title th:unless="${systemTitle}" th:text="Choerodon"></title>
     <style>
@@ -43,17 +43,9 @@
       body {
         padding: 0px;
         margin: 0px;
-        overflow: hidden;
         font-family: "Microsoft YaHei", arial;
-        line-height: 20px;
-        direction: ltr;
         width: 100%;
         height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-image: url("../static/bg.svg");
-        background-size: cover;
       }
       .phone-login-form table tbody tr:nth-child(3) {
         display: none;
@@ -81,7 +73,7 @@
       }
 
       .login #content {
-        padding-top: 52px;
+        padding-top: 32px;
         padding-left: 42px;
         background-color: #fff;
         width: 454px;
@@ -202,7 +194,7 @@
       }
 
       .btn {
-        background-color: #3f51b5;
+        background-color: #5365ea !important;
         background-image: none;
         filter: none;
         border: 0;
@@ -220,12 +212,12 @@
         border-radius: 2px !important;
         width: 100%;
         height: 38px;
-        margin-bottom: 52px;
+        margin-bottom: 32px;
       }
 
       @font-face {
         font-family: "FontAwesome";
-        src: url("../static/fontawesome-webfont.woff2") format("woff2");
+        src: url("../public/static/fontawesome-webfont.woff2") format("woff2");
         font-weight: normal;
         font-style: normal;
       }
@@ -239,24 +231,6 @@
         height: 7px;
       }
 
-      .fa {
-        display: inline-block;
-        font: normal normal normal 14px/1 FontAwesome;
-        font-size: inherit;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        /* position: relative; */
-      }
-
-      .fa-refresh:before {
-        content: "\f021";
-        position: absolute;
-        left: 0;
-        top: 0;
-        display: block;
-        height: 10px;
-      }
       .line-container-captcha {
         position: relative;
         display: flex;
@@ -329,37 +303,14 @@
         font-size: 24px;
         color: rgba(0, 0, 0, 0.65);
       }
-      #loginTypeTabs {
-        font-size: 14px;
-        font-family: PingFangSC-Regular, PingFang SC;
-        font-weight: 400;
-        color: #0f1358;
-        margin-top: 29px;
-        margin-bottom: 26px;
-      }
-      #loginTypeTabs span {
-        cursor: pointer;
-        transition: color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-      }
-      #loginTypeTabs .tabs-active {
-        position: relative;
-        color: #5365ea;
-      }
-      #loginTypeTabs .tabs-active::before {
-        content: "";
-        width: 130%;
-        height: 2px;
-        background: rgb(104, 135, 232);
-        bottom: -8px;
-        position: absolute;
-        left: -10%;
-      }
 
       .loginSpan {
+        display: inline-block;
         font-size: 20px;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: #0f1358;
+        margin-bottom: 22px;
       }
 
       .login #content .form-actions a {
@@ -386,6 +337,87 @@
         position: absolute;
         left: 24px;
         top: 24px;
+        z-index: 100;
+      }
+      .btm-img {
+        height: 110px;
+        width: 100% !important;
+        position: absolute;
+        bottom: 0;
+        display: block;
+      }
+      .container-page {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+      }
+      .page-left {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-grow: 1;
+        background-color: #f3f6ff;
+        min-width: 500px;
+        position: relative;
+      }
+      .btm-desc {
+        width: 100%;
+        position: absolute;
+        bottom: 6px;
+        display: flex;
+        justify-content: center;
+        min-width: 500px;
+        font-size: 12px;
+      }
+      .btm-desc span {
+        color: #5365ea;
+        margin-left: 18px;
+      }
+      .page-right {
+        width: 37.5%;
+        max-width: 540px;
+        position: relative;
+        overflow: hidden;
+      }
+      .container-font {
+        width: 433px;
+        height: 159px;
+        background-image: url("../public/static/2.svg");
+        background-size: 100%;
+        position: absolute;
+        top: 11%;
+        left: 50%;
+        transform: translate(-50%, 0);
+        color: #5365ea;
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .container-font .font {
+        width: 350px;
+      }
+      .right-img2 {
+        position: absolute;
+        bottom: 3.9%;
+        left: 50%;
+        transform: translate(-50%, 0);
+      }
+      tbody tr td .c7n-pro-field-wrapper {
+        margin-bottom: 0.2rem !important;
+      }
+      .c7n-tabs-nav .c7n-tabs-tab-active {
+        color: #5365EA !important;
+      }
+      .c7n-tabs-ink-bar {
+        background-color: #5365EA !important;
+      }
+      .c7n-tabs-bar {
+        border-bottom: none;
       }
     </style>
     <template id="publicKeyTemplateData" th:attr="data-publicKey=${publicKey}">
@@ -408,27 +440,53 @@
   </head>
   <body class="login">
     <script
-      th:src="@{../static/captcha.js(t=${new java.util.Date().getTime()})}"
+      th:src="@{../public/static/captcha.js(t=${new java.util.Date().getTime()})}"
     ></script>
-    <div class="container-des">
-      <img
-        style="width: 38px; height: 28px; margin-right: 6px"
-        src="../static/logo.png"
-        alt=""
-      />
-      <span
-        style="font-size: 22px; font-weight: 600; position: relative; top: 4px"
-        >Choerodon</span
-      >
+
+    <div class="container-page">
+      <div class="container-des">
+        <img
+          style="width: 38px; height: 28px; margin-right: 6px"
+          src="../public/static/logo.png"
+          alt=""
+        />
+        <span
+          style="
+            font-size: 22px;
+            font-weight: 600;
+            position: relative;
+            top: 4px;
+          "
+          >Choerodon</span
+        >
+      </div>
+
+      <div class="page-left">
+        <div th:class="${isNeedCaptcha} ? 'content1' : 'content2'" id="content">
+          <span class="loginSpan">登录猪齿鱼</span>
+          <div id="form-content"></div>
+        </div>
+        <img src="../public/static/1.svg" alt="" class="btm-img" />
+        <div class="btm-desc">
+          <p>
+            © Copyright Hand China Co.,Ltd. All Rights Reserved
+            上海汉得信息技术股份有限公司
+            <span>沪ICP备14039535号-18</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="page-right">
+        <div class="container-font">
+          <div class="font">
+            提供精益敏捷、持续交付、容器环境、微服务、DevOps等能力来帮助组织团队完成软件的生命周期管理
+          </div>
+        </div>
+        <img src="../public/static/3.svg" alt="" class="right-img2" />
+      </div>
     </div>
 
-    <div th:class="${isNeedCaptcha} ? 'content1' : 'content2'" id="content">
-      <span class="loginSpan">登录猪齿鱼</span>
-      <div id="loginTypeTabs"></div>
-      <div id="form-content"></div>
-    </div>
-
-    <div
+    <!-- <div
       style="
         position: absolute;
         z-index: 999;
@@ -444,6 +502,6 @@
         target="_blank"
         th:text="${icp}!=null?'&nbsp;&nbsp;'+${icp}:''"
       ></a>
-    </div>
+    </div> -->
   </body>
 </html>
