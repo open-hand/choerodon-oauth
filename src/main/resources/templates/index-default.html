@@ -16,26 +16,26 @@
     <link
       rel="shortcut icon"
       th:unless="${favicon != null}"
-      th:href="${'../public/static/icon.ico'}"
+      th:href="${'../static/icon.ico'}"
       type="image/x-icon"
     />
-    <link href="../public/static/choerodon-ui.min.css" rel="stylesheet" />
-    <link href="../public/static/choerodon-ui-pro.min.css" rel="stylesheet" />
+    <link href="../static/choerodon-ui.min.css" rel="stylesheet" />
+    <link href="../static/choerodon-ui-pro.min.css" rel="stylesheet" />
     <!-- <link href="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.css" rel="stylesheet"/> -->
 
-    <script src="../public/static/polyfill.min.js"></script>
-    <script src="../public/static/jquery.min.js"></script>
-    <script src="../public/static/react.production.min.js"></script>
-    <script src="../public/static/react-dom.min.js"></script>
-    <script src="../public/static/babel.min.js"></script>
-    <script src="../public/static/mobx.umd.min.js"></script>
-    <script src="../public/static/moment.min.js"></script>
-    <script src="../public/static/choerodon-ui.min.js"></script>
-    <script src="../public/static/choerodon-ui-pro.min.js"></script>
-    <script src="../public/static/jsencrypt.min.js"></script>
+    <script src="../static/polyfill.min.js"></script>
+    <script src="../static/jquery.min.js"></script>
+    <script src="../static/react.production.min.js"></script>
+    <script src="../static/react-dom.min.js"></script>
+    <script src="../static/babel.min.js"></script>
+    <script src="../static/mobx.umd.min.js"></script>
+    <script src="../static/moment.min.js"></script>
+    <script src="../static/choerodon-ui.min.js"></script>
+    <script src="../static/choerodon-ui-pro.min.js"></script>
+    <script src="../static/jsencrypt.min.js"></script>
     <!--<script src="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.js"></script>-->
-    <!--<script src="../public/static/choerodon-ui.min.js"></script>-->
-    <script src="../public/static/login.js" type="text/babel"></script>
+    <!--<script src="../static/choerodon-ui.min.js"></script>-->
+    <script src="../static/login.js" type="text/babel"></script>
     <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
     <title th:unless="${systemTitle}" th:text="Choerodon"></title>
     <style>
@@ -217,7 +217,7 @@
 
       @font-face {
         font-family: "FontAwesome";
-        src: url("../public/static/fontawesome-webfont.woff2") format("woff2");
+        src: url("../static/fontawesome-webfont.woff2") format("woff2");
         font-weight: normal;
         font-style: normal;
       }
@@ -384,7 +384,7 @@
       .container-font {
         width: 433px;
         height: 159px;
-        background-image: url("../public/static/2.svg");
+        background-image: url("../static/2.svg");
         background-size: 100%;
         position: absolute;
         top: 11%;
@@ -440,14 +440,14 @@
   </head>
   <body class="login">
     <script
-      th:src="@{../public/static/captcha.js(t=${new java.util.Date().getTime()})}"
+      th:src="@{../static/captcha.js(t=${new java.util.Date().getTime()})}"
     ></script>
 
     <div class="container-page">
       <div class="container-des">
         <img
           style="width: 38px; height: 28px; margin-right: 6px"
-          src="../public/static/logo.png"
+          src="../static/logo.png"
           alt=""
         />
         <span
@@ -466,7 +466,7 @@
           <span class="loginSpan">登录猪齿鱼</span>
           <div id="form-content"></div>
         </div>
-        <img src="../public/static/1.svg" alt="" class="btm-img" />
+        <img src="../static/1.svg" alt="" class="btm-img" />
         <div class="btm-desc">
           <p>
             © Copyright Hand China Co.,Ltd. All Rights Reserved
@@ -482,7 +482,7 @@
             提供精益敏捷、持续交付、容器环境、微服务、DevOps等能力来帮助组织团队完成软件的生命周期管理
           </div>
         </div>
-        <img src="../public/static/3.svg" alt="" class="right-img2" />
+        <img src="../static/3.svg" alt="" class="right-img2" />
       </div>
     </div>
 
