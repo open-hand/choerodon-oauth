@@ -344,10 +344,10 @@ class Content extends window.React.Component {
       <div>
         <Tabs defaultActiveKey="1" onChange={this.tabOnChange.bind(this)}>
           <TabPane tab="账号密码" key="1">
-            {this.getContent()}
+            {this.state.activeKey === "1" && this.getContent(1)}
           </TabPane>
           <TabPane tab="手机验证码" key="2">
-            {this.getContent()}
+            {this.state.activeKey === "2" && this.getContent(2)}
           </TabPane>
         </Tabs>
       </div>
