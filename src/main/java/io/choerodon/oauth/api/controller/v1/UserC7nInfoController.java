@@ -58,7 +58,7 @@ public class UserC7nInfoController {
 
 
     @ApiOperation(value = "请求发送验证码的接口")
-    @PostMapping("/oauth/public/send-phone-captcha")
+    @PostMapping("/public/send-phone-captcha")
     @ResponseBody
     public ResponseEntity<CaptchaPreResult<?>> sendPhoneCaptcha(
             @RequestParam(defaultValue = BaseConstants.DEFAULT_CROWN_CODE) String internationalTelCode,

@@ -101,7 +101,7 @@ class Content extends window.React.Component {
       return;
     }
     this.forTime(60);
-    fetch(`/choerodon/oauth/public/send-phone-captcha?phone=${phone}`)
+    fetch(`/oauth/choerodon/public/send-phone-captcha?phone=${phone}`)
       .then((response) => {
         return response.json();
       })
