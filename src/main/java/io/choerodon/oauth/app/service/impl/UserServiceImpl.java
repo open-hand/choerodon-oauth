@@ -32,6 +32,7 @@ import org.hzero.starter.captcha.domain.sms.valid.SmsValidResult;
 import org.hzero.starter.captcha.infra.builder.CaptchaBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -116,22 +117,18 @@ public class UserServiceImpl implements UserService {
     public BindReMsgVO bindUserPhone(String phone, String inputCaptcha, String captchaKey) {
         BindReMsgVO bindReMsgVO = new BindReMsgVO();
         try {
-            AssertUtils.notNull(phone,"hoth.warn.captcha.phoneNotNull");
+            AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
             // 检查验证码
             validSmsCode(phone, inputCaptcha, captchaKey);
             //2.跟新数据库
             User user = userRepository.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
             AssertUtils.notNull(user, "error.user.is.null");
-            UserInfoE userInfoE = userInfoMapper.selectByPrimaryKey(user.getId());
-            AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
 
-            if (!Objects.isNull(userInfoE)) {
-                if (userInfoE.getPhoneCheckFlag().intValue() == BaseConstants.Flag.YES.intValue()) {
-                    throw new CommonException("phone.number.has.been.bound");
-                }
-                userInfoE.setPhoneCheckFlag(BaseConstants.Flag.YES);
-                userInfoMapper.updateByPrimaryKey(userInfoE);
-            }
+            AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
+            UserE userE = new UserE();
+            BeanUtils.copyProperties(user, userE);
+            userE.setPhoneBind(Boolean.TRUE);
+            userMapper.updateByPrimaryKey(userE);
             bindReMsgVO.setStatus(Boolean.TRUE);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());

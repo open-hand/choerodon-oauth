@@ -41,6 +41,15 @@ public class UserE extends AuditDomain {
     private Integer passwordAttempt;
     @Column(name = "is_admin")
     private Boolean admin;
+    private Boolean phoneBind;
+
+    public Boolean getPhoneBind() {
+        return phoneBind;
+    }
+
+    public void setPhoneBind(Boolean phoneBind) {
+        this.phoneBind = phoneBind;
+    }
 
     public Long getId() {
         return id;
