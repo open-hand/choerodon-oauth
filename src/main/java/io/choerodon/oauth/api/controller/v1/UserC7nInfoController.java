@@ -36,7 +36,7 @@ import io.choerodon.oauth.infra.mapper.UserMapper;
 public class UserC7nInfoController {
 
     private static final String PHONE_IS_NOT_BIND = "phone.is.not.bind";
-
+    private static final String LDAP_PHONE_ERROR_MSG = "ldap.users.please.log.in.with.an.account";
 
     @Autowired
     private UserService userService;
@@ -58,7 +58,7 @@ public class UserC7nInfoController {
 
 
     @ApiOperation(value = "请求发送验证码的接口")
-    @PostMapping("/public/send-phone-captcha")
+    @GetMapping("/public/send-phone-captcha")
     @ResponseBody
     public ResponseEntity<CaptchaPreResult<?>> sendPhoneCaptcha(
             @RequestParam(defaultValue = BaseConstants.DEFAULT_CROWN_CODE) String internationalTelCode,
@@ -82,10 +82,17 @@ public class UserC7nInfoController {
         UserE userE = new UserE();
         userE.setPhone(phone);
         UserE user = userMapper.selectOne(userE);
-        if (!user.getPhoneBind()) {
-            return SmsPreResult.failure(MessageAccessor.getMessage(PHONE_IS_NOT_BIND, LoginUtil.getLanguageLocale()).desc());
+        if (Objects.isNull(user)) {
+            return SmsPreResult.failure(MessageAccessor.getMessage(LoginExceptions.PHONE_NOT_FOUND.value(), LoginUtil.getLanguageLocale()).desc());
         } else {
-            return null;
+            //判断是不是ldap用户
+            if (user.getLdap()) {
+                return SmsPreResult.failure(MessageAccessor.getMessage(LDAP_PHONE_ERROR_MSG, LoginUtil.getLanguageLocale()).desc());
+            } else if (!user.getPhoneBind()) {
+                return SmsPreResult.failure(MessageAccessor.getMessage(PHONE_IS_NOT_BIND, LoginUtil.getLanguageLocale()).desc());
+            } else {
+                return null;
+            }
         }
     }
 

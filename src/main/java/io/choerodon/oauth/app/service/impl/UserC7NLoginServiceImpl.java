@@ -35,6 +35,8 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
 
     private static final String SMS_MESSAGE_CODE = "SMS_CAPTCHA_NOTICE";
 
+    private static final String LDAP_PHONE_BIND = "ldap.account.can.not.be.bound";
+
 
     @Autowired
     private MessageClient messageClient;
@@ -66,7 +68,7 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
             } else {
                 //判断是不是ldap用户
                 if (user.getLdap()) {
-                    return SmsPreResult.failure(MessageAccessor.getMessage(LDAP_PHONE_ERROR_MSG, LoginUtil.getLanguageLocale()).desc());
+                    return SmsPreResult.failure(MessageAccessor.getMessage(LDAP_PHONE_BIND, LoginUtil.getLanguageLocale()).desc());
                 }
             }
         }
