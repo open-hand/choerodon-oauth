@@ -179,10 +179,16 @@ class Content extends window.React.Component {
         {/* 手机验证登陆 */}
         {this.state.activeKey === "2" && (
           <TextField
+            maxLength={11}
             autoComplete="new-text"
             key={2}
             id="phoneInput"
-            pattern="1[3-9]\d{9}"
+            validator={(value) => {
+              if (!/^1[3456789]\d{9}$/.test(value)) {
+                return "请填写正确的手机号";
+              }
+              return true;
+            }}
             colSpan={3}
             label="手机号"
             name="phone"
@@ -194,6 +200,7 @@ class Content extends window.React.Component {
         {this.state.activeKey === "2" && (
           <div colSpan={3} style={{ position: "relative" }}>
             <TextField
+              maxLength={6}
               autoComplete="new-text"
               style={{ width: "100%" }}
               validator={(value) => {
@@ -239,7 +246,7 @@ class Content extends window.React.Component {
               id="captchaKeyInput"
               colSpan={3}
               name="captchaKey"
-              required
+              // required
             />
           </div>
         )}
