@@ -12,6 +12,7 @@ class Content extends window.React.Component {
       text: "获取验证码",
       time: 0,
       captchaKey: "",
+      phoneValidateSuccess: false,
       publicKey: document
         .getElementById("publicKeyTemplateData")
         .getAttribute("data-publicKey"),
@@ -88,6 +89,9 @@ class Content extends window.React.Component {
     );
   }
   getVerificationCode() {
+    if (!this.state.phoneValidateSuccess) {
+      return;
+    }
     let phone = document.getElementById("phoneInput").value;
     if (!phone) {
       return;
@@ -114,9 +118,28 @@ class Content extends window.React.Component {
         }
       });
   }
+  phoneLabel = (
+    <span>
+      手机号
+      <span
+        style={{
+          display: "inline-block",
+          lineHeight: 1,
+          marginLeft: ".04rem",
+          color: "#d50000",
+          width: ".08rem",
+          verticalAlign: "middle",
+          content: " ",
+          fontFamily: "SimSun",
+        }}
+      >
+        *
+      </span>
+    </span>
+  );
   pswLabel = (
     <span>
-      密码{" "}
+      密码
       <span
         style={{
           display: "inline-block",
@@ -148,7 +171,7 @@ class Content extends window.React.Component {
         {/* 登录名/邮箱登录 */}
         {this.state.activeKey === "1" && (
           <TextField
-            autoComplete="new-text"
+            autoComplete="off"
             key={1}
             colSpan={3}
             width="100%"
@@ -179,22 +202,39 @@ class Content extends window.React.Component {
         {/* 手机验证登陆 */}
         {this.state.activeKey === "2" && (
           <TextField
-            autoComplete="new-text"
+            maxLength={11}
+            autoComplete="off"
             key={2}
             id="phoneInput"
-            pattern="1[3-9]\d{9}"
+            label={this.phoneLabel}
+            validator={(value) => {
+              if (!value) {
+                this.setState({
+                  phoneValidateSuccess: false,
+                });
+                return "请输入手机号";
+              }
+              if (!/^1[3456789]\d{9}$/.test(value)) {
+                this.setState({
+                  phoneValidateSuccess: false,
+                });
+                return "请填写正确的手机号";
+              }
+              this.setState({
+                phoneValidateSuccess: true,
+              });
+              return true;
+            }}
             colSpan={3}
-            label="手机号"
             name="phone"
-            required
-            placeholder="手机号"
           />
         )}
 
         {this.state.activeKey === "2" && (
           <div colSpan={3} style={{ position: "relative" }}>
             <TextField
-              autoComplete="new-text"
+              maxLength={6}
+              autoComplete="off"
               style={{ width: "100%" }}
               validator={(value) => {
                 const reg = /^\d{6}$/;
@@ -219,7 +259,17 @@ class Content extends window.React.Component {
               }}
               onClick={this.getVerificationCode.bind(this)}
             >
-              {this.state.time === 0 && <span>获取验证码</span>}
+              {this.state.time === 0 && (
+                <span
+                  style={
+                    !this.state.phoneValidateSuccess
+                      ? { color: "#D9D9D9", cursor: "not-allowed" }
+                      : {}
+                  }
+                >
+                  获取验证码
+                </span>
+              )}
               {this.state.time !== 0 && (
                 <span style={{ color: "#0F1358" }}>
                   {this.state.time}s后重新获取
@@ -234,12 +284,12 @@ class Content extends window.React.Component {
             style={{ display: "none", height: "0px !important" }}
           >
             <TextField
-              autoComplete="new-text"
+              autoComplete="off"
               value={this.state.captchaKey}
               id="captchaKeyInput"
               colSpan={3}
               name="captchaKey"
-              required
+              // required
             />
           </div>
         )}
@@ -251,7 +301,7 @@ class Content extends window.React.Component {
             <div className="line-container-captcha">
               <div>
                 <TextField
-                  autoComplete="new-text"
+                  autoComplete="off"
                   label="验证码"
                   // colSpan={3}
                   name="captcha"
