@@ -69,10 +69,10 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
                 if (user.getLdap()) {
                     return SmsPreResult.failure(MessageAccessor.getMessage(LDAP_PHONE_ERROR_MSG, LoginUtil.getLanguageLocale()).desc());
                 }
-                UserE userE = userMapper.selectByPrimaryKey(user.getId());
-                if (!userE.getPhoneBind()) {
-                    return SmsPreResult.failure(MessageAccessor.getMessage(PHONE_IS_NOT_BIND, LoginUtil.getLanguageLocale()).desc());
-                }
+//                UserE userE = userMapper.selectByPrimaryKey(user.getId());
+//                if (!userE.getPhoneBind()) {
+//                    return SmsPreResult.failure(MessageAccessor.getMessage(PHONE_IS_NOT_BIND, LoginUtil.getLanguageLocale()).desc());
+//                }
 
             }
         }
