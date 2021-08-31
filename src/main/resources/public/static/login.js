@@ -13,6 +13,7 @@ class Content extends window.React.Component {
       time: 0,
       captchaKey: "",
       phoneValidateSuccess: false,
+      captchaValidateSuccess: false,
       publicKey: document
         .getElementById("publicKeyTemplateData")
         .getAttribute("data-publicKey"),
@@ -117,6 +118,16 @@ class Content extends window.React.Component {
           message.warning(res.message);
         }
       });
+  }
+  submit() {
+    if (!this.state.captchaKey && this.state.activeKey === "2") {
+      if (
+        this.state.phoneValidateSuccess &&
+        this.state.captchaValidateSuccess
+      ) {
+        message.warning("请先获取验证码");
+      }
+    }
   }
   phoneLabel = (
     <span>
@@ -239,8 +250,14 @@ class Content extends window.React.Component {
               validator={(value) => {
                 const reg = /^\d{6}$/;
                 if (reg.test(value)) {
+                  this.setState({
+                    captchaValidateSuccess: true,
+                  });
                   return true;
                 }
+                this.setState({
+                  captchaValidateSuccess: false,
+                });
                 return "验证码应为6位数字";
               }}
               label="验证码"
@@ -289,7 +306,7 @@ class Content extends window.React.Component {
               id="captchaKeyInput"
               colSpan={3}
               name="captchaKey"
-              // required
+              required
             />
           </div>
         )}
@@ -381,6 +398,7 @@ class Content extends window.React.Component {
             funcType="raised"
             loading={this.state.loading}
             htmlStyle="padding-top:4px"
+            onClick={this.submit.bind(this)}
           >
             <span>{this.state.loading ? "登录中" : "登录"}</span>
           </Button>
