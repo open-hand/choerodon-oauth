@@ -125,6 +125,15 @@ public class UserServiceImpl implements UserService {
             AssertUtils.notNull(user, "error.user.is.null");
 
             AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
+
+            UserInfoE userInfoE = userInfoMapper.selectByPrimaryKey(user.getId());
+            AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
+            if (!Objects.isNull(userInfoE)) {
+                if (userInfoE.getPhoneCheckFlag().intValue() != BaseConstants.Flag.YES.intValue()) {
+                    userInfoE.setPhoneCheckFlag(BaseConstants.Flag.YES);
+                    userInfoMapper.updateByPrimaryKey(userInfoE);
+                }
+            }
             UserE userE = new UserE();
             BeanUtils.copyProperties(user, userE);
             userE.setPhoneBind(Boolean.TRUE);
