@@ -21,6 +21,9 @@ import org.hzero.starter.captcha.domain.sms.pre.SmsPreResult;
 import org.hzero.starter.captcha.infra.builder.CaptchaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.choerodon.oauth.infra.dto.UserE;
+import io.choerodon.oauth.infra.mapper.UserMapper;
+
 
 /**
  * Created by wangxiang on 2021/8/17
@@ -28,6 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
 
     private static final String LDAP_PHONE_ERROR_MSG = "ldap.users.please.log.in.with.an.account";
+
+    private static final String PHONE_IS_NOT_BIND = "phone.is.not.bind";
 
     private static final String SMS_MESSAGE_CODE = "SMS_CAPTCHA_NOTICE";
 
@@ -38,6 +43,9 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 获取验证码
@@ -61,6 +69,11 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
                 if (user.getLdap()) {
                     return SmsPreResult.failure(MessageAccessor.getMessage(LDAP_PHONE_ERROR_MSG, LoginUtil.getLanguageLocale()).desc());
                 }
+                UserE userE = userMapper.selectByPrimaryKey(user.getId());
+                if (!userE.getPhoneBind()) {
+                    return SmsPreResult.failure(MessageAccessor.getMessage(PHONE_IS_NOT_BIND, LoginUtil.getLanguageLocale()).desc());
+                }
+
             }
         }
 
