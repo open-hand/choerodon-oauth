@@ -104,7 +104,11 @@ class Content extends window.React.Component {
       .then((res) => {
         console.log(res);
         if (res.success) {
-          message.success(res.message);
+          notification.success({
+            message: "成功",
+            description: res.message,
+            placement: "bottomLeft",
+          });
           this.setState({
             captchaKey: res.captchaKey,
           });
