@@ -141,7 +141,7 @@ hzero:
     enable: true
     sms:
       # 验证码过期时长一分钟
-      expire: ${HZERO_CAPTCHA_SMS_EXPIRE:1}
+      expire: ${HZERO_CAPTCHA_SMS_EXPIRE:5}
       # 验证码间隔发送时间60s
       interval: ${HZERO_CAPTCHA_SMS_INTERVAL:60}
       #验证码长度6位
