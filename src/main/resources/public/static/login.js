@@ -1,4 +1,4 @@
-const { Input, Button, message, Tabs } = window["choerodon-ui.min"];
+const { Input, Button, Tabs, notification } = window["choerodon-ui.min"];
 const { Form, TextField, Password } = window["choerodon-ui-pro.min"];
 let timer = null;
 const TabPane = Tabs.TabPane;
@@ -38,7 +38,11 @@ class Content extends window.React.Component {
   }
   componentDidMount() {
     if (this.state.messageInfo) {
-      message.warning(this.state.messageInfo);
+      notification.warning({
+        message: "警告",
+        description: this.state.messageInfo,
+        placement: "bottomLeft",
+      });
     }
   }
 
@@ -56,14 +60,6 @@ class Content extends window.React.Component {
     this.setState({
       activeKey: key,
     });
-    // for (let i = 0; i < document.getElementsByClassName("tabs").length; i++) {
-    //   document
-    //     .getElementsByClassName("tabs")
-    //     [i].classList.remove("tabs-active");
-    // }
-    // document
-    //   .getElementsByClassName("tabs")
-    //   [+key - 1].classList.add("tabs-active");
   }
   refreshImg() {
     let timestamp = new Date().valueOf();
@@ -115,7 +111,11 @@ class Content extends window.React.Component {
         } else {
           clearInterval(timer);
           this.forTime(res.interval);
-          message.warning(res.message);
+          notification.warning({
+            message: "警告",
+            description: res.message,
+            placement: "bottomLeft",
+          });
         }
       });
   }
@@ -125,7 +125,11 @@ class Content extends window.React.Component {
         this.state.phoneValidateSuccess &&
         this.state.captchaValidateSuccess
       ) {
-        message.warning("请先获取验证码");
+        notification.warning({
+          message: "警告",
+          description: "请先获取验证码",
+          placement: "bottomLeft",
+        });
       }
     }
   }
