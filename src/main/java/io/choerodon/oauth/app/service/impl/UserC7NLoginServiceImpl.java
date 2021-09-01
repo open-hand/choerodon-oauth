@@ -8,6 +8,7 @@ import org.hzero.boot.message.MessageClient;
 import org.hzero.boot.message.entity.Receiver;
 import org.hzero.common.HZeroService;
 import org.hzero.core.base.BaseConstants;
+import org.hzero.core.captcha.CaptchaProperties;
 import org.hzero.core.captcha.CaptchaResult;
 import org.hzero.core.message.MessageAccessor;
 import org.hzero.core.user.UserType;
@@ -20,6 +21,7 @@ import org.hzero.starter.captcha.domain.core.pre.CaptchaPreResult;
 import org.hzero.starter.captcha.domain.sms.pre.SmsPreResult;
 import org.hzero.starter.captcha.infra.builder.CaptchaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import io.choerodon.oauth.infra.dto.UserE;
 import io.choerodon.oauth.infra.mapper.UserMapper;
@@ -47,6 +49,9 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private CaptchaProperties captchaProperties;
 
     /**
      * 获取验证码
@@ -88,6 +93,7 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
 
         Map<String, String> params = new HashMap<>(2);
         params.put("code", captchaPreResult.getCaptcha());
+        params.put("expireTime", captchaProperties.getSms().getExpire().toString());
         try {
             messageClient.async().sendMessage(BaseConstants.DEFAULT_TENANT_ID, SMS_MESSAGE_CODE, null,
                     Collections.singletonList(new Receiver().setPhone(phone).setIdd(internationalTelCode)), params, Collections.singletonList("SMS"));
