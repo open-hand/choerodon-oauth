@@ -11,10 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+
 import io.choerodon.oauth.api.vo.SysSettingVO;
 import io.choerodon.oauth.app.service.SystemSettingService;
 import io.choerodon.oauth.infra.enums.LoginException;
 import io.choerodon.oauth.infra.enums.ReturnPage;
+
 import org.hzero.oauth.domain.entity.User;
 import org.hzero.oauth.domain.service.UserLoginService;
 import org.hzero.oauth.infra.encrypt.EncryptClient;
@@ -110,6 +112,12 @@ public class OauthC7NController {
         if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage)) {
             model.addAttribute(USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG, exceptionMessage);
         }
+        //如果是短信登录连同CaptchaKey一起返回
+        String loginType = request.getParameter("type");
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(loginType)
+                && org.apache.commons.lang3.StringUtils.equalsIgnoreCase(loginType,"sms")) {
+            model.addAttribute("captchaKey", session.getAttribute("captchaKey"));
+        }
 
         if (icp != null && !icp.equals("")) {
             model.addAttribute("icp", icp);
@@ -127,7 +135,7 @@ public class OauthC7NController {
             return returnPage.fileName();
         }
 
-        model.addAttribute("isNeedCaptcha",  userLoginService.isNeedCaptcha(user));
+        model.addAttribute("isNeedCaptcha", userLoginService.isNeedCaptcha(user));
         return returnPage.fileName();
     }
 
@@ -182,7 +190,6 @@ public class OauthC7NController {
             }
         }
     }
-
 
 
 }
