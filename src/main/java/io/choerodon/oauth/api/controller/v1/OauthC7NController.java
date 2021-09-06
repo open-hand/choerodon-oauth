@@ -112,12 +112,6 @@ public class OauthC7NController {
         if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage)) {
             model.addAttribute(USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG, exceptionMessage);
         }
-        //如果是短信登录连同CaptchaKey一起返回
-        String loginType = request.getParameter("type");
-        if (org.apache.commons.lang3.StringUtils.isNotEmpty(loginType)
-                && org.apache.commons.lang3.StringUtils.equalsIgnoreCase(loginType,"sms")) {
-            model.addAttribute("captchaKey", session.getAttribute("captchaKey"));
-        }
 
         if (icp != null && !icp.equals("")) {
             model.addAttribute("icp", icp);
@@ -131,8 +125,22 @@ public class OauthC7NController {
             model.addAttribute("company", company);
         }
 
+        //如果是短信登录连同CaptchaKey一起返回
+        String loginType = request.getParameter("type");
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(loginType)
+                && org.apache.commons.lang3.StringUtils.equalsIgnoreCase(loginType, "sms")) {
+            model.addAttribute("captchaKey", session.getAttribute("captchaKey"));
+            model.addAttribute("phone", session.getAttribute("phone"));
+        }
+
         if (user == null) {
             return returnPage.fileName();
+        } else {
+            if (user.getLdap()) {
+                model.addAttribute("userName", user.getLoginName());
+            } else {
+                model.addAttribute("userName", user.getEmail());
+            }
         }
 
         model.addAttribute("isNeedCaptcha", userLoginService.isNeedCaptcha(user));
