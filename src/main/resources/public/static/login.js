@@ -2,13 +2,16 @@ const { Input, Button, Tabs, notification } = window["choerodon-ui.min"];
 const { Form, TextField, Password } = window["choerodon-ui-pro.min"];
 let timer = null;
 const TabPane = Tabs.TabPane;
+const keyStr = "ABCDEFGHIJKLMNOP" + "QRSTUVWXYZabcdef" + "ghijklmnopqrstuv"
+    + "wxyz0123456789+/" + "=";
 class Content extends window.React.Component {
   constructor(props) {
     super(props);
     this.state = {
       action: "/oauth/choerodon/login",
       activeKey: "1",
-      defaultValue: "",
+      defaultValue_username: "",
+      defaultValue_phone: "",
       loading: false,
       text: "获取验证码",
       time: 0,
@@ -38,14 +41,6 @@ class Content extends window.React.Component {
       imgSrc: "/oauth/public/captcha",
     };
   }
-  strToObj(str) {
-    console.log(str);
-    let obj = {};
-    $.each(str, function (index, item) {
-      obj[item.name] = item.value;
-    });
-    return obj;
-  }
   componentWillMount() {
     this.init();
   }
@@ -68,13 +63,13 @@ class Content extends window.React.Component {
       console.log(paramsObj);
       if (paramsObj.type && paramsObj.type === "sms") {
         this.setState({
-          activeKey: "2",
-          defaultValue: paramsObj.phone,
+          defaultValue_phone: paramsObj.phone,
           phoneValidateSuccess: true,
         });
+        this.tabOnChange("2");
       } else if (paramsObj.type && paramsObj.type === "account") {
         this.setState({
-          defaultValue: paramsObj.username,
+          defaultValue_username: paramsObj.username,
         });
       }
     }
@@ -95,8 +90,8 @@ class Content extends window.React.Component {
     if (key === "2" && $.cookie("getVerificationCodeTime")) {
       let timeDifference =
         new Date().getTime() - +$.cookie("getVerificationCodeTime");
-      if (timeDifference < 60) {
-        this.forTime(timeDifference);
+      if (timeDifference < 60000) {
+        this.forTime(Math.ceil(60 - timeDifference / 1000));
       }
     }
   }
@@ -165,6 +160,8 @@ class Content extends window.React.Component {
       });
   }
   submitBtnClick() {
+    let input = document.getElementById("pswinput")
+    input.value= this.encryptMd5(input.value)
     if (!this.state.captchaKey && this.state.activeKey === "2") {
       if (
         this.state.phoneValidateSuccess &&
@@ -178,23 +175,45 @@ class Content extends window.React.Component {
       }
     }
   }
-  formSubmit(e) {
-    let formValueStr = $("#myForm").serializeArray();
-    let postData = this.strToObj(formValueStr);
-    console.log(postData);
-    let str = "";
-    for (let i in postData) {
-      str = str + i + "=" + postData[i] + "&";
+  formSubmit() {
+    if (this.state.activeKey === "1") {
+      let input = document.getElementById("pswinput")
+      input.setAttribute('value',this.encryptMd5(input.value));
     }
+    $('#myForm').submit()
+  }
+  encryptMd5 = (password) => {
+    var output = "";
+    var chr1,
+        chr2,
+        chr3 = "";
+    var enc1,
+        enc2,
+        enc3,
+        enc4 = "";
+    var i = 0;
 
-    str = str.substring(0, str.length - 1);
-    fetch(this.state.action, {
-      method: "POST",
-      headers: {
-        "content-type": "application/x-www-form-urlencoded",
-      },
-      body: str,
-    });
+    do {
+      chr1 = password.charCodeAt(i++);
+      chr2 = password.charCodeAt(i++);
+      chr3 = password.charCodeAt(i++);
+      enc1 = chr1 >> 2;
+      enc2 = (chr1 & 3) << 4 | chr2 >> 4;
+      enc3 = (chr2 & 15) << 2 | chr3 >> 6;
+      enc4 = chr3 & 63;
+
+      if (isNaN(chr2)) {
+        enc3 = enc4 = 64;
+      } else if (isNaN(chr3)) {
+        enc4 = 64;
+      }
+
+      output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2) + keyStr.charAt(enc3) + keyStr.charAt(enc4);
+      chr1 = chr2 = chr3 = "";
+      enc1 = enc2 = enc3 = enc4 = "";
+    } while (i < password.length);
+
+    return output;
   }
   phoneLabel = (
     <span>
@@ -238,10 +257,10 @@ class Content extends window.React.Component {
   getContent() {
     return (
       <Form
-        target="_self"
+        // target="_self"
         className={+this.state.activeKey === 2 ? "phone-login-form" : ""}
         id="myForm"
-        // onSubmit={this.formSubmit.bind(this)}
+        onSubmit={this.formSubmit.bind(this)}
         method="post"
         action={this.state.action}
         columns={3}
@@ -250,7 +269,7 @@ class Content extends window.React.Component {
         {/* 登录名/邮箱登录 */}
         {this.state.activeKey === "1" && (
           <TextField
-            defaultValue={this.state.defaultValue}
+            defaultValue={this.state.defaultValue_username}
             autoComplete="off"
             key={1}
             colSpan={3}
@@ -282,7 +301,7 @@ class Content extends window.React.Component {
         {/* 手机验证登陆 */}
         {this.state.activeKey === "2" && (
           <TextField
-            defaultValue={this.state.defaultValue}
+            defaultValue={this.state.defaultValue_phone}
             maxLength={11}
             autoComplete="off"
             key={2}
@@ -479,7 +498,7 @@ class Content extends window.React.Component {
 
   render() {
     return (
-      <div>
+      <div >
         <Tabs
           activeKey={this.state.activeKey}
           onChange={this.tabOnChange.bind(this)}
