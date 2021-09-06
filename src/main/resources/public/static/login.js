@@ -8,12 +8,15 @@ class Content extends window.React.Component {
     this.state = {
       action: "/oauth/choerodon/login",
       activeKey: "1",
+      defaultValue: "",
       loading: false,
       text: "获取验证码",
       time: 0,
-      captchaKey: "",
       phoneValidateSuccess: false,
       captchaValidateSuccess: false,
+      captchaKey: document
+        .getElementById("captchaKeyTemplateData")
+        .getAttribute("data-captchaKey"),
       publicKey: document
         .getElementById("publicKeyTemplateData")
         .getAttribute("data-publicKey"),
@@ -32,9 +35,18 @@ class Content extends window.React.Component {
       messageInfo: document
         .getElementById("messageTemplateData")
         .getAttribute("data-messageTemplateData"),
-      // isNeedCaptcha: true,
       imgSrc: "/oauth/public/captcha",
     };
+  }
+  strToObj(str) {
+    let obj = {};
+    $.each(str, function (index, item) {
+      obj[item.name] = item.value;
+    });
+    return obj;
+  }
+  componentWillMount() {
+    this.init();
   }
   componentDidMount() {
     if (this.state.messageInfo) {
@@ -43,6 +55,23 @@ class Content extends window.React.Component {
         description: this.state.messageInfo,
         placement: "bottomLeft",
       });
+    }
+  }
+  init() {
+    let arr = window.location.href.split("?");
+    if (arr[1]) {
+      let paramsObj = this.strToObj(arr[1]);
+      if (paramsObj.type && paramsObj.type === "sms") {
+        this.state({
+          activeKey: "2",
+          defaultValue: paramsObj.phone,
+          phoneValidateSuccess: true,
+        });
+      } else if (paramsObj.type && paramsObj.type === "account") {
+        this.state({
+          defaultValue: paramsObj.username,
+        });
+      }
     }
   }
 
@@ -56,10 +85,15 @@ class Content extends window.React.Component {
     };
     this.setState({
       action: obj[key],
-    });
-    this.setState({
       activeKey: key,
     });
+    if (key === "2" && $.cookie("getVerificationCodeTime")) {
+      let timeDifference =
+        new Date().getTime() - +$.cookie("getVerificationCodeTime");
+      if (timeDifference < 60) {
+        this.forTime(timeDifference);
+      }
+    }
   }
   refreshImg() {
     let timestamp = new Date().valueOf();
@@ -68,6 +102,7 @@ class Content extends window.React.Component {
     });
   }
   forTime(time) {
+    clearTimeout(timer);
     this.setState(
       {
         time: time,
@@ -112,6 +147,7 @@ class Content extends window.React.Component {
           this.setState({
             captchaKey: res.captchaKey,
           });
+          $.cookie("getVerificationCodeTime", new Date().getTime()); // 成功获取验证码的时间
         } else {
           clearInterval(timer);
           this.forTime(res.interval);
@@ -123,7 +159,7 @@ class Content extends window.React.Component {
         }
       });
   }
-  submit() {
+  submitBtnClick() {
     if (!this.state.captchaKey && this.state.activeKey === "2") {
       if (
         this.state.phoneValidateSuccess &&
@@ -136,6 +172,17 @@ class Content extends window.React.Component {
         });
       }
     }
+  }
+  formSubmit(e) {
+    let formValueStr = $("#myForm").serializeArray();
+    let postData = this.strToObj(formValueStr);
+    fetch(this.state.action, {
+      method: "POST",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+      },
+      body: JSON.stringify(postData),
+    });
   }
   phoneLabel = (
     <span>
@@ -179,17 +226,19 @@ class Content extends window.React.Component {
   getContent() {
     return (
       <Form
-        target="_self"
+        // target="_self"
         className={+this.state.activeKey === 2 ? "phone-login-form" : ""}
         id="myForm"
-        method="post"
-        action={this.state.action}
+        onSubmit={this.formSubmit}
+        // method="post"
+        // action={this.state.action}
         columns={3}
         labelLayout="float"
       >
         {/* 登录名/邮箱登录 */}
         {this.state.activeKey === "1" && (
           <TextField
+            defaultValue={this.state.defaultValue}
             autoComplete="off"
             key={1}
             colSpan={3}
@@ -221,6 +270,7 @@ class Content extends window.React.Component {
         {/* 手机验证登陆 */}
         {this.state.activeKey === "2" && (
           <TextField
+            defaultValue={this.state.defaultValue}
             maxLength={11}
             autoComplete="off"
             key={2}
@@ -406,7 +456,7 @@ class Content extends window.React.Component {
             funcType="raised"
             loading={this.state.loading}
             htmlStyle="padding-top:4px"
-            onClick={this.submit.bind(this)}
+            onClick={this.submitBtnClick.bind(this)}
           >
             <span>{this.state.loading ? "登录中" : "登录"}</span>
           </Button>
@@ -418,7 +468,10 @@ class Content extends window.React.Component {
   render() {
     return (
       <div>
-        <Tabs defaultActiveKey="1" onChange={this.tabOnChange.bind(this)}>
+        <Tabs
+          activeKey={this.state.activeKey}
+          onChange={this.tabOnChange.bind(this)}
+        >
           <TabPane tab="账号密码登录" key="1">
             {this.state.activeKey === "1" && this.getContent(1)}
           </TabPane>
