@@ -229,7 +229,7 @@ class Content extends window.React.Component {
         // target="_self"
         className={+this.state.activeKey === 2 ? "phone-login-form" : ""}
         id="myForm"
-        onSubmit={this.formSubmit}
+        onSubmit={this.formSubmit.bind(this)}
         // method="post"
         // action={this.state.action}
         columns={3}
