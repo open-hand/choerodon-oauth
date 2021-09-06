@@ -55,6 +55,7 @@ public class SmsAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
         //认证之前将key存入session之中，认证失败，返回给前端
         request.getSession().setAttribute("captchaKey", request.getParameter("captchaKey"));
+        request.getSession().setAttribute("phone", request.getParameter("phone"));
 
         return this.getAuthenticationManager().authenticate(authRequest);
     }
