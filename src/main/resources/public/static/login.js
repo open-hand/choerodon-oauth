@@ -233,12 +233,12 @@ class Content extends window.React.Component {
   getContent() {
     return (
       <Form
-        // target="_self"
+        target="_self"
         className={+this.state.activeKey === 2 ? "phone-login-form" : ""}
         id="myForm"
-        onSubmit={this.formSubmit.bind(this)}
-        // method="post"
-        // action={this.state.action}
+        // onSubmit={this.formSubmit.bind(this)}
+        method="post"
+        action={this.state.action}
         columns={3}
         labelLayout="float"
       >
