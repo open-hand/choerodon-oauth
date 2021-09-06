@@ -176,12 +176,19 @@ class Content extends window.React.Component {
   formSubmit(e) {
     let formValueStr = $("#myForm").serializeArray();
     let postData = this.strToObj(formValueStr);
+    console.log(postData)
+    let str=''
+    for (let i in postData) {
+      str = str + i + '=' + postData[i] + '&'
+    }
+
+    str = str.substring(0,str.length - 1)
     fetch(this.state.action, {
       method: "POST",
       headers: {
         "content-type": "application/x-www-form-urlencoded",
       },
-      body: JSON.stringify(postData),
+      body: str
     });
   }
   phoneLabel = (
