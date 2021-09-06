@@ -39,6 +39,7 @@ class Content extends window.React.Component {
     };
   }
   strToObj(str) {
+    console.log(str);
     let obj = {};
     $.each(str, function (index, item) {
       obj[item.name] = item.value;
@@ -60,15 +61,19 @@ class Content extends window.React.Component {
   init() {
     let arr = window.location.href.split("?");
     if (arr[1]) {
-      let paramsObj = this.strToObj(arr[1]);
+      let paramsObj = {};
+      arr[1].replace(/([^=&]+)=([^&]*)/g, (m, key, value) => {
+        paramsObj[decodeURIComponent(key)] = decodeURIComponent(value);
+      });
+      console.log(paramsObj);
       if (paramsObj.type && paramsObj.type === "sms") {
-        this.state({
+        this.setState({
           activeKey: "2",
           defaultValue: paramsObj.phone,
           phoneValidateSuccess: true,
         });
       } else if (paramsObj.type && paramsObj.type === "account") {
-        this.state({
+        this.setState({
           defaultValue: paramsObj.username,
         });
       }
@@ -176,19 +181,19 @@ class Content extends window.React.Component {
   formSubmit(e) {
     let formValueStr = $("#myForm").serializeArray();
     let postData = this.strToObj(formValueStr);
-    console.log(postData)
-    let str=''
+    console.log(postData);
+    let str = "";
     for (let i in postData) {
-      str = str + i + '=' + postData[i] + '&'
+      str = str + i + "=" + postData[i] + "&";
     }
 
-    str = str.substring(0,str.length - 1)
+    str = str.substring(0, str.length - 1);
     fetch(this.state.action, {
       method: "POST",
       headers: {
         "content-type": "application/x-www-form-urlencoded",
       },
-      body: str
+      body: str,
     });
   }
   phoneLabel = (
