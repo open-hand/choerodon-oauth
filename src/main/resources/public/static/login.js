@@ -2,8 +2,12 @@ const { Input, Button, Tabs, notification } = window["choerodon-ui.min"];
 const { Form, TextField, Password } = window["choerodon-ui-pro.min"];
 let timer = null;
 const TabPane = Tabs.TabPane;
-const keyStr = "ABCDEFGHIJKLMNOP" + "QRSTUVWXYZabcdef" + "ghijklmnopqrstuv"
-    + "wxyz0123456789+/" + "=";
+const keyStr =
+  "ABCDEFGHIJKLMNOP" +
+  "QRSTUVWXYZabcdef" +
+  "ghijklmnopqrstuv" +
+  "wxyz0123456789+/" +
+  "=";
 class Content extends window.React.Component {
   constructor(props) {
     super(props);
@@ -60,7 +64,6 @@ class Content extends window.React.Component {
       arr[1].replace(/([^=&]+)=([^&]*)/g, (m, key, value) => {
         paramsObj[decodeURIComponent(key)] = decodeURIComponent(value);
       });
-      console.log(paramsObj);
       if (paramsObj.type && paramsObj.type === "sms") {
         this.setState({
           defaultValue_phone: paramsObj.phone,
@@ -160,10 +163,12 @@ class Content extends window.React.Component {
       });
   }
   submitBtnClick() {
-    let input = document.getElementById("pswinput")
-    let encrypt = new JSEncrypt()
-    encrypt.setPublicKey(this.state.publicKey); // 加密
-    input.value = encrypt.encrypt(input.value)
+    if (this.state.activeKey === "1") {
+      let input = document.getElementById("pswinput");
+      let encrypt = new JSEncrypt();
+      encrypt.setPublicKey(this.state.publicKey); // 加密
+      input.value = encrypt.encrypt(input.value);
+    }
     if (!this.state.captchaKey && this.state.activeKey === "2") {
       if (
         this.state.phoneValidateSuccess &&
@@ -182,7 +187,7 @@ class Content extends window.React.Component {
       let input = document.getElementById("pswinput");
       input.setAttribute("value", input.value);
     }
-    $('#myForm').submit()
+    $("#myForm").submit();
   }
   phoneLabel = (
     <span>
@@ -467,7 +472,7 @@ class Content extends window.React.Component {
 
   render() {
     return (
-      <div >
+      <div>
         <Tabs
           activeKey={this.state.activeKey}
           onChange={this.tabOnChange.bind(this)}
