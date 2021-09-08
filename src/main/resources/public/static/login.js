@@ -244,7 +244,7 @@ class Content extends window.React.Component {
         {this.state.activeKey === "1" && (
           <TextField
             defaultValue={this.state.defaultValue_username}
-            autoComplete="off"
+            // autoComplete="off"
             key={1}
             colSpan={3}
             width="100%"
@@ -277,7 +277,7 @@ class Content extends window.React.Component {
           <TextField
             defaultValue={this.state.defaultValue_phone}
             maxLength={11}
-            autoComplete="off"
+            // autoComplete="off"
             key={2}
             id="phoneInput"
             label={this.phoneLabel}
@@ -308,7 +308,7 @@ class Content extends window.React.Component {
           <div colSpan={3} style={{ position: "relative" }}>
             <TextField
               maxLength={6}
-              autoComplete="off"
+              // autoComplete="off"
               style={{ width: "100%" }}
               validator={(value) => {
                 const reg = /^\d{6}$/;
@@ -364,7 +364,7 @@ class Content extends window.React.Component {
             style={{ display: "none", height: "0px !important" }}
           >
             <TextField
-              autoComplete="off"
+              // autoComplete="off"
               value={this.state.captchaKey}
               id="captchaKeyInput"
               colSpan={3}
@@ -381,7 +381,7 @@ class Content extends window.React.Component {
             <div className="line-container-captcha">
               <div>
                 <TextField
-                  autoComplete="off"
+                  // autoComplete="off"
                   label="验证码"
                   // colSpan={3}
                   name="captcha"
