@@ -56,8 +56,18 @@ public class UserC7nInfoController {
         return Results.success(userService.bindUserPhone(phone, captcha, captchaKey));
     }
 
+    @ApiOperation(value = "非ldap用户更新手机号的接口")
+    @PostMapping("/update/user/phone")
+    public ResponseEntity<BindReMsgVO> updateUserPhone(@RequestParam(required = false) String phone,
+                                                       @RequestParam(required = false) String captcha,
+                                                       @RequestParam(required = false) String captchaKey,
+                                                       @RequestParam(required = false) String password,
+                                                       @RequestParam String type) {
+        return Results.success(userService.updateUserPhone(phone, captcha, captchaKey, password, type));
+    }
 
-    @ApiOperation(value = "请求发送验证码的接口")
+
+    @ApiOperation(value = "登录的时候，请求发送验证码的接口")
     @GetMapping("/public/send-phone-captcha")
     @ResponseBody
     public ResponseEntity<CaptchaPreResult<?>> sendPhoneCaptcha(

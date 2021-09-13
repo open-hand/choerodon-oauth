@@ -17,6 +17,7 @@ import io.choerodon.oauth.infra.mapper.UserMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.hzero.boot.oauth.domain.entity.BaseUserInfo;
 import org.hzero.boot.oauth.infra.mapper.BaseUserInfoMapper;
+import org.hzero.boot.oauth.util.CustomBCryptPasswordEncoder;
 import org.hzero.common.HZeroService;
 import org.hzero.core.base.BaseConstants;
 import org.hzero.core.user.PlatformUserType;
@@ -38,6 +39,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -60,6 +62,8 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     @Autowired
     private UserInfoMapper userInfoMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder = new CustomBCryptPasswordEncoder();
 
     @Override
     public UserE queryByLoginField(String field) {
@@ -145,6 +149,42 @@ public class UserServiceImpl implements UserService {
         }
         return bindReMsgVO;
 
+    }
+
+    @Override
+    public BindReMsgVO updateUserPhone(String phone, String captcha, String captchaKey, String password, String type) {
+        BindReMsgVO bindReMsgVO = new BindReMsgVO();
+        AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
+        try {
+            User user = userRepository.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
+            AssertUtils.notNull(user, "error.user.is.null");
+            AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
+            if (StringUtils.equalsIgnoreCase(type, "captcha")) {
+                AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
+                // 检查验证码
+                validSmsCode(phone, captcha, captchaKey);
+            } else if (StringUtils.equalsIgnoreCase(type, "password")) {
+                AssertUtils.notNull(phone, "hoth.warn.update.passwordNotNull");
+                //校验非ldap用户的密码
+                boolean matches = passwordEncoder.matches(password, user.getPassword());
+                if (!matches) {
+                    throw new CommonException("error.password");
+                }
+            } else {
+                throw new CommonException("unsupported.way.to.change.mobile");
+            }
+            //更新进数据库
+            UserE userE = new UserE();
+            BeanUtils.copyProperties(user, userE);
+            userE.setPhoneBind(Boolean.FALSE);
+            userE.setPhone(phone);
+            userMapper.updateByPrimaryKey(userE);
+            bindReMsgVO.setStatus(Boolean.TRUE);
+
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        }
+        return bindReMsgVO;
     }
 
     private void validSmsCode(String phone, String inputCaptcha, String captchaKey) {
