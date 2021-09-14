@@ -164,10 +164,11 @@ class Content extends window.React.Component {
   }
   submitBtnClick() {
     if (this.state.activeKey === "1") {
+      let inputEncrypt = document.getElementById('encryptPassword')
       let input = document.getElementById("pswinput");
       let encrypt = new JSEncrypt();
       encrypt.setPublicKey(this.state.publicKey); // 加密
-      input.value = encrypt.encrypt(input.value);
+      inputEncrypt.value = encrypt.encrypt(input.value);
     }
     if (!this.state.captchaKey && this.state.activeKey === "2") {
       if (
@@ -184,8 +185,8 @@ class Content extends window.React.Component {
   }
   formSubmit() {
     if (this.state.activeKey === "1") {
-      let input = document.getElementById("pswinput");
-      input.setAttribute("value", input.value);
+      let inputEncrypt = document.getElementById("encryptPassword");
+      inputEncrypt.setAttribute("value", inputEncrypt.value);
     }
     $("#myForm").submit();
   }
@@ -208,6 +209,18 @@ class Content extends window.React.Component {
       </span>
     </span>
   );
+  phoneInput = (e) => {
+    // 输入不用点一下失焦才能点获取验证码
+    if (/^1[3456789]\d{9}$/.test(e.target.value)) {
+      this.setState({
+        phoneValidateSuccess: true,
+      });
+    } else {
+      this.setState({
+        phoneValidateSuccess: false,
+      });
+    }
+  };
   pswLabel = (
     <span>
       密码
@@ -261,7 +274,6 @@ class Content extends window.React.Component {
             colSpan={3}
             newLine
             label={this.pswLabel}
-            name="password"
             validator={(value) => {
               let passwordValue = document.getElementById("pswinput").value;
               if (!passwordValue) {
@@ -270,6 +282,9 @@ class Content extends window.React.Component {
               return true;
             }}
           />
+        )}
+        {this.state.activeKey === "1" && (
+          <input type="hidden" name="password" id="encryptPassword" />
         )}
 
         {/* 手机验证登陆 */}
@@ -281,6 +296,7 @@ class Content extends window.React.Component {
             key={2}
             id="phoneInput"
             label={this.phoneLabel}
+            onInput={this.phoneInput}
             validator={(value) => {
               if (!value) {
                 this.setState({
