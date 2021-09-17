@@ -67,7 +67,9 @@ public class UserC7NLoginServiceImpl extends UserLoginServiceImpl {
     public CaptchaPreResult<?> sendPhoneCaptchaNew(String internationalTelCode, String phone, UserType userType, String businessScope, boolean checkRegistered) {
         CaptchaPreResult<?> captchaPreResult = null;
         if (checkRegistered) {
-            User user = userRepository.selectLoginUserByPhone(phone, userType);
+            UserE userE = new UserE();
+            userE.setPhone(phone);
+            UserE user = userMapper.selectOne(userE);
             if (Objects.isNull(user)) {
                 return SmsPreResult.failure(MessageAccessor.getMessage(LoginExceptions.PHONE_NOT_FOUND.value(), LoginUtil.getLanguageLocale()).desc());
             } else {
