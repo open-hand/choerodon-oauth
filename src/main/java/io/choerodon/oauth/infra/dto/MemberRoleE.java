@@ -8,11 +8,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hzero.starter.keyencrypt.core.Encrypt;
 
+import io.choerodon.mybatis.domain.AuditDomain;
+
 /**
  * Created by wangxiang on 2021/8/2
  */
 @Table(name = "iam_member_role")
-public class MemberRoleE {
+public class MemberRoleE extends AuditDomain {
 
     @Id
     @GeneratedValue

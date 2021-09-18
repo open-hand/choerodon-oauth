@@ -11,12 +11,13 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import io.choerodon.mybatis.annotation.MultiLanguageField;
+import io.choerodon.mybatis.domain.AuditDomain;
 
 /**
  * Created by wangxiang on 2021/8/2
  */
 @Table(name = "hpfm_tenant")
-public class TenantE {
+public class TenantE extends AuditDomain {
     @Id
     @GeneratedValue
     @ApiModelProperty("租户ID")
