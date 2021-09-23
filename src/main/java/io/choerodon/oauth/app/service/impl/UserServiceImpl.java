@@ -2,6 +2,7 @@ package io.choerodon.oauth.app.service.impl;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import io.choerodon.core.exception.CommonException;
@@ -20,14 +21,18 @@ import org.hzero.boot.oauth.infra.mapper.BaseUserInfoMapper;
 import org.hzero.boot.oauth.util.CustomBCryptPasswordEncoder;
 import org.hzero.common.HZeroService;
 import org.hzero.core.base.BaseConstants;
+import org.hzero.core.redis.RedisHelper;
 import org.hzero.core.user.PlatformUserType;
 import org.hzero.core.user.UserType;
 import org.hzero.core.util.AssertUtils;
 import org.hzero.oauth.domain.entity.User;
 import org.hzero.oauth.domain.repository.UserRepository;
+import org.hzero.oauth.infra.encrypt.EncryptClient;
+import org.hzero.oauth.security.custom.CustomAuthenticationProvider;
 import org.hzero.oauth.security.exception.CustomAuthenticationException;
 import org.hzero.oauth.security.exception.ErrorWithTimesException;
 import org.hzero.oauth.security.exception.LoginExceptions;
+import org.hzero.oauth.security.service.LoginRecordService;
 import org.hzero.oauth.security.sms.SmsAuthenticationDetails;
 import org.hzero.starter.captcha.domain.sms.valid.SmsValidResult;
 import org.hzero.starter.captcha.infra.builder.CaptchaBuilder;
@@ -64,6 +69,10 @@ public class UserServiceImpl implements UserService {
     private UserInfoMapper userInfoMapper;
     @Autowired
     private PasswordEncoder passwordEncoder = new CustomBCryptPasswordEncoder();
+    @Autowired
+    private RedisHelper redisHelper;
+    @Autowired
+    private EncryptClient encryptClient;
 
     @Override
     public UserE queryByLoginField(String field) {
@@ -128,7 +137,6 @@ public class UserServiceImpl implements UserService {
             UserE userE = new UserE();
             userE.setPhone(phone);
             UserE dbUser = userMapper.selectOne(userE);
-//            User user = userMapper.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
             AssertUtils.notNull(dbUser, "error.user.is.null");
 
             AssertUtils.isTrue(!dbUser.getLdap(), "ldap.account.not.support.binding.phone");
@@ -152,7 +160,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BindReMsgVO updateUserPhone(String phone, String captcha, String captchaKey, String password, String type) {
+    public BindReMsgVO updateUserPhone(String phone, String verifyKey, String password, String type) {
         BindReMsgVO bindReMsgVO = new BindReMsgVO();
         AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
         try {
@@ -161,8 +169,12 @@ public class UserServiceImpl implements UserService {
             AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
             if (StringUtils.equalsIgnoreCase(type, "captcha")) {
                 AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
-                // 检查验证码
-                validSmsCode(phone, captcha, captchaKey);
+                // 检查验证码是否校验通过
+                String redisKey = redisHelper.strGet("phone:" + phone);
+                if (!StringUtils.equalsIgnoreCase(redisKey, verifyKey)) {
+                    throw new CommonException("hoth.warn.captchaWrong");
+                }
+
             } else if (StringUtils.equalsIgnoreCase(type, "password")) {
                 AssertUtils.notNull(phone, "hoth.warn.update.passwordNotNull");
                 //校验非ldap用户的密码
@@ -183,6 +195,46 @@ public class UserServiceImpl implements UserService {
 
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
+        }
+        return bindReMsgVO;
+    }
+
+
+    @Override
+    public BindReMsgVO verifyCaptcha(String phone, String captcha, String captchaKey) {
+        AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
+        User user = userRepository.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
+        AssertUtils.notNull(user, "error.user.is.null");
+        AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
+        BindReMsgVO bindReMsgVO = new BindReMsgVO();
+        try {
+            // 检查验证码
+            validSmsCode(phone, captcha, captchaKey);
+            bindReMsgVO.setStatus(Boolean.TRUE);
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        }
+        //生成唯一的key存入redis,等成功更新完成后，删除这个值
+        String verifyKey = UUID.randomUUID().toString();
+        String tokenCache = "phone:" + phone;
+        redisHelper.strSet(tokenCache, verifyKey);
+        bindReMsgVO.setKey(verifyKey);
+        return bindReMsgVO;
+    }
+
+    @Override
+    public BindReMsgVO verifyPassword(String loginName, String password) {
+        User user = userRepository.selectLoginUserByLoginName(loginName);
+        AssertUtils.notNull(user, "error.user.is.null");
+        AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
+        String decrypt = encryptClient.decrypt(password);
+        boolean matches = passwordEncoder.matches(decrypt, user.getPassword());
+        BindReMsgVO bindReMsgVO = new BindReMsgVO();
+        if (matches) {
+            bindReMsgVO.setStatus(Boolean.TRUE);
+        } else {
+            bindReMsgVO.setStatus(Boolean.FALSE);
+            bindReMsgVO.setMessage("passwordWrong");
         }
         return bindReMsgVO;
     }
