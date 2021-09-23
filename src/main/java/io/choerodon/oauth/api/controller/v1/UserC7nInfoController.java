@@ -70,8 +70,8 @@ public class UserC7nInfoController {
     @ApiOperation(value = "非ldap用户更新手机号时校验验密码")
     @PostMapping("/verify/password")
     public ResponseEntity<BindReMsgVO> verifyPassword(@RequestParam String loginName,
-                                                      @RequestParam String password) {
-        return Results.success(userService.verifyPassword(loginName, password));
+                                                      @RequestParam String passWord) {
+        return Results.success(userService.verifyPassword(loginName, passWord));
     }
 
     @ApiOperation(value = "登录的时候，请求发送验证码的接口")
