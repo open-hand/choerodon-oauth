@@ -112,6 +112,11 @@ public class OauthC7NController {
         if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage)) {
             model.addAttribute(USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG, exceptionMessage);
         }
+        //如果用户为null  又有错误信息，则错误信息统一展示成用户名密码错误
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage) && user == null) {
+            model.addAttribute(USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG, "用户名密码错误");
+        }
+
 
         if (icp != null && !icp.equals("")) {
             model.addAttribute("icp", icp);

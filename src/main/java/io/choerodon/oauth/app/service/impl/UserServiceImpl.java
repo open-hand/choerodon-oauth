@@ -121,23 +121,24 @@ public class UserServiceImpl implements UserService {
             // 检查验证码
             validSmsCode(phone, inputCaptcha, captchaKey);
             //2.跟新数据库
-            User user = userRepository.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
-            AssertUtils.notNull(user, "error.user.is.null");
+            UserE userE = new UserE();
+            userE.setPhone(phone);
+            UserE dbUser = userMapper.selectOne(userE);
+//            User user = userMapper.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
+            AssertUtils.notNull(dbUser, "error.user.is.null");
 
-            AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
+            AssertUtils.isTrue(!dbUser.getLdap(), "ldap.account.not.support.binding.phone");
 
-            UserInfoE userInfoE = userInfoMapper.selectByPrimaryKey(user.getId());
-            AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
+            UserInfoE userInfoE = userInfoMapper.selectByPrimaryKey(dbUser.getId());
+            AssertUtils.isTrue(!dbUser.getLdap(), "ldap.account.not.support.binding.phone");
             if (!Objects.isNull(userInfoE)) {
                 if (userInfoE.getPhoneCheckFlag().intValue() != BaseConstants.Flag.YES.intValue()) {
                     userInfoE.setPhoneCheckFlag(BaseConstants.Flag.YES);
                     userInfoMapper.updateByPrimaryKey(userInfoE);
                 }
             }
-            UserE userE = new UserE();
-            BeanUtils.copyProperties(user, userE);
-            userE.setPhoneBind(Boolean.TRUE);
-            userMapper.updateByPrimaryKey(userE);
+            dbUser.setPhoneBind(Boolean.TRUE);
+            userMapper.updateByPrimaryKey(dbUser);
             bindReMsgVO.setStatus(Boolean.TRUE);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());

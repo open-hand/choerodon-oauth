@@ -4,11 +4,13 @@ import java.time.LocalDate;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.choerodon.mybatis.domain.AuditDomain;
+
 /**
  * Created by wangxiang on 2021/8/25
  */
 @Table(name = "hiam_user_info")
-public class UserInfoE {
+public class UserInfoE extends AuditDomain {
     @Id
     private Long userId;
     private String companyName;
