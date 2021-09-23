@@ -42,6 +42,7 @@ public class UserC7nInfoController {
     private UserMapper userMapper;
 
 
+
     @ApiOperation(value = "非ldap用户绑定手机号的接口")
     @PostMapping("/bind/user/phone")
     public ResponseEntity<BindReMsgVO> bindUserPhone(@RequestParam(required = false) String phone,
@@ -95,6 +96,22 @@ public class UserC7nInfoController {
             return Results.success(checkPhoneBindResult);
         }
     }
+
+
+    @ApiOperation(value = "绑定手机号的时候直接发送验证码  不校验手机号是否注册")
+    @GetMapping("/public/new/send-phone-captcha")
+    @ResponseBody
+    public ResponseEntity<CaptchaPreResult<?>> newSendPhoneCaptcha(
+            @RequestParam(defaultValue = BaseConstants.DEFAULT_CROWN_CODE) String internationalTelCode,
+            @RequestParam("phone") String phone,
+            @RequestParam(name = UserType.PARAM_NAME, required = false, defaultValue = UserType.DEFAULT_USER_TYPE) String userType,
+            @RequestParam(required = false) String businessScope) {
+
+        CaptchaPreResult<?> captchaPreResult = userService.newSendPhoneCaptcha(internationalTelCode, phone, UserType.ofDefault(userType), businessScope, true);
+        return Results.success(captchaPreResult);
+
+    }
+
 
     private CaptchaPreResult<?> checkPhoneBind(String phone) {
         UserE userE = new UserE();

@@ -1,6 +1,9 @@
 package io.choerodon.oauth.app.service;
 
 
+import org.hzero.core.user.UserType;
+import org.hzero.starter.captcha.domain.core.pre.CaptchaPreResult;
+
 import io.choerodon.oauth.api.vo.BindReMsgVO;
 import io.choerodon.oauth.infra.dto.UserE;
 
@@ -22,4 +25,5 @@ public interface UserService {
 
     BindReMsgVO verifyPassword(String loginName, String password);
 
+    CaptchaPreResult<?> newSendPhoneCaptcha(String internationalTelCode, String phone, UserType ofDefault, String businessScope, boolean b);
 }

@@ -1,8 +1,6 @@
 package io.choerodon.oauth.app.service.impl;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import io.choerodon.core.exception.CommonException;
@@ -16,11 +14,15 @@ import io.choerodon.oauth.infra.mapper.UserInfoMapper;
 import io.choerodon.oauth.infra.mapper.UserMapper;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hzero.boot.message.MessageClient;
+import org.hzero.boot.message.entity.Receiver;
 import org.hzero.boot.oauth.domain.entity.BaseUserInfo;
 import org.hzero.boot.oauth.infra.mapper.BaseUserInfoMapper;
 import org.hzero.boot.oauth.util.CustomBCryptPasswordEncoder;
 import org.hzero.common.HZeroService;
 import org.hzero.core.base.BaseConstants;
+import org.hzero.core.captcha.CaptchaProperties;
+import org.hzero.core.message.MessageAccessor;
 import org.hzero.core.redis.RedisHelper;
 import org.hzero.core.user.PlatformUserType;
 import org.hzero.core.user.UserType;
@@ -34,6 +36,9 @@ import org.hzero.oauth.security.exception.ErrorWithTimesException;
 import org.hzero.oauth.security.exception.LoginExceptions;
 import org.hzero.oauth.security.service.LoginRecordService;
 import org.hzero.oauth.security.sms.SmsAuthenticationDetails;
+import org.hzero.oauth.security.util.LoginUtil;
+import org.hzero.starter.captcha.domain.core.pre.CaptchaPreResult;
+import org.hzero.starter.captcha.domain.sms.pre.SmsPreResult;
 import org.hzero.starter.captcha.domain.sms.valid.SmsValidResult;
 import org.hzero.starter.captcha.infra.builder.CaptchaBuilder;
 import org.slf4j.Logger;
@@ -56,6 +61,7 @@ import org.springframework.util.Assert;
 public class UserServiceImpl implements UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final String SMS_MESSAGE_CODE = "SMS_CAPTCHA_NOTICE";
 
     @Value("${choerodon.oauth.login.field:mail,phone}")
     private String[] queryField;
@@ -73,6 +79,13 @@ public class UserServiceImpl implements UserService {
     private RedisHelper redisHelper;
     @Autowired
     private EncryptClient encryptClient;
+
+    @Autowired
+    private MessageClient messageClient;
+
+
+    @Autowired
+    private CaptchaProperties captchaProperties;
 
     @Override
     public UserE queryByLoginField(String field) {
@@ -244,6 +257,37 @@ public class UserServiceImpl implements UserService {
             bindReMsgVO.setMessage("passwordWrong");
         }
         return bindReMsgVO;
+    }
+
+    @Override
+    public CaptchaPreResult<?> newSendPhoneCaptcha(String internationalTelCode, String phone, UserType userType, String businessScope, boolean b) {
+        CaptchaPreResult<?> captchaPreResult = null;
+        // 获取验证码
+        captchaPreResult = CaptchaBuilder.Pre.Sms.of(phone)
+                .setPrefix(HZeroService.Oauth.CODE)
+                .setCrownCode(internationalTelCode)
+                .setUserType(userType.value())
+                .setBusinessScope(businessScope)
+                .execute();
+
+        if (captchaPreResult.isFailure()) {
+            captchaPreResult.clearCaptcha();
+            return captchaPreResult;
+        }
+        Map<String, String> params = new HashMap<>(2);
+        params.put("code", captchaPreResult.getCaptcha());
+        params.put("expireTime", captchaProperties.getSms().getExpire().toString());
+        try {
+            messageClient.async().sendMessage(BaseConstants.DEFAULT_TENANT_ID, SMS_MESSAGE_CODE, null,
+                    Collections.singletonList(new Receiver().setPhone(phone).setIdd(internationalTelCode)), params, Collections.singletonList("SMS"));
+        } catch (Exception e) {
+            // 消息发送异常
+            captchaPreResult = SmsPreResult.failure(MessageAccessor.getMessage("hoth.warn.captcha.sendPhoneCaptchaError", LoginUtil.getLanguageLocale()).desc());
+        }
+
+        captchaPreResult.clearCaptcha();
+
+        return captchaPreResult;
     }
 
     private void validSmsCode(String phone, String inputCaptcha, String captchaKey) {
