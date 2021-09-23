@@ -160,7 +160,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BindReMsgVO updateUserPhone(String phone, String verifyKey, String password, String type) {
+    public BindReMsgVO updateUserPhone(String phone, String verifyKey, String type) {
         BindReMsgVO bindReMsgVO = new BindReMsgVO();
         AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
         try {
@@ -178,8 +178,8 @@ public class UserServiceImpl implements UserService {
             } else if (StringUtils.equalsIgnoreCase(type, "password")) {
                 AssertUtils.notNull(phone, "hoth.warn.update.passwordNotNull");
                 //校验非ldap用户的密码
-                boolean matches = passwordEncoder.matches(password, user.getPassword());
-                if (!matches) {
+                String redisKey = redisHelper.strGet("password:" + user.getLoginName());
+                if (!StringUtils.equalsIgnoreCase(redisKey, verifyKey)) {
                     throw new CommonException("error.password");
                 }
             } else {
@@ -232,6 +232,11 @@ public class UserServiceImpl implements UserService {
         BindReMsgVO bindReMsgVO = new BindReMsgVO();
         if (matches) {
             bindReMsgVO.setStatus(Boolean.TRUE);
+            //校验成功存一个key 在redis
+            String passwordKey = UUID.randomUUID().toString();
+            String tokenCache = "password:" + loginName;
+            redisHelper.strSet(tokenCache, passwordKey);
+            bindReMsgVO.setKey(passwordKey);
         } else {
             bindReMsgVO.setStatus(Boolean.FALSE);
             bindReMsgVO.setMessage("passwordWrong");
