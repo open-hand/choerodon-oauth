@@ -54,8 +54,9 @@ public class UserC7nInfoController {
     @PostMapping("/update/user/phone")
     public ResponseEntity<BindReMsgVO> updateUserPhone(@RequestParam(required = false) String phone,
                                                        @RequestParam(required = false) String verifyKey,
+                                                       @RequestParam String loginName,
                                                        @RequestParam String type) {
-        return Results.success(userService.updateUserPhone(phone, verifyKey, type));
+        return Results.success(userService.updateUserPhone(phone, verifyKey, loginName, type));
     }
 
 

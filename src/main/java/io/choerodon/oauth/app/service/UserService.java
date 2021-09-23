@@ -16,7 +16,7 @@ public interface UserService {
 
     BindReMsgVO bindUserPhone(String phone, String captcha, String bindUserPhone);
 
-    BindReMsgVO updateUserPhone(String phone, String verifyKey, String type);
+    BindReMsgVO updateUserPhone(String phone, String verifyKey, String loginName, String type);
 
     BindReMsgVO verifyCaptcha(String phone, String captcha, String captchaKey);
 

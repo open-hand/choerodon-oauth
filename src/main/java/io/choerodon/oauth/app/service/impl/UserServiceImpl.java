@@ -160,11 +160,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BindReMsgVO updateUserPhone(String phone, String verifyKey, String type) {
+    public BindReMsgVO updateUserPhone(String phone, String verifyKey, String loginName, String type) {
         BindReMsgVO bindReMsgVO = new BindReMsgVO();
         AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
         try {
-            User user = userRepository.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
+            User user = userRepository.selectLoginUserByLoginName(loginName);
             AssertUtils.notNull(user, "error.user.is.null");
             AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
             if (StringUtils.equalsIgnoreCase(type, "captcha")) {
@@ -174,7 +174,7 @@ public class UserServiceImpl implements UserService {
                 if (!StringUtils.equalsIgnoreCase(redisKey, verifyKey)) {
                     throw new CommonException("hoth.warn.captchaWrong");
                 }
-
+                redisHelper.delKey("phone:" + user.getLoginName());
             } else if (StringUtils.equalsIgnoreCase(type, "password")) {
                 AssertUtils.notNull(phone, "hoth.warn.update.passwordNotNull");
                 //校验非ldap用户的密码
@@ -182,6 +182,8 @@ public class UserServiceImpl implements UserService {
                 if (!StringUtils.equalsIgnoreCase(redisKey, verifyKey)) {
                     throw new CommonException("error.password");
                 }
+                //删除key
+                redisHelper.delKey("password:" + user.getLoginName());
             } else {
                 throw new CommonException("unsupported.way.to.change.mobile");
             }
