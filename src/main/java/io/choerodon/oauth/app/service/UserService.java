@@ -17,7 +17,7 @@ public interface UserService {
 
     UserE queryByEmail(String email);
 
-    BindReMsgVO bindUserPhone(String phone, String captcha, String bindUserPhone);
+    BindReMsgVO bindUserPhone(String phone, String captcha, String bindUserPhone, String loginName);
 
     BindReMsgVO updateUserPhone(String phone, String verifyKey, String loginName, String type);
 

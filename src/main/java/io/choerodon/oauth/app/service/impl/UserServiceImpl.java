@@ -140,20 +140,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BindReMsgVO bindUserPhone(String phone, String inputCaptcha, String captchaKey) {
+    public BindReMsgVO bindUserPhone(String phone, String inputCaptcha, String captchaKey, String loginName) {
         BindReMsgVO bindReMsgVO = new BindReMsgVO();
+        //校验手机号是否存在
+        User user = userRepository.selectLoginUserByPhone(phone, UserType.ofDefault(UserType.DEFAULT_USER_TYPE));
+
+        UserE userE = new UserE();
+        userE.setLoginName(loginName);
+        UserE dbUser = userMapper.selectOne(userE);
+        AssertUtils.notNull(dbUser, "error.user.is.null");
+        AssertUtils.isTrue(!dbUser.getLdap(), "ldap.account.not.support.binding.phone");
+        if (user != null && dbUser.getId().longValue() != user.getId().longValue()) {
+            bindReMsgVO.setStatus(Boolean.FALSE);
+            bindReMsgVO.setMessage("phone.has.been.taken");
+        }
+
+
         try {
             AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
             // 检查验证码
             validSmsCode(phone, inputCaptcha, captchaKey);
             //2.跟新数据库
-            UserE userE = new UserE();
-            userE.setPhone(phone);
-            UserE dbUser = userMapper.selectOne(userE);
-            AssertUtils.notNull(dbUser, "error.user.is.null");
-
-            AssertUtils.isTrue(!dbUser.getLdap(), "ldap.account.not.support.binding.phone");
-
             UserInfoE userInfoE = userInfoMapper.selectByPrimaryKey(dbUser.getId());
             AssertUtils.isTrue(!dbUser.getLdap(), "ldap.account.not.support.binding.phone");
             if (!Objects.isNull(userInfoE)) {

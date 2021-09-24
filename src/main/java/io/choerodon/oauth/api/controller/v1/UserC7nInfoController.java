@@ -47,8 +47,9 @@ public class UserC7nInfoController {
     @PostMapping("/bind/user/phone")
     public ResponseEntity<BindReMsgVO> bindUserPhone(@RequestParam(required = false) String phone,
                                                      @RequestParam(required = false) String captcha,
+                                                     @RequestParam String loginName,
                                                      @RequestParam(required = false) String captchaKey) {
-        return Results.success(userService.bindUserPhone(phone, captcha, captchaKey));
+        return Results.success(userService.bindUserPhone(phone, captcha, captchaKey,loginName));
     }
 
     @ApiOperation(value = "非ldap用户更新手机号的接口")
