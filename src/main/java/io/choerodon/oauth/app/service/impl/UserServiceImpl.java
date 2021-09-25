@@ -1,6 +1,7 @@
 package io.choerodon.oauth.app.service.impl;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import io.choerodon.core.exception.CommonException;
@@ -192,15 +193,15 @@ public class UserServiceImpl implements UserService {
                 // 检查验证码是否校验通过
                 String redisKey = redisHelper.strGet("phone:" + phone);
                 if (!StringUtils.equalsIgnoreCase(redisKey, verifyKey)) {
-                    throw new CommonException("hoth.warn.captchaWrong");
+                    throw new CommonException("phone.modification.failed", phone);
                 }
-                redisHelper.delKey("phone:" + user.getLoginName());
+                redisHelper.delKey("phone:" + phone);
             } else if (StringUtils.equalsIgnoreCase(type, "password")) {
                 AssertUtils.notNull(phone, "hoth.warn.update.passwordNotNull");
                 //校验非ldap用户的密码
                 String redisKey = redisHelper.strGet("password:" + user.getLoginName());
                 if (!StringUtils.equalsIgnoreCase(redisKey, verifyKey)) {
-                    throw new CommonException("error.password");
+                    throw new CommonException("phone.modification.failed", phone);
                 }
                 //删除key
                 redisHelper.delKey("password:" + user.getLoginName());
@@ -239,7 +240,7 @@ public class UserServiceImpl implements UserService {
         //生成唯一的key存入redis,等成功更新完成后，删除这个值
         String verifyKey = UUID.randomUUID().toString();
         String tokenCache = "phone:" + phone;
-        redisHelper.strSet(tokenCache, verifyKey);
+        redisHelper.strSet(tokenCache, verifyKey, 900, TimeUnit.SECONDS);
         bindReMsgVO.setKey(verifyKey);
         return bindReMsgVO;
     }
@@ -257,7 +258,7 @@ public class UserServiceImpl implements UserService {
             //校验成功存一个key 在redis
             String passwordKey = UUID.randomUUID().toString();
             String tokenCache = "password:" + loginName;
-            redisHelper.strSet(tokenCache, passwordKey);
+            redisHelper.strSet(tokenCache, passwordKey, 900, TimeUnit.SECONDS);
             bindReMsgVO.setKey(passwordKey);
         } else {
             bindReMsgVO.setStatus(Boolean.FALSE);
