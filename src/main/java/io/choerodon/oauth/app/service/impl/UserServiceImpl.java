@@ -156,7 +156,6 @@ public class UserServiceImpl implements UserService {
             bindReMsgVO.setMessage("phone.has.been.taken");
         }
 
-
         try {
             AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
             // 检查验证码
@@ -171,6 +170,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
             dbUser.setPhoneBind(Boolean.TRUE);
+            dbUser.setPhone(phone);
             userMapper.updateByPrimaryKey(dbUser);
             bindReMsgVO.setStatus(Boolean.TRUE);
         } catch (Exception e) {
