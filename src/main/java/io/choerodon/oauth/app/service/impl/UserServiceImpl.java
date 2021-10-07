@@ -185,13 +185,16 @@ public class UserServiceImpl implements UserService {
         BindReMsgVO bindReMsgVO = new BindReMsgVO();
         AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
         try {
-            User user = userRepository.selectLoginUserByLoginName(loginName);
-            AssertUtils.notNull(user, "error.user.is.null");
-            AssertUtils.isTrue(!user.getLdap(), "ldap.account.not.support.binding.phone");
+            UserE record = new UserE();
+            record.setLoginName(loginName);
+            UserE userE = userMapper.selectOne(record);
+//            User user = userRepository.selectLoginUserByLoginName(loginName);
+            AssertUtils.notNull(userE, "error.user.is.null");
+            AssertUtils.isTrue(!userE.getLdap(), "ldap.account.not.support.binding.phone");
             if (StringUtils.equalsIgnoreCase(type, "captcha")) {
                 AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
                 // 检查验证码是否校验通过
-                String redisKey = redisHelper.strGet("phone:" + phone);
+                String redisKey = redisHelper.strGet("phone:" + userE.getPhone());
                 if (!StringUtils.equalsIgnoreCase(redisKey, verifyKey)) {
                     throw new CommonException("phone.modification.failed", phone);
                 }
@@ -199,18 +202,16 @@ public class UserServiceImpl implements UserService {
             } else if (StringUtils.equalsIgnoreCase(type, "password")) {
                 AssertUtils.notNull(phone, "hoth.warn.update.passwordNotNull");
                 //校验非ldap用户的密码
-                String redisKey = redisHelper.strGet("password:" + user.getLoginName());
+                String redisKey = redisHelper.strGet("password:" + userE.getLoginName());
                 if (!StringUtils.equalsIgnoreCase(redisKey, verifyKey)) {
                     throw new CommonException("phone.modification.failed", phone);
                 }
                 //删除key
-                redisHelper.delKey("password:" + user.getLoginName());
+                redisHelper.delKey("password:" + userE.getLoginName());
             } else {
                 throw new CommonException("unsupported.way.to.change.mobile");
             }
             //更新进数据库
-            UserE userE = new UserE();
-            BeanUtils.copyProperties(user, userE);
             userE.setPhoneBind(Boolean.FALSE);
             userE.setPhone(phone);
             userMapper.updateByPrimaryKey(userE);
