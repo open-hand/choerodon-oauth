@@ -275,7 +275,7 @@ class App extends window.React.Component {
     const {getFieldDecorator} = form;
     return (
       <div>
-        <span className="loginSpan">忘记密码</span>
+        <span className="loginSpan">重置密码</span>
         <Form layout="vertical" className="form-vertical login-form">
           <FormItem
             {...formItemLayout}

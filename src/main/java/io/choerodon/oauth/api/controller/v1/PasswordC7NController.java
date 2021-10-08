@@ -208,4 +208,30 @@ public class PasswordC7NController {
         }
         return ResponseEntity.ok(passwordForgetService.resetPassword(token, pwd));
     }
+
+    /**
+     * 进入密码过期页面
+     *
+     * @return path
+     */
+    @GetMapping(value = "/expired")
+    public String expired(HttpServletRequest request, Model model) {
+        request.getSession().removeAttribute("userId");
+        request.getSession().removeAttribute("userName");
+        SysSettingVO sysSettingVO = systemSettingService.getSetting();
+        if (sysSettingVO == null) {
+            sysSettingVO = new SysSettingVO();
+        }
+        model.addAttribute("systemName", sysSettingVO.getSystemName());
+        if (!StringUtils.isEmpty(sysSettingVO.getSystemLogo())) {
+            model.addAttribute("systemLogo", sysSettingVO.getSystemLogo());
+        }
+        model.addAttribute("systemTitle", sysSettingVO.getSystemTitle());
+        if (!StringUtils.isEmpty(sysSettingVO.getFavicon())) {
+            model.addAttribute("favicon", sysSettingVO.getFavicon());
+        }
+
+        model.addAttribute("loginPage", loginPage);
+        return PageUrlEnum.PASS_EXPIRED_PAGE.value();
+    }
 }

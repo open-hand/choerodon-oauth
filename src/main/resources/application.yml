@@ -177,6 +177,8 @@ hzero:
       # 强制修改默认密码页面
       passForceModifyPage: ${HZERO_OAUTH_PASS_FORCE_MODIFY_PAGE:/choerodon/password/update_default_pwd_page}
       mobile-login-process-url: ${HZERO_MOBILE_LOGIN_PAGE:/choerodon/login/sms}
+      # 密码过期页面
+      passExpiredPage: ${HZERO_OAUTH_PASS_EXPIRED_PAGE:/choerodon/password/expired}
     social:
       # 三方登录启用 https
       enable-https: ${HZERO_OAUTH_LOGIN_ENABLE_HTTPS:false}
