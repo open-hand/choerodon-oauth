@@ -10,7 +10,8 @@ package io.choerodon.oauth.infra.enums;
 public enum PageUrlEnum {
     DEFAULT_PAGE("password-find"),
     UPDATE_DEFAULT_PWD_PAGE("password-update-pwd"),
-    RESET_URL("password-reset");
+    RESET_URL("password-reset"),
+    PASS_EXPIRED_PAGE("pass-expired");
 
     private final String value;
 
