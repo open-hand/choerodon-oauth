@@ -263,7 +263,7 @@ public class UserServiceImpl implements UserService {
             bindReMsgVO.setKey(passwordKey);
         } else {
             bindReMsgVO.setStatus(Boolean.FALSE);
-            bindReMsgVO.setMessage("passwordWrong");
+            bindReMsgVO.setMessage("密码错误");
         }
         return bindReMsgVO;
     }
