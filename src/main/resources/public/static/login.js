@@ -272,7 +272,7 @@ class Content extends window.React.Component {
         {this.state.activeKey === "1" && (
           <Password
             id="pswinput"
-            autoComplete="new-password"
+            // autoComplete="new-password"
             colSpan={3}
             newLine
             label={this.pswLabel}
