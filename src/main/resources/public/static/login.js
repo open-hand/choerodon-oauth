@@ -435,7 +435,7 @@ class Content extends window.React.Component {
                       width: "100%",
                       height: "100%",
                     }}
-                    src="../public/static/refresh.svg"
+                    src="../static/refresh.svg"
                   />
                 </span>
               </div>
@@ -494,7 +494,7 @@ class Content extends window.React.Component {
         <div className="container-des">
           <img
             style={{ width: 38, height: 28, marginRight: 6 }}
-            src='../public/static/logo.png'
+            src='../static/logo.png'
             alt=""
           />
           <span
@@ -526,7 +526,7 @@ class Content extends window.React.Component {
               </Tabs>
             </div>
           </div>
-          <img src='../public/static/1.svg' alt="" className="btm-img" />
+          <img src='../static/1.svg' alt="" className="btm-img" />
           <div className="btm-desc">
             <p>
               © Copyright Hand China Co.,Ltd. All Rights Reserved
@@ -539,13 +539,13 @@ class Content extends window.React.Component {
         <div className="page-right">
           <div
             className="container-font"
-            style={{ backgroundImage: `url(../public/static/2.svg)` }}
+            style={{ backgroundImage: `url(../static/2.svg)` }}
           >
             <div className="font">
               传递体系化方法论，提供协作、测试、DevOps及容器工具，让团队效能提升更快更稳更简单
             </div>
           </div>
-          <img src='../public/static/3.svg' alt="" className="right-img2" />
+          <img src='../static/3.svg' alt="" className="right-img2" />
         </div>
       </div>
     );

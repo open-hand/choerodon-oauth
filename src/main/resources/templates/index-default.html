@@ -16,29 +16,29 @@
     <link
       rel="shortcut icon"
       th:unless="${favicon != null}"
-      th:href="${'../public/static/icon.ico'}"
+      th:href="${'../static/icon.ico'}"
       type="image/x-icon"
     />
-    <link href="../public/static/choerodon-ui.min.css" rel="stylesheet" />
-    <link href="../public/static/choerodon-ui-pro.min.css" rel="stylesheet" />
+    <link href="../static/choerodon-ui.min.css" rel="stylesheet" />
+    <link href="../static/choerodon-ui-pro.min.css" rel="stylesheet" />
     <!-- <link href="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.css" rel="stylesheet"/> -->
 
-    <script src="../public/static/polyfill.min.js"></script>
-    <script src="../public/static/jquery.min.js"></script>
+    <script src="../static/polyfill.min.js"></script>
+    <script src="../static/jquery.min.js"></script>
     <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-    <script src="../public/static/react.production.min.js"></script>
-    <script src="../public/static/react-dom.min.js"></script>
-    <script src="../public/static/babel.min.js"></script>
-    <script src="../public/static/mobx.umd.min.js"></script>
-    <script src="../public/static/moment.min.js"></script>
-    <script src="../public/static/choerodon-ui.min.js"></script>
-    <script src="../public/static/choerodon-ui-pro.min.js"></script>
-    <script src="../public/static/jsencrypt.min.js"></script>
+    <script src="../static/react.production.min.js"></script>
+    <script src="../static/react-dom.min.js"></script>
+    <script src="../static/babel.min.js"></script>
+    <script src="../static/mobx.umd.min.js"></script>
+    <script src="../static/moment.min.js"></script>
+    <script src="../static/choerodon-ui.min.js"></script>
+    <script src="../static/choerodon-ui-pro.min.js"></script>
+    <script src="../static/jsencrypt.min.js"></script>
     <!--<script src="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.js"></script>-->
-    <!--<script src="../public/static/choerodon-ui.min.js"></script>-->
+    <!--<script src="../static/choerodon-ui.min.js"></script>-->
 
     <script
-      src="../public/static/login.js?t=20210914"
+      src="../static/login.js?t=20210914"
       type="text/babel"
     ></script>
     <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
@@ -258,7 +258,7 @@
 
       @font-face {
         font-family: "FontAwesome";
-        src: url("../public/static/fontawesome-webfont.woff2") format("woff2");
+        src: url("../static/fontawesome-webfont.woff2") format("woff2");
         font-weight: normal;
         font-style: normal;
       }
@@ -345,7 +345,7 @@
       .container-font {
         width: 433px;
         height: 159px;
-        background-image: url("../public/static/2.svg");
+        background-image: url("../static/2.svg");
         background-size: 100%;
         position: absolute;
         top: 11%;
@@ -408,7 +408,7 @@
   </head>
   <body class="login">
     <script
-      th:src="@{../public/static/captcha.js(t=${new java.util.Date().getTime()})}"
+      th:src="@{../static/captcha.js(t=${new java.util.Date().getTime()})}"
     ></script>
 
     <div id="root"></div>
