@@ -79,7 +79,7 @@
 
 <div class="pass-expired">
     <div class="row-flex row-flex-center">
-        <img alt="" th:src="${session.contextPath} + '/static/main/img/pass-expired.svg'" class="pass-expired-image" />
+        <img alt="" src="../../static/pass-expired.svg" class="pass-expired-image" />
     </div>
     <div class="row-flex row-flex-center">
         <h3 class="pass-expired-text" th:text="${expiredMsg}?${expiredMsg}:'您的密码已过期，请点击下方按钮重置密码后再登录！'"></h3>
