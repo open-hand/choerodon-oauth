@@ -164,7 +164,7 @@ class Content extends window.React.Component {
   }
   submitBtnClick() {
     if (this.state.activeKey === "1") {
-      let inputEncrypt = document.getElementById('encryptPassword')
+      let inputEncrypt = document.getElementById("encryptPassword");
       let input = document.getElementById("pswinput");
       let encrypt = new JSEncrypt();
       encrypt.setPublicKey(this.state.publicKey); // 加密
@@ -198,7 +198,7 @@ class Content extends window.React.Component {
           display: "inline-block",
           lineHeight: 1,
           marginLeft: ".04rem",
-          color: "#d50000",
+          color: "rgb(247, 103, 118)",
           width: ".08rem",
           verticalAlign: "middle",
           content: " ",
@@ -229,7 +229,7 @@ class Content extends window.React.Component {
           display: "inline-block",
           lineHeight: 1,
           marginLeft: ".04rem",
-          color: "#d50000",
+          color: "rgb(247, 103, 118)",
           width: ".08rem",
           verticalAlign: "middle",
           content: " ",
@@ -245,7 +245,9 @@ class Content extends window.React.Component {
     return (
       <Form
         // target="_self"
-        className={+this.state.activeKey === 2 ? "phone-login-form" : ""}
+        className={
+          +this.state.activeKey === 2 ? "phone-login-form" : "psw-login-form"
+        }
         id="myForm"
         onSubmit={this.formSubmit.bind(this)}
         method="post"
@@ -259,7 +261,7 @@ class Content extends window.React.Component {
             defaultValue={this.state.defaultValue_username}
             // autoComplete="off"
             key={1}
-            colSpan={3}
+            colSpan={5}
             width="100%"
             label="登录名/邮箱"
             name="username"
@@ -270,7 +272,7 @@ class Content extends window.React.Component {
         {this.state.activeKey === "1" && (
           <Password
             id="pswinput"
-            autoComplete="new-password"
+            // autoComplete="new-password"
             colSpan={3}
             newLine
             label={this.pswLabel}
@@ -348,7 +350,7 @@ class Content extends window.React.Component {
               style={{
                 position: "absolute",
                 right: 13,
-                top: 7,
+                top: 15,
                 color: "#5365EA",
                 zIndex: 10,
                 cursor: "pointer",
@@ -469,7 +471,7 @@ class Content extends window.React.Component {
           </a>
         </div>
         {/* 登录 */}
-        <div newLine colSpan={3}>
+        <div newLine colSpan={3} style={{marginTop: 20}}>
           <Button
             htmlType="submit"
             type="primary"
@@ -488,20 +490,65 @@ class Content extends window.React.Component {
 
   render() {
     return (
-      <div>
-        <Tabs
-          activeKey={this.state.activeKey}
-          onChange={this.tabOnChange.bind(this)}
-        >
-          <TabPane tab="账号密码登录" key="1">
-            {this.state.activeKey === "1" && this.getContent(1)}
-          </TabPane>
-          <TabPane tab="手机验证登录" key="2">
-            {this.state.activeKey === "2" && this.getContent(2)}
-          </TabPane>
-        </Tabs>
+      <div className="container-page">
+        <div className="container-des">
+          <img
+            style={{ width: 38, height: 28, marginRight: 6 }}
+            src='../static/logo.png'
+            alt=""
+          />
+          <span
+            style={{
+              fontSize: 22,
+              fontWeight: 600,
+              position: "relative",
+              top: 4,
+            }}
+          >
+            Choerodon
+          </span>
+        </div>
+
+        <div className="page-left">
+          <div id="content">
+            <span className="loginSpan">登录猪齿鱼</span>
+            <div id="form-content">
+              <Tabs
+                activeKey={this.state.activeKey}
+                onChange={this.tabOnChange.bind(this)}
+              >
+                <TabPane tab="账号密码登录" key="1">
+                  {this.state.activeKey === "1" && this.getContent(1)}
+                </TabPane>
+                <TabPane tab="手机验证登录" key="2">
+                  {this.state.activeKey === "2" && this.getContent(2)}
+                </TabPane>
+              </Tabs>
+            </div>
+          </div>
+          <img src='../static/1.svg' alt="" className="btm-img" />
+          <div className="btm-desc">
+            <p>
+              © Copyright Hand China Co.,Ltd. All Rights Reserved
+              上海汉得信息技术股份有限公司
+              <span>沪ICP备14039535号-18</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="page-right">
+          <div
+            className="container-font"
+            style={{ backgroundImage: `url(../static/2.svg)` }}
+          >
+            <div className="font">
+              传递体系化方法论，提供协作、测试、DevOps及容器工具，让团队效能提升更快更稳更简单
+            </div>
+          </div>
+          <img src='../static/3.svg' alt="" className="right-img2" />
+        </div>
       </div>
     );
   }
 }
-ReactDOM.render(<Content />, document.getElementById("form-content"));
+ReactDOM.render(<Content />, document.getElementById("root"));
