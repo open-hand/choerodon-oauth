@@ -8,6 +8,16 @@ public class BindReMsgVO {
 
     private String message;
 
+    private String key;
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     public Boolean getStatus() {
         return status;
     }
