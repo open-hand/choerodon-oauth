@@ -7,21 +7,15 @@ import org.hzero.core.base.BaseConstants;
 import org.hzero.core.message.MessageAccessor;
 import org.hzero.core.user.UserType;
 import org.hzero.core.util.Results;
-import org.hzero.oauth.config.SwaggerApiConfig;
-import org.hzero.oauth.domain.entity.User;
-import org.hzero.oauth.domain.repository.UserRepository;
 import org.hzero.oauth.domain.service.UserLoginService;
 import org.hzero.oauth.security.exception.LoginExceptions;
 import org.hzero.oauth.security.util.LoginUtil;
 import org.hzero.starter.captcha.domain.core.pre.CaptchaPreResult;
 import org.hzero.starter.captcha.domain.sms.pre.SmsPreResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.oauth.api.vo.BindReMsgVO;
 import io.choerodon.oauth.app.service.UserService;
 import io.choerodon.oauth.infra.dto.UserE;
@@ -48,16 +42,42 @@ public class UserC7nInfoController {
     private UserMapper userMapper;
 
 
+
     @ApiOperation(value = "非ldap用户绑定手机号的接口")
     @PostMapping("/bind/user/phone")
     public ResponseEntity<BindReMsgVO> bindUserPhone(@RequestParam(required = false) String phone,
                                                      @RequestParam(required = false) String captcha,
+                                                     @RequestParam String loginName,
                                                      @RequestParam(required = false) String captchaKey) {
-        return Results.success(userService.bindUserPhone(phone, captcha, captchaKey));
+        return Results.success(userService.bindUserPhone(phone, captcha, captchaKey,loginName));
+    }
+
+    @ApiOperation(value = "非ldap用户更新手机号的接口")
+    @PostMapping("/update/user/phone")
+    public ResponseEntity<BindReMsgVO> updateUserPhone(@RequestParam(required = false) String phone,
+                                                       @RequestParam(required = false) String verifyKey,
+                                                       @RequestParam String loginName,
+                                                       @RequestParam String type) {
+        return Results.success(userService.updateUserPhone(phone, verifyKey, loginName, type));
     }
 
 
-    @ApiOperation(value = "请求发送验证码的接口")
+    @ApiOperation(value = "非ldap用户更新手机号时校验验证码")
+    @PostMapping("/verify/captcha")
+    public ResponseEntity<BindReMsgVO> verifyCaptcha(@RequestParam String phone,
+                                                     @RequestParam String captcha,
+                                                     @RequestParam String captchaKey) {
+        return Results.success(userService.verifyCaptcha(phone, captcha, captchaKey));
+    }
+
+    @ApiOperation(value = "非ldap用户更新手机号时校验验密码")
+    @PostMapping("/verify/password")
+    public ResponseEntity<BindReMsgVO> verifyPassword(@RequestParam String loginName,
+                                                      @RequestParam String passWord) {
+        return Results.success(userService.verifyPassword(loginName, passWord));
+    }
+
+    @ApiOperation(value = "登录的时候，请求发送验证码的接口")
     @GetMapping("/public/send-phone-captcha")
     @ResponseBody
     public ResponseEntity<CaptchaPreResult<?>> sendPhoneCaptcha(
@@ -77,6 +97,22 @@ public class UserC7nInfoController {
             return Results.success(checkPhoneBindResult);
         }
     }
+
+
+    @ApiOperation(value = "绑定手机号的时候直接发送验证码  不校验手机号是否注册")
+    @GetMapping("/public/new/send-phone-captcha")
+    @ResponseBody
+    public ResponseEntity<CaptchaPreResult<?>> newSendPhoneCaptcha(
+            @RequestParam(defaultValue = BaseConstants.DEFAULT_CROWN_CODE) String internationalTelCode,
+            @RequestParam("phone") String phone,
+            @RequestParam(name = UserType.PARAM_NAME, required = false, defaultValue = UserType.DEFAULT_USER_TYPE) String userType,
+            @RequestParam(required = false) String businessScope) {
+
+        CaptchaPreResult<?> captchaPreResult = userService.newSendPhoneCaptcha(internationalTelCode, phone, UserType.ofDefault(userType), businessScope, true);
+        return Results.success(captchaPreResult);
+
+    }
+
 
     private CaptchaPreResult<?> checkPhoneBind(String phone) {
         UserE userE = new UserE();
