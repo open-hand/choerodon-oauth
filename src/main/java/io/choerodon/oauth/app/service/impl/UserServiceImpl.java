@@ -181,7 +181,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BindReMsgVO updateUserPhone(String phone, String verifyKey, String loginName, String type) {
+    public BindReMsgVO updateUserPhone(String phone, String verifyKey, String captcha, String captchaKey, String loginName, String type) {
         BindReMsgVO bindReMsgVO = new BindReMsgVO();
         AssertUtils.notNull(phone, "hoth.warn.captcha.phoneNotNull");
         try {
@@ -199,6 +199,8 @@ public class UserServiceImpl implements UserService {
                     throw new CommonException("phone.modification.failed", phone);
                 }
                 redisHelper.delKey("phone:" + phone);
+                //校验新手机的验证码
+                validSmsCode(phone, captcha, captchaKey);
             } else if (StringUtils.equalsIgnoreCase(type, "password")) {
                 AssertUtils.notNull(phone, "hoth.warn.update.passwordNotNull");
                 //校验非ldap用户的密码
