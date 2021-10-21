@@ -21,7 +21,6 @@
     />
     <link href="../static/choerodon-ui.min.css" rel="stylesheet" />
     <link href="../static/choerodon-ui-pro.min.css" rel="stylesheet" />
-    <!-- <link href="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.css" rel="stylesheet"/> -->
 
     <script src="../static/polyfill.min.js"></script>
     <script src="../static/jquery.min.js"></script>
@@ -34,16 +33,132 @@
     <script src="../static/choerodon-ui.min.js"></script>
     <script src="../static/choerodon-ui-pro.min.js"></script>
     <script src="../static/jsencrypt.min.js"></script>
-    <!--<script src="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.js"></script>-->
-    <!--<script src="../static/choerodon-ui.min.js"></script>-->
 
     <script
-      src="../static/login.js?t=20210914"
+      src="../static/login.js?t=20211021"
       type="text/babel"
     ></script>
     <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
     <title th:unless="${systemTitle}" th:text="Choerodon"></title>
     <style>
+      /* .c7n-tabs-nav {
+        font-size: 14px;
+      } */
+      /* 1 */
+      .c7n-pro-field-wrapper {
+        margin: 0px 0px 0.2rem !important;
+      }
+      .c7n-pro-form-float-label .c7n-pro-field-wrapper {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+      }
+      .c7n-pro-field-wrapper {
+        padding: 0.1rem 0.05rem !important;
+      }
+
+      /* 2 */
+      .c7n-pro-input-wrapper,
+      .c7n-pro-password-wrapper {
+        padding: 0px !important;
+        position: relative !important;
+        border-radius: 0.04rem !important;
+        font-size: 0.13rem !important;
+        overflow: visible !important;
+        border: 0.01rem solid rgb(217, 230, 242) !important;
+      }
+
+      .c7n-pro-input-wrapper::before,
+      .c7n-pro-password-wrapper::before {
+        border: none !important;
+        content: "" !important;
+        display: block !important;
+        position: absolute !important;
+        inset: -0.01rem !important;
+        transition: all 0s ease 0s !important;
+        border-radius: 0.04rem 0.04rem 0px 0px !important;
+        opacity: 0 !important;
+      }
+
+      .c7n-pro-input-focused::before,
+      .c7n-pro-password-focused::before {
+        opacity: 1 !important;
+        border-radius: 0 !important;
+        border-top: none !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: 0.02rem solid rgb(83, 101, 204) !important;
+        bottom: -0.02rem !important;
+      }
+
+      .c7n-pro-input,
+      .c7n-pro-password {
+        padding-top: 0.2rem !important;
+        height: 0.48rem !important;
+        position: static !important;
+        /* font-size: 14px !important; */
+      }
+      .c7n-pro-password-invalid .c7n-pro-password {
+        color: #f76776 !important;
+      }
+      .c7n-pro-input-invalid .c7n-pro-input {
+        color: #f76776 !important;
+      }
+      .c7n-pro-field-label-wrapper {
+        width: auto !important;
+        height: 0px !important;
+        top: 0.15rem !important;
+        left: 0.03rem !important;
+        margin-left: 0px !important;
+        border-top: 0px !important;
+      }
+      .c7n-pro-field-label {
+        background: transparent !important;
+        white-space: break-spaces !important;
+        text-align: left !important;
+        display: flex !important;
+        -webkit-box-pack: end !important;
+        justify-content: flex-end !important;
+        -webkit-box-align: center !important;
+        align-items: center !important;
+        margin-right: 0.08rem !important;
+        line-height: normal !important;
+        font-weight: 400 !important;
+        /* font-size: 0.15rem !important; */
+        color: rgb(158, 173, 190) !important;
+      }
+
+      .c7n-pro-input-focused .c7n-pro-field-label {
+        /* font-size: .18rem !important; */
+      }
+
+      .c7n-pro-password-invalid .c7n-pro-field-label {
+        color: rgb(247, 103, 118) !important;
+      }
+
+      .c7n-pro-input-invalid .c7n-pro-field-label {
+        color: rgb(247, 103, 118) !important;
+      }
+
+      .c7n-pro-validation-message {
+        color: rgb(247, 103, 118) !important;
+        /* font-size: 14px !important; */
+      }
+
+      .c7n-pro-input-float-label .c7n-pro-input:-webkit-autofill {
+        text-indent: 0 !important;
+      }
+      .c7n-pro-password-float-label .c7n-pro-password:-webkit-autofill {
+        text-indent: 0 !important;
+      }
+
+      #root {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+
       html,
       body {
         padding: 0px;
@@ -55,9 +170,26 @@
       .phone-login-form table tbody tr:nth-child(3) {
         display: none;
       }
-
-      .c7n-input:-webkit-autofill {
-        text-indent: 0 !important;
+      .psw-login-form table tbody tr:nth-child(3) {
+        display: none;
+      }
+      .phone-login-form table tbody tr:nth-child(1) {
+        height: 80px;
+      }
+      .phone-login-form table tbody tr:nth-child(2) {
+        height: 80px;
+      }
+      .psw-login-form table tbody tr:nth-child(1) {
+        height: 80px;
+      }
+      .psw-login-form table tbody tr:nth-child(2) {
+        height: 80px;
+      }
+      .phone-login-form table tbody tr:nth-child(5) {
+        margin-top: 20px;
+      }
+      .psw-login-form table tbody tr:nth-child(5) {
+        margin-top: 20px;
       }
 
       .logoleft {
@@ -67,7 +199,7 @@
       }
 
       .login .logo {
-        font-size: 30px;
+        font-size: 32px;
         width: 279px;
         margin: 50px auto;
         padding: 15px;
@@ -77,15 +209,18 @@
         word-break: break-all;
       }
 
-      .login #content {
+      #content {
         padding-top: 32px;
-        padding-left: 42px;
+        padding-left: 32px;
         background-color: #fff;
-        width: 454px;
-        min-height: 434px;
-        padding-right: 42px;
-        box-shadow: 0px 1px 12px 0px rgba(15, 19, 88, 0.14);
+        width: 28.86vw;
+        padding-bottom: 20px;
+        padding-right: 32px;
         border-radius: 6px;
+        position: relative;
+        z-index: 1000;
+        box-shadow: 0px 4px 14px 0px rgba(206, 207, 209, 0.28);
+        min-width: 380px;
       }
 
       .login #content .form-title {
@@ -100,25 +235,33 @@
       }
 
       .btn {
+        letter-spacing: 2px;
+        font-size: 0.14rem !important;
+        height: 40px !important;
+        margin-top: -28px !important;
         background-color: #5365ea !important;
-        background-image: none;
-        filter: none;
-        border: 0;
-        text-shadow: none;
-        font-size: 14px;
-        color: #ffffff;
-        cursor: pointer;
-        outline: none;
-        -webkit-box-shadow: none !important;
-        -moz-box-shadow: none !important;
-        -webkit-border-radius: 0 !important;
-        -moz-border-radius: 0 !important;
-        box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
-          0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12) !important;
-        border-radius: 2px !important;
+        color: #fff;
+        border-color: #5365ea;
         width: 100%;
-        height: 38px;
-        margin-bottom: 32px;
+        display: inline-block;
+        box-sizing: border-box;
+        height: 0.32rem;
+        line-height: 0;
+        padding: 0 0.12rem;
+        border-radius: 0.04rem;
+        border-width: 0.01rem;
+        border-style: solid;
+        color: #5365ea;
+        border: none;
+        background-color: transparent;
+        white-space: nowrap;
+        background-clip: padding-box;
+      }
+      .btn:hover {
+        box-shadow: 0px 8px 10px -6px rgb(72 88 206 / 54%);
+        color: #fff;
+        background-color: #7b8cff !important;
+        border-color: #7b8cff !important;
       }
 
       @font-face {
@@ -152,10 +295,17 @@
         color: #0f1358;
         margin-bottom: 22px;
       }
-
-      input:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0px 1000px white inset;
+      .c7n-pro-input:-webkit-autofill {
+        /* -webkit-box-shadow: 0 0 0px 1000px white inset !important; */
+        -webkit-box-shadow: none !important;
         border: 0px solid #ccc !important;
+        box-shadow: none !important;
+      }
+      .c7n-pro-password:-webkit-autofill {
+        /* -webkit-box-shadow: 0 0 0px 1000px white inset !important; */
+        -webkit-box-shadow: none !important;
+        border: 0px solid #ccc !important;
+        box-shadow: none !important;
       }
 
       .login {
@@ -167,12 +317,23 @@
         top: 24px;
         z-index: 100;
       }
+      .container-des span {
+        position: relative;
+        left: -2px;
+        font-size: 20px !important;
+        font-family: STHeitiSC-Medium, STHeitiSC, "Monospaced Number",
+          "Chinese Quote", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue",
+          Helvetica, Arial, sans-serif;
+        font-weight: 500 !important;
+        color: #0f1358 !important;
+      }
       .btm-img {
         height: 110px;
         width: 100% !important;
         position: absolute;
         bottom: 0;
-        transform: scale(1.8, 1.5);
+        transform: scale(1.15, 1.3);
       }
       .container-page {
         display: flex;
@@ -183,14 +344,14 @@
         position: relative;
       }
       .page-left {
-        display: flex;
-        justify-content: center;
-        align-items: center;
         flex-grow: 1;
         background-color: #f3f6ff;
         min-width: 500px;
         position: relative;
         overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
       .btm-desc {
         width: 100%;
@@ -199,7 +360,6 @@
         display: flex;
         justify-content: center;
         min-width: 500px;
-        font-size: 12px;
       }
       .btm-desc span {
         color: #5365ea;
@@ -279,47 +439,6 @@
       th:src="@{../static/captcha.js(t=${new java.util.Date().getTime()})}"
     ></script>
 
-    <div class="container-page">
-      <div class="container-des">
-        <img
-          style="width: 38px; height: 28px; margin-right: 6px"
-          src="../static/logo.png"
-          alt=""
-        />
-        <span
-          style="
-            font-size: 22px;
-            font-weight: 600;
-            position: relative;
-            top: 4px;
-          "
-          >Choerodon</span
-        >
-      </div>
-
-      <div class="page-left">
-        <div th:class="${isNeedCaptcha} ? 'content1' : 'content2'" id="content">
-          <span class="loginSpan">登录猪齿鱼</span>
-          <div id="form-content"></div>
-        </div>
-        <img src="../static/1.svg" alt="" class="btm-img" />
-        <div class="btm-desc">
-          <p>
-            © Copyright Hand China Co.,Ltd. All Rights Reserved
-            上海汉得信息技术股份有限公司
-            <span>沪ICP备14039535号-18</span>
-          </p>
-        </div>
-      </div>
-
-      <div class="page-right">
-        <div class="container-font">
-          <div class="font">
-            传递体系化方法论，提供协作、测试、DevOps及容器工具，让团队效能提升更快更稳更简单
-          </div>
-        </div>
-        <img src="../static/3.svg" alt="" class="right-img2" />
-      </div>
-    </div>
+    <div id="root"></div>
   </body>
 </html>
