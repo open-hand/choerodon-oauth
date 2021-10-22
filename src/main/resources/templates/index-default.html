@@ -21,7 +21,6 @@
     />
     <link href="../static/choerodon-ui.min.css" rel="stylesheet" />
     <link href="../static/choerodon-ui-pro.min.css" rel="stylesheet" />
-    <!-- <link href="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.css" rel="stylesheet"/> -->
 
     <script src="../static/polyfill.min.js"></script>
     <script src="../static/jquery.min.js"></script>
@@ -34,16 +33,17 @@
     <script src="../static/choerodon-ui.min.js"></script>
     <script src="../static/choerodon-ui-pro.min.js"></script>
     <script src="../static/jsencrypt.min.js"></script>
-    <!--<script src="https://unpkg.com/choerodon-ui@0.8.18/dist/choerodon-ui.min.js"></script>-->
-    <!--<script src="../static/choerodon-ui.min.js"></script>-->
 
     <script
-      src="../static/login.js?t=20210914"
+      src="../static/login.js?t=20211021"
       type="text/babel"
     ></script>
     <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
     <title th:unless="${systemTitle}" th:text="Choerodon"></title>
     <style>
+      /* .c7n-tabs-nav {
+        font-size: 14px;
+      } */
       /* 1 */
       .c7n-pro-field-wrapper {
         margin: 0px 0px 0.2rem !important;
@@ -95,7 +95,13 @@
         padding-top: 0.2rem !important;
         height: 0.48rem !important;
         position: static !important;
-        font-size: inherit !important;
+        /* font-size: 14px !important; */
+      }
+      .c7n-pro-password-invalid .c7n-pro-password {
+        color: #f76776 !important;
+      }
+      .c7n-pro-input-invalid .c7n-pro-input {
+        color: #f76776 !important;
       }
       .c7n-pro-field-label-wrapper {
         width: auto !important;
@@ -117,7 +123,7 @@
         margin-right: 0.08rem !important;
         line-height: normal !important;
         font-weight: 400 !important;
-        font-size: 0.15rem !important;
+        /* font-size: 0.15rem !important; */
         color: rgb(158, 173, 190) !important;
       }
 
@@ -135,7 +141,14 @@
 
       .c7n-pro-validation-message {
         color: rgb(247, 103, 118) !important;
-        font-size: 0.12rem !important;
+        /* font-size: 14px !important; */
+      }
+
+      .c7n-pro-input-float-label .c7n-pro-input:-webkit-autofill {
+        text-indent: 0 !important;
+      }
+      .c7n-pro-password-float-label .c7n-pro-password:-webkit-autofill {
+        text-indent: 0 !important;
       }
 
       #root {
@@ -179,10 +192,6 @@
         margin-top: 20px;
       }
 
-      .c7n-input:-webkit-autofill {
-        text-indent: 0 !important;
-      }
-
       .logoleft {
         width: 85%;
         height: 100%;
@@ -190,7 +199,7 @@
       }
 
       .login .logo {
-        font-size: 30px;
+        font-size: 32px;
         width: 279px;
         margin: 50px auto;
         padding: 15px;
@@ -202,19 +211,16 @@
 
       #content {
         padding-top: 32px;
-        padding-left: 42px;
+        padding-left: 32px;
         background-color: #fff;
-        width: 454px;
-        min-height: 434px;
-        padding-right: 42px;
-        box-shadow: 0px 1px 12px 0px rgba(15, 19, 88, 0.14);
+        width: 28.86vw;
+        padding-bottom: 20px;
+        padding-right: 32px;
         border-radius: 6px;
-        position: absolute;
+        position: relative;
         z-index: 1000;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        box-sizing: content-box;
+        box-shadow: 0px 4px 14px 0px rgba(206, 207, 209, 0.28);
+        min-width: 380px;
       }
 
       .login #content .form-title {
@@ -229,7 +235,9 @@
       }
 
       .btn {
-        height: 48px !important;
+        letter-spacing: 2px;
+        font-size: 0.14rem !important;
+        height: 40px !important;
         margin-top: -28px !important;
         background-color: #5365ea !important;
         color: #fff;
@@ -287,10 +295,17 @@
         color: #0f1358;
         margin-bottom: 22px;
       }
-
-      input:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0px 1000px white inset;
+      .c7n-pro-input:-webkit-autofill {
+        /* -webkit-box-shadow: 0 0 0px 1000px white inset !important; */
+        -webkit-box-shadow: none !important;
         border: 0px solid #ccc !important;
+        box-shadow: none !important;
+      }
+      .c7n-pro-password:-webkit-autofill {
+        /* -webkit-box-shadow: 0 0 0px 1000px white inset !important; */
+        -webkit-box-shadow: none !important;
+        border: 0px solid #ccc !important;
+        box-shadow: none !important;
       }
 
       .login {
@@ -302,12 +317,23 @@
         top: 24px;
         z-index: 100;
       }
+      .container-des span {
+        position: relative;
+        left: -2px;
+        font-size: 20px !important;
+        font-family: STHeitiSC-Medium, STHeitiSC, "Monospaced Number",
+          "Chinese Quote", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue",
+          Helvetica, Arial, sans-serif;
+        font-weight: 500 !important;
+        color: #0f1358 !important;
+      }
       .btm-img {
         height: 110px;
         width: 100% !important;
         position: absolute;
         bottom: 0;
-        transform: scale(1.8, 1.5);
+        transform: scale(1.15, 1.3);
       }
       .container-page {
         display: flex;
@@ -323,6 +349,9 @@
         min-width: 500px;
         position: relative;
         overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
       .btm-desc {
         width: 100%;
@@ -331,7 +360,6 @@
         display: flex;
         justify-content: center;
         min-width: 500px;
-        font-size: 12px;
       }
       .btm-desc span {
         color: #5365ea;

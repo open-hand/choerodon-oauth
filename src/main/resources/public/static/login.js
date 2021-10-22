@@ -471,7 +471,7 @@ class Content extends window.React.Component {
           </a>
         </div>
         {/* 登录 */}
-        <div newLine colSpan={3} style={{marginTop: 20}}>
+        <div newLine colSpan={3} style={{marginTop: 5}}>
           <Button
             htmlType="submit"
             type="primary"
@@ -492,21 +492,7 @@ class Content extends window.React.Component {
     return (
       <div className="container-page">
         <div className="container-des">
-          <img
-            style={{ width: 38, height: 28, marginRight: 6 }}
-            src='../static/logo.png'
-            alt=""
-          />
-          <span
-            style={{
-              fontSize: 22,
-              fontWeight: 600,
-              position: "relative",
-              top: 4,
-            }}
-          >
-            Choerodon
-          </span>
+          <img src="../static/choerodon-logo-02.svg" alt="" />
         </div>
 
         <div className="page-left">
