@@ -471,7 +471,7 @@ class Content extends window.React.Component {
           </a>
         </div>
         {/* 登录 */}
-        <div newLine colSpan={3} style={{marginTop: 5}}>
+        <div newLine colSpan={3} style={{ marginTop: 5 }}>
           <Button
             htmlType="submit"
             type="primary"
@@ -497,6 +497,23 @@ class Content extends window.React.Component {
 
         <div className="page-left">
           <div id="content">
+            <div className="info-email-phone">
+              <span className="info-phone">
+                <img
+                  style={{ position: "relative", top: -1 }}
+                  src="../static/call_black_24dp.svg"
+                  alt=""
+                />
+                <span className="info-email-phone-font">400-168-4263</span>
+              </span>
+              <span>
+                <img src="../static/email_black_24dp.svg" alt="" />
+                <span className="info-email-phone-font">
+                  zhuchiyu@vip.hand-china.com
+                </span>
+              </span>
+            </div>
+
             <span className="loginSpan">登录猪齿鱼</span>
             <div id="form-content">
               <Tabs
@@ -512,7 +529,7 @@ class Content extends window.React.Component {
               </Tabs>
             </div>
           </div>
-          <img src='../static/1.svg' alt="" className="btm-img" />
+          <img src="../static/1.svg" alt="" className="btm-img" />
           <div className="btm-desc">
             <p>
               © Copyright Hand China Co.,Ltd. All Rights Reserved
@@ -531,7 +548,7 @@ class Content extends window.React.Component {
               传递体系化方法论，提供协作、测试、DevOps及容器工具，让团队效能提升更快更稳更简单
             </div>
           </div>
-          <img src='../static/3.svg' alt="" className="right-img2" />
+          <img src="../static/3.svg" alt="" className="right-img2" />
         </div>
       </div>
     );

@@ -35,7 +35,7 @@
     <script src="../static/jsencrypt.min.js"></script>
 
     <script
-      src="../static/login.js?t=20211021"
+      src="../static/login.js?t=20211025"
       type="text/babel"
     ></script>
     <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
@@ -221,6 +221,24 @@
         z-index: 1000;
         box-shadow: 0px 4px 14px 0px rgba(206, 207, 209, 0.28);
         min-width: 380px;
+        position: relative;
+        top: -20px;
+      }
+      .info-email-phone {
+        width: 100%;
+        position: absolute;
+        bottom: -35px;
+        left: 0;
+        color: rgba(15, 19, 88, 0.45);
+        font-family: PingFangSC-Regular, PingFang SC;
+        display: flex;
+        justify-content: space-around;
+      }
+      .info-phone {
+        margin-right: 20px;
+      }
+      .info-email-phone-font {
+        margin-left: 3px;
       }
 
       .login #content .form-title {
