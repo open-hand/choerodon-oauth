@@ -106,10 +106,12 @@ public class OauthC7NController {
         }
 
         User user = userLoginService.queryRequestUser(request);
-
+        String userName = request.getParameter("username");
         // 错误消息
         String exceptionMessage = (String) session.getAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION);
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage)) {
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage)
+                && (org.apache.commons.lang3.StringUtils.equalsIgnoreCase(user.getLoginName(), userName)
+                || org.apache.commons.lang3.StringUtils.equalsIgnoreCase(user.getEmail(), userName))) {
             model.addAttribute(USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG, exceptionMessage);
         }
         //如果用户为null  又有错误信息，则错误信息统一展示成用户名密码错误
