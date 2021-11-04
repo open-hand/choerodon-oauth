@@ -107,15 +107,20 @@ public class OauthC7NController {
 
         User user = userLoginService.queryRequestUser(request);
         String userName = request.getParameter("username");
+        String phone = request.getParameter("phone");
         String username = (String) session.getAttribute("username");
         // 错误消息
         String exceptionMessage = (String) session.getAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION);
         if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage)
-                && org.apache.commons.lang3.StringUtils.equalsIgnoreCase(username, userName)) {
+                && (org.apache.commons.lang3.StringUtils.equalsIgnoreCase(username, userName)
+                || org.apache.commons.lang3.StringUtils.equalsIgnoreCase(username, phone))) {
             model.addAttribute(USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG, exceptionMessage);
         }
         //如果用户为null  又有错误信息，则错误信息统一展示成用户名密码错误
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage) && user == null) {
+        String loginType = request.getParameter("type");
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage) && user == null &&
+                org.apache.commons.lang3.StringUtils.isNotEmpty(loginType)
+                && !org.apache.commons.lang3.StringUtils.equalsIgnoreCase(loginType, "sms")) {
             model.addAttribute(USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG, "用户名密码错误");
         }
 
@@ -133,7 +138,6 @@ public class OauthC7NController {
         }
 
         //如果是短信登录连同CaptchaKey一起返回
-        String loginType = request.getParameter("type");
         if (org.apache.commons.lang3.StringUtils.isNotEmpty(loginType)
                 && org.apache.commons.lang3.StringUtils.equalsIgnoreCase(loginType, "sms")) {
             model.addAttribute("captchaKey", session.getAttribute("captchaKey"));
