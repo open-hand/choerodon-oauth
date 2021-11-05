@@ -214,7 +214,7 @@ public class UserServiceImpl implements UserService {
                 throw new CommonException("unsupported.way.to.change.mobile");
             }
             //更新进数据库
-            userE.setPhoneBind(Boolean.FALSE);
+            userE.setPhoneBind(Boolean.TRUE);
             userE.setPhone(phone);
             userMapper.updateByPrimaryKey(userE);
             bindReMsgVO.setStatus(Boolean.TRUE);
