@@ -529,8 +529,8 @@ class Content extends window.React.Component {
               </Tabs>
             </div>
           </div>
-          <div className='c-btn-img'>
-          <img src="../static/1.svg" alt="" className="btm-img" />
+          <div className="c-btn-img">
+            <img src="../static/1.svg" alt="" className="btm-img" />
           </div>
           <div className="btm-desc">
             <p>
