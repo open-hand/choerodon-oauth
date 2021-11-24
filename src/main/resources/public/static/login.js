@@ -267,6 +267,13 @@ class Content extends window.React.Component {
             name="username"
             required
             placeholder="登录名/邮箱"
+            validator={(value) => {
+              let reg = /^[^\u4e00-\u9fa5]+$/
+              if (!reg.test(value)) {
+                return "登录名不能含有中文";
+              }
+              return true;
+            }}
           />
         )}
         {this.state.activeKey === "1" && (
