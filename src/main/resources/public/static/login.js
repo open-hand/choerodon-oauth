@@ -1,4 +1,4 @@
-const { Input, Button, Tabs, notification } = window["choerodon-ui.min"];
+const { Input, Button, Tabs, notification, Icon } = window["choerodon-ui.min"];
 const { Form, TextField, Password } = window["choerodon-ui-pro.min"];
 let timer = null;
 const TabPane = Tabs.TabPane;
@@ -279,10 +279,14 @@ class Content extends window.React.Component {
       document
         .getElementsByClassName("menu-list")[0]
         .setAttribute("style", "height: 0");
+      document.getElementsByClassName("icon-expand_more")[0].style.transform =
+        "rotate(0deg)";
     } else {
       document
         .getElementsByClassName("menu-list")[0]
         .setAttribute("style", "height: 86px");
+      document.getElementsByClassName("icon-expand_more")[0].style.transform =
+        "rotate(180deg)";
     }
     this.setState({
       dropDownVisible: !this.state.dropDownVisible,
@@ -304,6 +308,8 @@ class Content extends window.React.Component {
     document
       .getElementsByClassName("menu-list")[0]
       .setAttribute("style", "height: 0");
+      document.getElementsByClassName("icon-expand_more")[0].style.transform =
+      "rotate(0deg)";
     this.setState(
       {
         dropDownVisible: !this.state.dropDownVisible,
@@ -312,12 +318,12 @@ class Content extends window.React.Component {
       },
       () => {
         this.tabBarInit();
-        this.languageRequest()
+        this.languageRequest();
       }
     );
   };
 
-  getContent() {
+  getTabPaneContent() {
     const language =
       this.state.currentLanguage === "zh_CN"
         ? this.state.languageZH_CN
@@ -612,10 +618,10 @@ class Content extends window.React.Component {
                 onChange={this.tabOnChange.bind(this)}
               >
                 <TabPane tab={language.accountLogin} key="1">
-                  {this.state.activeKey === "1" && this.getContent(1)}
+                  {this.state.activeKey === "1" && this.getTabPaneContent(1)}
                 </TabPane>
                 <TabPane tab={language.mobileLogin} key="2">
-                  {this.state.activeKey === "2" && this.getContent(2)}
+                  {this.state.activeKey === "2" && this.getTabPaneContent(2)}
                 </TabPane>
               </Tabs>
             </div>
@@ -636,9 +642,18 @@ class Content extends window.React.Component {
               onClick={this.handleLanguageMenu}
               className="language-switch-currentLanguage"
             >
+              <Icon
+                type="language"
+                style={{ position: "relative", top: -1, marginRight: 6 }}
+              />
               {this.state.currentLanguage === "zh_CN"
                 ? "简体中文"
                 : "English (US)"}
+              <Icon
+                className="icon-expand_more"
+                type="expand_less"
+                style={{ position: "relative", top: -1, marginLeft: 6 }}
+              />
             </span>
             <div className="menu-list">
               <div
