@@ -151,9 +151,24 @@
         text-indent: 0 !important;
       }
 
-      .c7n-tabs-ink-bar {
+      .c7n-tabs-ink-bar-zh_CN-1 {
+        width: 53px !important;
+      }
+
+      .c7n-tabs-ink-bar-en_US-1 {
+        width: 85px !important;
+      }
+
+      #c7n-tabs-ink-bar-zh_CN-2 {
+        width: 66px !important;
+      }
+
+      #c7n-tabs-ink-bar-en_US-2 {
         width: 78px !important;
-        left: 16px !important;
+      }
+
+      .c7n-tabs-ink-bar {
+        left: 1px !important;
       }
 
       #root {
@@ -212,6 +227,17 @@
         position: relative;
         color: #0366d6;
         word-break: break-all;
+      }
+
+      .label-required {
+        display: inline-block;
+        line-height: 1;
+        margin-left: 0.04rem;
+        color: rgb(247, 103, 118);
+        width: .08rem;
+        vertical-align: middle;
+        content: " ";
+        font-family: "SimSun";
       }
 
       #content {
@@ -387,6 +413,43 @@
         color: #5365ea;
         margin-left: 18px;
       }
+
+      .language-switch {
+        position: absolute;
+        color: rgba(15, 19, 88, 0.65);
+        right: 51px;
+        bottom: 19px;
+      }
+      .language-switch-currentLanguage {
+        cursor: pointer;
+        width: 144px;
+        text-align: center;
+        display: inline-block;
+      }
+      .menu-list {
+        position: absolute;
+        left: 0;
+        bottom: 31px;
+        background: #ffffff;
+        box-shadow: 0px 3px 11px 0px rgba(15, 19, 88, 0.12);
+        border-radius: 3px;
+        width: 144px;
+        transition: background 0.3s, height 0.2s;
+        overflow: hidden;
+        height: 0;
+      }
+      .menu-list-item {
+        cursor: pointer;
+        height: 43px;
+        padding-left: 13px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s;
+      }
+      .menu-list-item:hover {
+        background-color: #f5f5f5;
+      }
+
       .page-right {
         width: 37.5%;
         position: relative;
@@ -423,6 +486,10 @@
       }
       .c7n-tabs-nav .c7n-tabs-tab-active {
         color: #5365ea !important;
+      }
+      .c7n-tabs-tab {
+        padding-left: 1px !important;
+        margin-right: 24px !important;
       }
       .c7n-tabs-ink-bar {
         background-color: #5365ea !important;

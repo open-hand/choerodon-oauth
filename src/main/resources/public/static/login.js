@@ -21,6 +21,8 @@ class Content extends window.React.Component {
       time: 0,
       phoneValidateSuccess: false,
       captchaValidateSuccess: false,
+      dropDownVisible: false,
+      currentLanguage: "zh_CN",
       captchaKey: document
         .getElementById("captchaKeyTemplateData")
         .getAttribute("data-captchaKey"),
@@ -43,19 +45,47 @@ class Content extends window.React.Component {
         .getElementById("messageTemplateData")
         .getAttribute("data-messageTemplateData"),
       imgSrc: "/oauth/public/captcha",
+
+      languageZH_CN: {
+        signInzcy: "登录猪齿鱼",
+        accountLogin: "账号密码",
+        mobileLogin: "手机验证码",
+        loginAccountEmail: "登录名/邮箱",
+        password: "密码",
+        register: "注册",
+        forgotPassword: "忘记密码",
+        signIn: "登录",
+        desc:
+          "传递体系化方法论，提供协作、测试、DevOps及容器工具，让团队效能提升更快更稳更简单",
+      },
+      languageEN_US: {
+        signInzcy: "Sign in",
+        accountLogin: "Account Login",
+        mobileLogin: "Mobile Login",
+        loginAccountEmail: "Login Account/Email",
+        password: "Password",
+        register: "Register",
+        forgotPassword: "Forgot Password",
+        signIn: "Sign in",
+        desc:
+          "Deliver a systematic methodology that provides collaboration, testing, DevOps and container tools to make team performance faster, more stable and easier.",
+      },
     };
   }
+
+  languageRequest() {
+    let formData = new FormData();
+    formData.append("lang", this.state.currentLanguage);
+    fetch("/oauth/login/lang", {
+      method: "post",
+      body: formData,
+    }).then((res) => {
+      console.log(res);
+    });
+  }
+
   componentWillMount() {
     this.init();
-  }
-  componentDidMount() {
-    if (this.state.messageInfo) {
-      notification.warning({
-        message: "警告",
-        description: this.state.messageInfo,
-        placement: "bottomLeft",
-      });
-    }
   }
   init() {
     let arr = window.location.href.split("?");
@@ -76,12 +106,42 @@ class Content extends window.React.Component {
         });
       }
     }
+
+    if (this.state.messageInfo) {
+      notification.warning({
+        message: "警告",
+        description: this.state.messageInfo,
+        placement: "bottomLeft",
+      });
+    }
+
+    const language = localStorage.getItem("language") || "zh_CN";
+    this.setState(
+      {
+        currentLanguage: language,
+      },
+      () => {
+        this.tabBarInit();
+        this.languageRequest();
+      }
+    );
   }
 
   tabOnChange(key) {
     if (key === this.state.activeKey) {
       return;
     }
+    // tab  底部线样式
+    if (key === "1") {
+      document
+        .getElementsByClassName("c7n-tabs-ink-bar")[0]
+        .setAttribute("id", "");
+    } else if (key === "2") {
+      document
+        .getElementsByClassName("c7n-tabs-ink-bar")[0]
+        .setAttribute("id", `c7n-tabs-ink-bar-${this.state.currentLanguage}-2`);
+    }
+
     let obj = {
       1: "/oauth/choerodon/login",
       2: "/oauth/choerodon/login/sms",
@@ -162,6 +222,7 @@ class Content extends window.React.Component {
         }
       });
   }
+
   submitBtnClick() {
     if (this.state.activeKey === "1") {
       let inputEncrypt = document.getElementById("encryptPassword");
@@ -190,25 +251,7 @@ class Content extends window.React.Component {
     }
     $("#myForm").submit();
   }
-  phoneLabel = (
-    <span>
-      手机号
-      <span
-        style={{
-          display: "inline-block",
-          lineHeight: 1,
-          marginLeft: ".04rem",
-          color: "rgb(247, 103, 118)",
-          width: ".08rem",
-          verticalAlign: "middle",
-          content: " ",
-          fontFamily: "SimSun",
-        }}
-      >
-        *
-      </span>
-    </span>
-  );
+
   phoneInput = (e) => {
     // 输入不用点一下失焦才能点获取验证码
     if (/^1[3456789]\d{9}$/.test(e.target.value)) {
@@ -221,27 +264,64 @@ class Content extends window.React.Component {
       });
     }
   };
-  pswLabel = (
-    <span>
-      密码
-      <span
-        style={{
-          display: "inline-block",
-          lineHeight: 1,
-          marginLeft: ".04rem",
-          color: "rgb(247, 103, 118)",
-          width: ".08rem",
-          verticalAlign: "middle",
-          content: " ",
-          fontFamily: "SimSun",
-        }}
-      >
-        *
+
+  getlabelRequired = (text) => {
+    return (
+      <span>
+        {text}
+        <span className="label-required">*</span>
       </span>
-    </span>
-  );
+    );
+  };
+
+  handleLanguageMenu = () => {
+    if (this.state.dropDownVisible) {
+      document
+        .getElementsByClassName("menu-list")[0]
+        .setAttribute("style", "height: 0");
+    } else {
+      document
+        .getElementsByClassName("menu-list")[0]
+        .setAttribute("style", "height: 86px");
+    }
+    this.setState({
+      dropDownVisible: !this.state.dropDownVisible,
+    });
+  };
+
+  tabBarInit = () => {
+    const elment = document.getElementsByClassName("c7n-tabs-ink-bar")[0];
+    elment.setAttribute("id", "");
+    elment.classList.remove(
+      `c7n-tabs-ink-bar-zh_CN-1`,
+      `c7n-tabs-ink-bar-en_US-1`
+    );
+    elment.classList.add(`c7n-tabs-ink-bar-${this.state.currentLanguage}-1`);
+  };
+
+  languageSwitch = (i) => {
+    localStorage.setItem("language", i);
+    document
+      .getElementsByClassName("menu-list")[0]
+      .setAttribute("style", "height: 0");
+    this.setState(
+      {
+        dropDownVisible: !this.state.dropDownVisible,
+        activeKey: "1",
+        currentLanguage: i,
+      },
+      () => {
+        this.tabBarInit();
+        this.languageRequest()
+      }
+    );
+  };
 
   getContent() {
+    const language =
+      this.state.currentLanguage === "zh_CN"
+        ? this.state.languageZH_CN
+        : this.state.languageEN_US;
     return (
       <Form
         // target="_self"
@@ -263,12 +343,12 @@ class Content extends window.React.Component {
             key={1}
             colSpan={5}
             width="100%"
-            label="登录名/邮箱"
+            label={language.loginAccountEmail}
             name="username"
             required
-            placeholder="登录名/邮箱"
+            placeholder={language.loginAccountEmail}
             validator={(value) => {
-              let reg = /^[^\u4e00-\u9fa5]+$/
+              let reg = /^[^\u4e00-\u9fa5]+$/;
               if (!reg.test(value)) {
                 return "登录名不能含有中文";
               }
@@ -282,7 +362,7 @@ class Content extends window.React.Component {
             // autoComplete="new-password"
             colSpan={3}
             newLine
-            label={this.pswLabel}
+            label={this.getlabelRequired(language.password)}
             validator={(value) => {
               let passwordValue = document.getElementById("pswinput").value;
               if (!passwordValue) {
@@ -304,7 +384,7 @@ class Content extends window.React.Component {
             // autoComplete="off"
             key={2}
             id="phoneInput"
-            label={this.phoneLabel}
+            label={this.getlabelRequired("手机号")}
             onInput={this.phoneInput}
             validator={(value) => {
               if (!value) {
@@ -459,7 +539,7 @@ class Content extends window.React.Component {
         >
           {this.state.registerUrl && (
             <a style={{ color: "#5365EA" }} href={this.state.registerUrl}>
-              注册
+              {language.register}
             </a>
           )}
           {this.state.registerUrl && (
@@ -474,7 +554,7 @@ class Content extends window.React.Component {
             </span>
           )}
           <a style={{ color: "#5365EA" }} href="./password/find">
-            忘记密码
+            {language.forgotPassword}
           </a>
         </div>
         {/* 登录 */}
@@ -488,7 +568,7 @@ class Content extends window.React.Component {
             htmlStyle="padding-top:4px"
             onClick={this.submitBtnClick.bind(this)}
           >
-            <span>{this.state.loading ? "登录中" : "登录"}</span>
+            <span>{this.state.loading ? "登录中" : language.signIn}</span>
           </Button>
         </div>
       </Form>
@@ -496,6 +576,10 @@ class Content extends window.React.Component {
   }
 
   render() {
+    const language =
+      this.state.currentLanguage === "zh_CN"
+        ? this.state.languageZH_CN
+        : this.state.languageEN_US;
     return (
       <div className="container-page">
         <div className="container-des">
@@ -521,16 +605,16 @@ class Content extends window.React.Component {
               </span>
             </div>
 
-            <span className="loginSpan">登录猪齿鱼</span>
+            <span className="loginSpan">{language.signInzcy}</span>
             <div id="form-content">
               <Tabs
                 activeKey={this.state.activeKey}
                 onChange={this.tabOnChange.bind(this)}
               >
-                <TabPane tab="账号密码登录" key="1">
+                <TabPane tab={language.accountLogin} key="1">
                   {this.state.activeKey === "1" && this.getContent(1)}
                 </TabPane>
-                <TabPane tab="手机验证登录" key="2">
+                <TabPane tab={language.mobileLogin} key="2">
                   {this.state.activeKey === "2" && this.getContent(2)}
                 </TabPane>
               </Tabs>
@@ -546,6 +630,46 @@ class Content extends window.React.Component {
               <span>沪ICP备14039535号-18</span>
             </p>
           </div>
+
+          <div className="language-switch">
+            <span
+              onClick={this.handleLanguageMenu}
+              className="language-switch-currentLanguage"
+            >
+              {this.state.currentLanguage === "zh_CN"
+                ? "简体中文"
+                : "English (US)"}
+            </span>
+            <div className="menu-list">
+              <div
+                className="menu-list-item"
+                onClick={() => {
+                  this.languageSwitch("zh_CN");
+                }}
+                style={
+                  this.state.currentLanguage === "zh_CN"
+                    ? { background: "#F1F3FF", color: "#5365EA" }
+                    : {}
+                }
+              >
+                简体中文
+              </div>
+              <div
+                className="menu-list-item"
+                onClick={() => {
+                  this.languageSwitch("en_US");
+                }}
+                // style={{background:'red'}}
+                style={
+                  this.state.currentLanguage === "en_US"
+                    ? { background: "#F1F3FF", color: "#5365EA" }
+                    : {}
+                }
+              >
+                English (US)
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="page-right">
@@ -553,9 +677,7 @@ class Content extends window.React.Component {
             className="container-font"
             style={{ backgroundImage: `url(../static/2.svg)` }}
           >
-            <div className="font">
-              传递体系化方法论，提供协作、测试、DevOps及容器工具，让团队效能提升更快更稳更简单
-            </div>
+            <div className="font">{language.desc}</div>
           </div>
           <img src="../static/3.svg" alt="" className="right-img2" />
         </div>
