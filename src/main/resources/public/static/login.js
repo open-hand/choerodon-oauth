@@ -633,7 +633,9 @@ class Content extends window.React.Component {
             <p>
               © Copyright Hand China Co.,Ltd. All Rights Reserved
               上海汉得信息技术股份有限公司
-              <span className='btm-desc-color-blue'>沪ICP备14039535号-18</span>
+              <span onClick={()=>{
+                window.open('https://beian.miit.gov.cn')
+              }}>沪ICP备14039535号-18</span>
             </p>
 
             <div className="language-switch">
