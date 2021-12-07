@@ -308,7 +308,7 @@ class Content extends window.React.Component {
     document
       .getElementsByClassName("menu-list")[0]
       .setAttribute("style", "height: 0");
-      document.getElementsByClassName("icon-expand_more")[0].style.transform =
+    document.getElementsByClassName("icon-expand_more")[0].style.transform =
       "rotate(0deg)";
     this.setState(
       {
@@ -633,55 +633,55 @@ class Content extends window.React.Component {
             <p>
               © Copyright Hand China Co.,Ltd. All Rights Reserved
               上海汉得信息技术股份有限公司
-              <span>沪ICP备14039535号-18</span>
+              <span className='btm-desc-color-blue'>沪ICP备14039535号-18</span>
             </p>
-          </div>
 
-          <div className="language-switch">
-            <span
-              onClick={this.handleLanguageMenu}
-              className="language-switch-currentLanguage"
-            >
-              <Icon
-                type="language"
-                style={{ position: "relative", top: -1, marginRight: 6 }}
-              />
-              {this.state.currentLanguage === "zh_CN"
-                ? "简体中文"
-                : "English (US)"}
-              <Icon
-                className="icon-expand_more"
-                type="expand_less"
-                style={{ position: "relative", top: -1, marginLeft: 6 }}
-              />
-            </span>
-            <div className="menu-list">
-              <div
-                className="menu-list-item"
-                onClick={() => {
-                  this.languageSwitch("zh_CN");
-                }}
-                style={
-                  this.state.currentLanguage === "zh_CN"
-                    ? { background: "#F1F3FF", color: "#5365EA" }
-                    : {}
-                }
+            <div className="language-switch">
+              <span
+                onClick={this.handleLanguageMenu}
+                className="language-switch-currentLanguage"
               >
-                简体中文
-              </div>
-              <div
-                className="menu-list-item"
-                onClick={() => {
-                  this.languageSwitch("en_US");
-                }}
-                // style={{background:'red'}}
-                style={
-                  this.state.currentLanguage === "en_US"
-                    ? { background: "#F1F3FF", color: "#5365EA" }
-                    : {}
-                }
-              >
-                English (US)
+                <Icon
+                  type="language"
+                  style={{ position: "relative", top: -1, marginRight: 6 }}
+                />
+                {this.state.currentLanguage === "zh_CN"
+                  ? "简体中文"
+                  : "English (US)"}
+                <Icon
+                  className="icon-expand_more"
+                  type="expand_less"
+                  style={{ position: "relative", top: -1, marginLeft: 6 }}
+                />
+              </span>
+              <div className="menu-list">
+                <div
+                  className="menu-list-item"
+                  onClick={() => {
+                    this.languageSwitch("zh_CN");
+                  }}
+                  style={
+                    this.state.currentLanguage === "zh_CN"
+                      ? { background: "#F1F3FF", color: "#5365EA" }
+                      : {}
+                  }
+                >
+                  简体中文
+                </div>
+                <div
+                  className="menu-list-item"
+                  onClick={() => {
+                    this.languageSwitch("en_US");
+                  }}
+                  // style={{background:'red'}}
+                  style={
+                    this.state.currentLanguage === "en_US"
+                      ? { background: "#F1F3FF", color: "#5365EA" }
+                      : {}
+                  }
+                >
+                  English (US)
+                </div>
               </div>
             </div>
           </div>
