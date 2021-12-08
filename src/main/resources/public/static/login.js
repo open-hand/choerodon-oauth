@@ -633,7 +633,7 @@ class Content extends window.React.Component {
             <p>
               © Copyright Hand China Co.,Ltd. All Rights Reserved
               上海汉得信息技术股份有限公司
-              <span onClick={()=>{
+              <span className='btm-desc-color-blue' onClick={()=>{
                 window.open('https://beian.miit.gov.cn')
               }}>沪ICP备14039535号-18</span>
             </p>
@@ -675,7 +675,6 @@ class Content extends window.React.Component {
                   onClick={() => {
                     this.languageSwitch("en_US");
                   }}
-                  // style={{background:'red'}}
                   style={
                     this.state.currentLanguage === "en_US"
                       ? { background: "#F1F3FF", color: "#5365EA" }
