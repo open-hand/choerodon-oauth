@@ -35,7 +35,7 @@
     <script src="../static/jsencrypt.min.js"></script>
 
     <script
-      src="../static/login.js?t=20211025"
+      src="../static/login.js?t=20211208"
       type="text/babel"
     ></script>
     <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
@@ -407,18 +407,23 @@
         bottom: 6px;
         display: flex;
         justify-content: center;
-        min-width: 500px;
       }
-      .btm-desc span {
+      .btm-desc p {
+        max-width: 57%;
+        text-align: center;
+
+      }
+      .btm-desc .btm-desc-color-blue {
         color: #5365ea;
         margin-left: 18px;
+        cursor: pointer;
       }
 
       .language-switch {
         position: absolute;
         color: rgba(15, 19, 88, 0.65);
-        right: 51px;
-        bottom: 19px;
+        right: 4.25%;
+        height: 100%;
       }
       .language-switch-currentLanguage {
         cursor: pointer;
