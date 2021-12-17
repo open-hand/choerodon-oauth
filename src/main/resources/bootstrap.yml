@@ -14,7 +14,9 @@ management:
     web:
       exposure:
         include: '*'
-
+  health:
+    ldap:
+      enabled: false
 spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:default}
