@@ -330,7 +330,7 @@ class Content extends window.React.Component {
         : this.state.languageEN_US;
     return (
       <Form
-        // target="_self"
+        target="_self"
         className={
           +this.state.activeKey === 2 ? "phone-login-form" : "psw-login-form"
         }
