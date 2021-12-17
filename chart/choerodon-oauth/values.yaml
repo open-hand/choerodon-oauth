@@ -99,14 +99,6 @@ env:
     EUREKA_INSTANCE_LEASE_RENEWAL_INTERVAL_IN_SECONDS: 30
     # 实例故障摘除时间，默认90秒，实际是90*2=180秒，配置45就是90秒
     EUREKA_INSTANCE_LEASE_EXPIRATION_DURATION_IN_SECONDS: 45
-    # session 失效时间设置短一点，登录后让 Session 自动失效
-    SERVER_SERVLET_SESSION_TIMEOUT: 120
-    # IO线程数, 它主要执行非阻塞的任务
-    SERVER_UNDERTOW_IO_THREADS: 4
-    # 阻塞任务线程池
-    SERVER_UNDERTOW_WORKER_THREADS: 128
-    # 每块buffer的空间大小，越小空间被利用越充分
-    SERVER_UNDERTOW_BUFFER_SIZE: 1024
     # 日志级别
     LOG_LEVEL: info
     HZERO_OAUTH_BASE_URL: http://api.example.com/oauth
