@@ -68,6 +68,12 @@
             <artifactId>hzero-starter-sso-cas</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.choerodon.template</groupId>
+            <artifactId>choerodon-template-oauth</artifactId>
+            <version>1.2.0-alpha.2-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
