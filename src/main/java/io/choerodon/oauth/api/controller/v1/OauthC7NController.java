@@ -11,10 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+
 import io.choerodon.oauth.api.vo.SysSettingVO;
 import io.choerodon.oauth.app.service.SystemSettingService;
 import io.choerodon.oauth.infra.enums.LoginException;
 import io.choerodon.oauth.infra.enums.ReturnPage;
+
 import org.hzero.oauth.domain.entity.User;
 import org.hzero.oauth.domain.service.UserLoginService;
 import org.hzero.oauth.infra.encrypt.EncryptClient;
@@ -63,6 +65,8 @@ public class OauthC7NController {
 
     @Value("${choerodon.default.icp: }")
     private String icp;
+    @Value("${choerodon.default.icpUrl: }")
+    private String icpUrl;
 
     @Value("${choerodon.default.company: }")
     private String company;
@@ -102,26 +106,55 @@ public class OauthC7NController {
         }
 
         User user = userLoginService.queryRequestUser(request);
-
+        String userName = request.getParameter("username");
+        String phone = request.getParameter("phone");
+        String username = (String) session.getAttribute("username");
         // 错误消息
         String exceptionMessage = (String) session.getAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION);
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage)) {
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage)
+                && (org.apache.commons.lang3.StringUtils.equalsIgnoreCase(username, userName)
+                || org.apache.commons.lang3.StringUtils.equalsIgnoreCase(username, phone))) {
             model.addAttribute(USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG, exceptionMessage);
         }
+        //如果用户为null  又有错误信息，则错误信息统一展示成用户名密码错误
+        String loginType = request.getParameter("type");
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(exceptionMessage) && user == null &&
+                org.apache.commons.lang3.StringUtils.isNotEmpty(loginType)
+                && !org.apache.commons.lang3.StringUtils.equalsIgnoreCase(loginType, "sms")) {
+            model.addAttribute(USERNAME_NOT_FOUND_OR_PASSWORD_IS_WRONG, "用户名密码错误");
+        }
+
 
         if (icp != null && !icp.equals("")) {
             model.addAttribute("icp", icp);
+        }
+
+        if (icpUrl != null && !icpUrl.equals("")) {
+            model.addAttribute("icpUrl", icpUrl);
         }
 
         if (company != null && !company.equals("")) {
             model.addAttribute("company", company);
         }
 
-        if (user == null) {
-            return returnPage.fileName();
+        //如果是短信登录连同CaptchaKey一起返回
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(loginType)
+                && org.apache.commons.lang3.StringUtils.equalsIgnoreCase(loginType, "sms")) {
+            model.addAttribute("captchaKey", session.getAttribute("captchaKey"));
+            model.addAttribute("phone", session.getAttribute("phone"));
         }
 
-        model.addAttribute("isNeedCaptcha",  userLoginService.isNeedCaptcha(user));
+        if (user == null) {
+            return returnPage.fileName();
+        } else {
+            if (user.getLdap()) {
+                model.addAttribute("userName", user.getLoginName());
+            } else {
+                model.addAttribute("userName", user.getEmail());
+            }
+        }
+
+        model.addAttribute("isNeedCaptcha", userLoginService.isNeedCaptcha(user));
         return returnPage.fileName();
     }
 
@@ -177,14 +210,5 @@ public class OauthC7NController {
         }
     }
 
-//    /**
-//     * 判断用户是否登录
-//     * @return
-//     */
-//    @ResponseBody
-//    @GetMapping(value = "/is_login")
-//    public Boolean isLogin() {
-//        CustomUserDetails userDetails = DetailsHelper.getUserDetails();
-//        return userDetails != null;
-//    }
+
 }
