@@ -83,7 +83,7 @@
         <dependency>
             <groupId>io.choerodon.template</groupId>
             <artifactId>choerodon-template-oauth</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>1.2.0-alpha.3.RELEASE</version>
         </dependency>
 
     </dependencies>
