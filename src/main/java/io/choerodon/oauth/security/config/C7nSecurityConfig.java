@@ -8,6 +8,7 @@ import org.hzero.oauth.domain.repository.UserRepository;
 import org.hzero.oauth.domain.service.UserLoginService;
 import org.hzero.oauth.domain.service.impl.UserLoginServiceImpl;
 import org.hzero.oauth.security.config.SecurityProperties;
+import org.hzero.oauth.security.custom.CustomAuthenticationSuccessHandler;
 import org.hzero.oauth.security.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -20,6 +21,7 @@ import io.choerodon.oauth.app.service.impl.C7nUserAccountService;
 import io.choerodon.oauth.app.service.impl.UserC7NLoginServiceImpl;
 import io.choerodon.oauth.infra.mapper.MemberRoleMapper;
 import io.choerodon.oauth.infra.mapper.TenantMapper;
+import io.choerodon.oauth.security.custom.C7nCustomAuthenticationSuccessHandler;
 
 /**
  * @author scp
@@ -36,6 +38,8 @@ public class C7nSecurityConfig {
     private MemberRoleMapper memberRoleMapper;
     @Autowired
     private TenantMapper tenantMapper;
+    @Autowired
+    private SecurityProperties securityProperties;
 
     @Bean
     public CookieSerializer cookieSerializer() {
@@ -58,6 +62,12 @@ public class C7nSecurityConfig {
     @Bean
     public UserLoginService userLoginService() {
         return new UserC7NLoginServiceImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CustomAuthenticationSuccessHandler.class)
+    public CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler() {
+        return new C7nCustomAuthenticationSuccessHandler(securityProperties);
     }
 
 }
