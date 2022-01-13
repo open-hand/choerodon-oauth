@@ -208,21 +208,21 @@ public class DefaultUserDetailsWrapper implements UserDetailsWrapper {
         String language;
         // 1、取用户界面选择的语言
         language = this.getUserPageLanguage();
-        logger.info("========================getUserPageLanguage{}", language);
+        logger.info("========================getUserPageLanguage:{},userId:{}", language, details.getUserId());
         if (languageCodes.contains(language)) {
             return language;
         }
 
         // 2、取用户配置默认语言 (hiam_user_config [default_language])
         language = roleDetails.getDefaultLanguage();
-        logger.info("========================getDefaultLanguage{}", language);
+        logger.info("========================getDefaultLanguage:{},userId:{}", language, details.getUserId());
         if (languageCodes.contains(language)) {
             return language;
         }
 
         // 2、取用户全局默认语言配置 (iam_user [language])
         language = roleDetails.getUserLanguage();
-        logger.info("========================getUserLanguage{}", language);
+        logger.info("========================getUserLanguage:{},userId:{}", language, details.getUserId());
         if (languageCodes.contains(language)) {
             return language;
         }
