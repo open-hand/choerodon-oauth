@@ -56,8 +56,10 @@ public class C7nCustomAuthenticationSuccessHandler extends CustomAuthenticationS
                                         Authentication authentication) throws IOException, ServletException {
         User localLoginUser = loginRecordService.getLocalLoginUser();
         String language = getUserPageLanguage();
+        LOGGER.info("++++++++++++++++++++getUserPageLanguage:{}", language);
         if (ObjectUtils.isNotEmpty(language)) {
             User dbUser = userRepository.selectByPrimaryKey(localLoginUser.getId());
+            LOGGER.info("++++++++++++++++++++dbUser:{}", dbUser.getId());
             User user = new User();
             user.setLanguage(StringUtils.isBlank(language) ? null : language);
             user.setId(localLoginUser.getId());
