@@ -33,6 +33,7 @@ public class C7nCustomAuthenticationSuccessHandler extends CustomAuthenticationS
     /**
      * 用户信息服务对象
      */
+    @Autowired
     private LoginRecordService loginRecordService;
     @Autowired
     private UserRepository userRepository;
@@ -45,15 +46,11 @@ public class C7nCustomAuthenticationSuccessHandler extends CustomAuthenticationS
         super(securityProperties);
     }
 
-    @Autowired
-    public void setLoginRecordService(LoginRecordService loginRecordService) {
-        this.loginRecordService = loginRecordService;
-    }
-
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
+        super.onAuthenticationSuccess(request, response, authentication);
         User localLoginUser = loginRecordService.getLocalLoginUser();
         String language = getUserPageLanguage();
         LOGGER.info("++++++++++++++++++++getUserPageLanguage:{}", language);
@@ -66,7 +63,6 @@ public class C7nCustomAuthenticationSuccessHandler extends CustomAuthenticationS
             user.setObjectVersionNumber(dbUser.getObjectVersionNumber());
             this.userRepository.updateOptional(user, new String[]{"language"});
         }
-        super.onAuthenticationSuccess(request, response, authentication);
 
     }
 
