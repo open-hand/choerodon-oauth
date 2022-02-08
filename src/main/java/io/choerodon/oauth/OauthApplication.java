@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableDiscoveryClient
 @EnableFeignClients
 @SpringBootApplication
-@ComponentScan(basePackages = {"org.hzero.oauth", "io.choerodon.oauth"})
+@ComponentScan(basePackages = {"io.choerodon.oauth","org.hzero.oauth"})
 public class OauthApplication {
 
     public static void main(String[] args) {
