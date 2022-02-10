@@ -46,7 +46,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.control.PagedResultsDirContextProcessor;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.core.LdapOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.core.support.LdapContextSource;
@@ -68,6 +67,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import io.choerodon.core.ldap.DirectoryType;
 
+/**
+ * c7n覆盖私有方法{@link #accountAsUserDn2Authentication}
+ */
 public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomAuthenticationProvider.class);
 
@@ -608,6 +610,7 @@ public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticat
         } catch (Exception e) {
             LOGGER.error("use ldap account as userDn and password to authentication but search objectclass = {}, {} = {} failed, maybe the account or password is illegal, and check for the ldap config, exception {}",
                     ldap.getObjectClass(), ldap.getLoginNameField(), loginName, e);
+            // todo c7n自定义逻辑 补偿查询
             List<String> names = retryAccountAsUserDn2Authentication(loginName, ldap, template);
             userDn = getUserDn(names, ldap.getLoginNameField(), loginName);
         }
@@ -638,7 +641,7 @@ public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticat
         final PagedResultsDirContextProcessor processor = new PagedResultsDirContextProcessor(batchSize);
         return SingleContextSource.doWithSingleContext(
                 template.getContextSource(), (LdapOperationsCallback<List<String>>) operations -> {
-                    ContextMapper attributesMapper = new AbstractContextMapper<String>() {
+                    ContextMapper<String> attributesMapper = new AbstractContextMapper<String>() {
                         @Override
                         protected String doMapFromContext(DirContextOperations ctx) {
                             return ctx.getNameInNamespace();
