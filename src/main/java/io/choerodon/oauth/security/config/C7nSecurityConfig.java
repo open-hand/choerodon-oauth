@@ -6,7 +6,6 @@ import org.hzero.boot.oauth.domain.service.BaseUserService;
 import org.hzero.boot.oauth.policy.PasswordPolicyManager;
 import org.hzero.oauth.domain.repository.UserRepository;
 import org.hzero.oauth.domain.service.UserLoginService;
-import org.hzero.oauth.domain.service.impl.UserLoginServiceImpl;
 import org.hzero.oauth.security.config.SecurityProperties;
 import org.hzero.oauth.security.custom.CustomAuthenticationSuccessHandler;
 import org.hzero.oauth.security.service.UserAccountService;
