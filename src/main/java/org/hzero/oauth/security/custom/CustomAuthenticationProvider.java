@@ -8,10 +8,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
+import javax.naming.directory.SearchControls;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hzero.boot.oauth.domain.entity.BaseClient;
@@ -45,10 +43,18 @@ import org.hzero.starter.captcha.infra.builder.CaptchaBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ldap.control.PagedResultsDirContextProcessor;
+import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextOperations;
+import org.springframework.ldap.core.LdapOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.core.support.LdapOperationsCallback;
+import org.springframework.ldap.core.support.SingleContextSource;
+import org.springframework.ldap.filter.AndFilter;
+import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.filter.HardcodedFilter;
 import org.springframework.ldap.query.SearchScope;
 import org.springframework.ldap.support.LdapUtils;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -584,11 +590,6 @@ public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticat
         if (DirectoryType.MICROSOFT_ACTIVE_DIRECTORY.value().equals(ldap.getDirectoryType())) {
             template.setIgnorePartialResultException(true);
         }
-        Attributes attrs = new BasicAttributes();
-        BasicAttribute ocattr = new BasicAttribute("objectclass");
-        ocattr.add(ldap.getObjectClass());
-        attrs.put(ocattr);
-        template.bind(ldap.getAccount(),null,attrs);
         try {
             List<String> names = template.search(
                     query()
@@ -607,8 +608,54 @@ public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticat
         } catch (Exception e) {
             LOGGER.error("use ldap account as userDn and password to authentication but search objectclass = {}, {} = {} failed, maybe the account or password is illegal, and check for the ldap config, exception {}",
                     ldap.getObjectClass(), ldap.getLoginNameField(), loginName, e);
+            List<String> names = retryAccountAsUserDn2Authentication(loginName, ldap, template);
+            userDn = getUserDn(names, ldap.getLoginNameField(), loginName);
         }
         return userDn;
+    }
+
+    /**
+     * 补偿机制
+     * 不能正常search的情况下 换种方式尝试获取ldap用户
+     *
+     * @param loginName
+     * @param ldap
+     * @param template
+     * @return
+     */
+    private List<String> retryAccountAsUserDn2Authentication(String loginName, BaseLdap ldap, LdapTemplate template) {
+        LOGGER.info("=====get it another way search====");
+        //搜索控件
+        final SearchControls searchControls = new SearchControls();
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        //Filter
+        AndFilter andFilter = getAndFilterByObjectClass(ldap);
+        HardcodedFilter hardcodedFilter = new HardcodedFilter("(" + ldap.getLoginNameField() + "=" + loginName + ")");
+        andFilter.and(hardcodedFilter);
+
+        int batchSize = ldap.getSagaBatchSize();
+        //分页PagedResultsDirContextProcessor
+        final PagedResultsDirContextProcessor processor = new PagedResultsDirContextProcessor(batchSize);
+        return SingleContextSource.doWithSingleContext(
+                template.getContextSource(), (LdapOperationsCallback<List<String>>) operations -> {
+                    ContextMapper attributesMapper = new AbstractContextMapper<String>() {
+                        @Override
+                        protected String doMapFromContext(DirContextOperations ctx) {
+                            return ctx.getNameInNamespace();
+                        }
+                    };
+                    return operations.search("", andFilter.toString(), searchControls, attributesMapper, processor);
+                });
+    }
+
+    private AndFilter getAndFilterByObjectClass(BaseLdap ldapDO) {
+        String objectClass = ldapDO.getObjectClass();
+        String[] arr = objectClass.split(",");
+        AndFilter andFilter = new AndFilter();
+        for (String str : arr) {
+            andFilter.and(new EqualsFilter("objectclass", str));
+        }
+        return andFilter;
     }
 
     private String getUserDn(List<String> names, String loginFiled, String loginName) {
