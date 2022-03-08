@@ -546,8 +546,8 @@ public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticat
             contextSource.setBase(ldap.getBaseDn());
             HashMap<String, Object> envProperties = new HashMap<>();
             int timeout = ldap.getConnectionTimeout() != null ? ldap.getConnectionTimeout() : 5;
-            envProperties.put("com.sun.jndi.ldap.connect.timeout", timeout * 1000);
-            envProperties.put("com.sun.jndi.ldap.read.timeout", timeout * 1000);
+            envProperties.put("com.sun.jndi.ldap.connect.timeout", String.valueOf(timeout * 1000));
+            envProperties.put("com.sun.jndi.ldap.read.timeout", String.valueOf(timeout * 1000));
             contextSource.setBaseEnvironmentProperties(envProperties);
             contextSource.afterPropertiesSet();
             LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
