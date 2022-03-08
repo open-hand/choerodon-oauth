@@ -2,10 +2,7 @@ package org.hzero.oauth.security.custom;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import javax.naming.directory.DirContext;
@@ -547,6 +544,11 @@ public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticat
             String url = ldap.getServerAddress() + ":" + ldap.getPort();
             contextSource.setUrl(url);
             contextSource.setBase(ldap.getBaseDn());
+            HashMap<String, Object> envProperties = new HashMap<>();
+            int timeout = ldap.getConnectionTimeout() != null ? ldap.getConnectionTimeout() : 5;
+            envProperties.put("com.sun.jndi.ldap.connect.timeout", String.valueOf(timeout * 1000));
+            envProperties.put("com.sun.jndi.ldap.read.timeout", String.valueOf(timeout * 1000));
+            contextSource.setBaseEnvironmentProperties(envProperties);
             contextSource.afterPropertiesSet();
             LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
             // ad目录不设置会报错
