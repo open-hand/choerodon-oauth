@@ -9,7 +9,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>choerodon-oauth</artifactId>
-    <version>1.2.3-SNAPSHOT</version>
+    <version>1.2.3.RELEASE</version>
     <name>choerodon-oauth</name>
     <description>Demo project for Spring Boot</description>
 
@@ -83,7 +83,7 @@
         <dependency>
             <groupId>io.choerodon.template</groupId>
             <artifactId>choerodon-template-oauth</artifactId>
-            <version>1.2.2-SNAPSHOT</version>
+            <version>1.2.2.RELEASE</version>
         </dependency>
 
     </dependencies>
