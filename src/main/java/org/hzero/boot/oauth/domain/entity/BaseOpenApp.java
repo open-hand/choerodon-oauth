@@ -16,7 +16,7 @@ import io.choerodon.mybatis.domain.AuditDomain;
 
 /**
  * 三方网站管理
- *
+ * 当时参考的yqcloud 覆盖表 其实c7n没有必要重新设计表覆盖
  * @author wuguokai
  */
 @ApiModel("三方网站")

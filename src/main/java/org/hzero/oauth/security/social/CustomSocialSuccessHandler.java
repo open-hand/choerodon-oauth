@@ -22,6 +22,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 
+/**
+ * c7n覆盖私有方法{@link #determineTargetUrl}
+ */
 public class CustomSocialSuccessHandler extends SocialSuccessHandler implements ApplicationContextAware {
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomSocialSuccessHandler.class);
     private SecurityProperties securityProperties;
@@ -42,6 +45,12 @@ public class CustomSocialSuccessHandler extends SocialSuccessHandler implements 
         super.onAuthenticationSuccess(request, response, authentication);
     }
 
+    /**
+     *
+     * @param request
+     * @param response
+     * @return 覆盖重定向地址 todo
+     */
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response) {
         String targetUrl = RequestUtil.getBaseURL(request) + "/oauth/authorize?response_type=token&client_id=" + this.securityProperties.getLogin().getDefaultClientId() + "&redirect_uri=" + this.securityProperties.getLogin().getSuccessUrl();
         LOGGER.debug("Using default authorize target url: [{}]", targetUrl);

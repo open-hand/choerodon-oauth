@@ -27,13 +27,23 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hzero.core.base.BaseConstants;
+import org.hzero.core.util.TokenUtils;
+import org.hzero.starter.social.core.common.connect.SocialUserData;
+import org.hzero.starter.social.core.common.constant.ChannelEnum;
+import org.hzero.starter.social.core.common.constant.SocialConstant;
+import org.hzero.starter.social.core.exception.RejectAuthorizationException;
+import org.hzero.starter.social.core.exception.UserBindException;
+import org.hzero.starter.social.core.exception.UserUnbindException;
+import org.hzero.starter.social.core.provider.Provider;
+import org.hzero.starter.social.core.provider.SocialProviderRepository;
+import org.hzero.starter.social.core.provider.SocialUserProviderRepository;
+import org.hzero.starter.social.core.security.holder.SocialSessionHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.authentication.*;
@@ -49,22 +59,11 @@ import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import org.hzero.core.util.TokenUtils;
-import org.hzero.starter.social.core.common.connect.SocialUserData;
-import org.hzero.starter.social.core.common.constant.ChannelEnum;
-import org.hzero.starter.social.core.common.constant.SocialConstant;
-import org.hzero.starter.social.core.exception.RejectAuthorizationException;
-import org.hzero.starter.social.core.exception.UserBindException;
-import org.hzero.starter.social.core.exception.UserUnbindException;
-import org.hzero.starter.social.core.provider.Provider;
-import org.hzero.starter.social.core.provider.SocialProviderRepository;
-import org.hzero.starter.social.core.provider.SocialUserProviderRepository;
-import org.hzero.starter.social.core.security.holder.SocialSessionHolder;
-
 /**
  * 跳转认证地址：/open/qq
  * 回调地址：/open/qq/callback，
  * 通过 Provider 返回三方应用信息
+ * c7n覆盖私有方法{@link #getAuthentication} {@link #attemptAuthentication}
  *
  * @author bojiangzhou 2019/08/30
  */
@@ -218,14 +217,20 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
             }
             throw new RejectAuthorizationException("Authentication failed because user rejected authorization.");
         }
-        String providerId = getRequestedProviderId(request);
+        Authentication auth;
+        // 添加catch覆盖 三方登录失败 跳转到正常页面登录 todo
+        try {
+            String providerId = getRequestedProviderId(request);
 
-        SocialAuthenticationService<?> authService = getAuthServiceLocator().getAuthenticationService(providerId);
-        Authentication auth = attemptAuthService(authService, request, response);
+            SocialAuthenticationService<?> authService = getAuthServiceLocator().getAuthenticationService(providerId);
+            auth = attemptAuthService(authService, request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new AuthenticationServiceException("authentication failed");
+        }
         if (auth == null) {
             throw new AuthenticationServiceException("authentication failed");
         }
-
         return auth;
     }
 
@@ -321,7 +326,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
                 }
             }
         }
-        // todo 唯一覆盖逻辑
+        // todo 唯一覆盖逻辑 上下文获取的认证不准
         return null;
     }
 
