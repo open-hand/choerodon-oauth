@@ -3,8 +3,11 @@ package io.choerodon.oauth.security.social.dingTalk.connection;
 import java.util.Map;
 
 import com.dingtalk.api.DefaultDingTalkClient;
+import com.dingtalk.api.DingTalkClient;
 import com.dingtalk.api.request.OapiSnsGetuserinfoBycodeRequest;
+import com.dingtalk.api.request.OapiV2UserGetuserinfoRequest;
 import com.dingtalk.api.response.OapiSnsGetuserinfoBycodeResponse;
+import com.dingtalk.api.response.OapiV2UserGetuserinfoResponse;
 import com.google.common.base.Charsets;
 import com.taobao.api.ApiException;
 import org.hzero.starter.social.core.common.connect.SocialTemplate;
@@ -16,6 +19,8 @@ import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import io.choerodon.oauth.util.RequestUtil;
 
 /**
  * @author hua.zhang03@hand-china.com
@@ -51,7 +56,13 @@ public class DingTalkTemplate extends SocialTemplate {
             if (errCode != 0) {
                 throw new RestClientException(errMsg);
             } else {
-                unionId = getUnionId(authorizationCode, provider);
+                // 免登陆和扫码登录需要调用的接口不一样
+                String way = RequestUtil.obtainParameter("way", "scan");
+                if (way.equals("scan")) {
+                    unionId = getUnionIdBycode(authorizationCode, provider);
+                } else {
+                    unionId = getUnionIdNoCode(authorizationCode, result.get("access_token").toString());
+                }
                 String accessToken = result.get("access_token") + "#" + authorizationCode + "#" + unionId;
                 Long expireIn = Long.valueOf(String.valueOf(result.get("expires_in")));
                 return this.createAccessGrant(accessToken, (String) null, (String) null, expireIn, (Map) null);
@@ -69,7 +80,7 @@ public class DingTalkTemplate extends SocialTemplate {
      * @param code 扫码临时授权码
      * @return 三方用户unionId
      */
-    private String getUnionId(String code, Provider provider) {
+    private String getUnionIdBycode(String code, Provider provider) {
         OapiSnsGetuserinfoBycodeResponse response;
         String unionId = null;
         DefaultDingTalkClient defaultDingTalkClient = new DefaultDingTalkClient("https://oapi.dingtalk.com/sns/getuserinfo_bycode");
@@ -85,4 +96,26 @@ public class DingTalkTemplate extends SocialTemplate {
         }
         return unionId;
     }
+
+    /**
+     * @param code 免登陆临时授权码
+     * @return 三方用户unionId
+     */
+    private String getUnionIdNoCode(String code, String accessToken) {
+        String unionId = null;
+        LOGGER.info("TmpAuthCode {}", code);
+        try {
+            DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/v2/user/getuserinfo");
+            OapiV2UserGetuserinfoRequest req = new OapiV2UserGetuserinfoRequest();
+            req.setCode(code);
+            OapiV2UserGetuserinfoResponse rsp = client.execute(req, accessToken);
+            unionId = rsp.getResult().getUnionid();
+        } catch (ApiException e) {
+            LOGGER.info("get unionId by authCode error");
+            e.printStackTrace();
+        }
+        return unionId;
+    }
+
+
 }
