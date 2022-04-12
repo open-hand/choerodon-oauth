@@ -272,16 +272,19 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
                 SocialSessionHolder.add(request, PREFIX_REDIRECT_URL, state, bindRedirectUrl);
             }
         }
+        logger.warn("+++++++++++++=1");
 
         request.setAttribute("enableHttps", enableHttps);
         final SocialAuthenticationToken token = authService.getAuthToken(request, response);
         if (token == null) {
             return null;
         }
+        logger.warn("+++++++++++++=2");
 
         Assert.notNull(token.getConnection(), "token connection is null.");
 
         Authentication auth = getAuthentication(request);
+        logger.warn("+++++++++++++=3");
         if (auth == null || !auth.isAuthenticated()) {
             // 用户未登录，校验三方账号绑定的本地账号并进行登录
             return doAuthentication(authService, request, token);
@@ -297,6 +300,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
             if (!authService.getConnectionCardinality().isAuthenticatePossible()) {
                 return null;
             }
+            logger.warn("+++++++++++++=4");
 
             token.setDetails(authenticationDetailsSource.buildDetails(request));
             Authentication success = getAuthenticationManager().authenticate(token);
