@@ -43,7 +43,6 @@ public class CustomSocialSuccessHandler extends SocialSuccessHandler implements 
         LoginEvent loginEvent = new LoginEvent(request);
         this.applicationContext.publishEvent(loginEvent);
         super.onAuthenticationSuccess(request, response, authentication);
-        LOGGER.debug("==============success session :{}", request.getSession().getId());
     }
 
     /**

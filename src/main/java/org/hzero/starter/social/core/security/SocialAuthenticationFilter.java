@@ -17,10 +17,8 @@ import static org.hzero.starter.social.core.common.constant.SocialConstant.*;
 import static org.hzero.starter.social.core.exception.SocialErrorCode.OPEN_ID_ALREADY_BIND_OTHER_USER;
 import static org.hzero.starter.social.core.exception.SocialErrorCode.USER_ALREADY_BIND;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,9 +26,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hzero.core.base.BaseConstants;
 import org.hzero.core.util.TokenUtils;
+import org.hzero.starter.social.core.common.configurer.SocialConnectionFactoryBuilder;
 import org.hzero.starter.social.core.common.connect.SocialUserData;
 import org.hzero.starter.social.core.common.constant.ChannelEnum;
 import org.hzero.starter.social.core.common.constant.SocialConstant;
+import org.hzero.starter.social.core.configuration.CustomSocialConfiguration;
 import org.hzero.starter.social.core.exception.RejectAuthorizationException;
 import org.hzero.starter.social.core.exception.UserBindException;
 import org.hzero.starter.social.core.exception.UserUnbindException;
@@ -40,6 +40,9 @@ import org.hzero.starter.social.core.provider.SocialUserProviderRepository;
 import org.hzero.starter.social.core.security.holder.SocialSessionHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -49,14 +52,17 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.authentication.*;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.ConnectionFactory;
+import org.springframework.social.connect.support.OAuth1ConnectionFactory;
+import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.SessionStrategy;
-import org.springframework.social.security.SocialAuthenticationFailureHandler;
-import org.springframework.social.security.SocialAuthenticationRedirectException;
-import org.springframework.social.security.SocialAuthenticationServiceLocator;
-import org.springframework.social.security.SocialAuthenticationToken;
+import org.springframework.social.security.*;
+import org.springframework.social.security.provider.OAuth1AuthenticationService;
+import org.springframework.social.security.provider.OAuth2AuthenticationService;
 import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
@@ -74,6 +80,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
     private static final String DEFAULT_FAILURE_URL = "/login";
     private static final String DEFAULT_FILTER_PROCESSES_URL = "/open/**";
     private static final String DEFAULT_BIND_URL = "/bind";
+    private static final String REDIS_KEY_OPEN_APP_FORMAT = "open-app:%s:%s";
+
 
     private String bindUrl = DEFAULT_BIND_URL;
     private boolean attemptBind = false;
@@ -82,19 +90,23 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
     private String filterProcessesUrl = DEFAULT_FILTER_PROCESSES_URL;
     private String filterProcessesUrlPrefix;
 
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
     private TokenStore tokenStore;
     private SocialAuthenticationServiceLocator authServiceLocator;
     private SimpleUrlAuthenticationFailureHandler delegateAuthenticationFailureHandler;
     private SocialUserProviderRepository userProviderRepository;
     private SocialProviderRepository socialProviderRepository;
-
+    private ApplicationContext applicationContext;
     private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
 
     public SocialAuthenticationFilter(AuthenticationManager authManager,
                                       TokenStore tokenStore,
                                       SocialUserProviderRepository userProviderRepository,
                                       SocialAuthenticationServiceLocator authServiceLocator,
-                                      SocialProviderRepository socialProviderRepository) {
+
+                                      SocialProviderRepository socialProviderRepository,
+                                      ApplicationContext applicationContext) {
         super(DEFAULT_FILTER_PROCESSES_URL);
         filterProcessesUrlPrefix = DEFAULT_FILTER_PROCESSES_URL.replace("/**", "");
         setAuthenticationManager(authManager);
@@ -102,7 +114,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
         this.authServiceLocator = authServiceLocator;
         this.socialProviderRepository = socialProviderRepository;
         this.userProviderRepository = userProviderRepository;
-
+        this.applicationContext = applicationContext;
         this.delegateAuthenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler(DEFAULT_FAILURE_URL);
         super.setAuthenticationFailureHandler(new SocialAuthenticationFailureHandler(delegateAuthenticationFailureHandler));
     }
@@ -204,9 +216,62 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
         if (providerId == null) {
             return false;
         }
+        String[] arr = providerId.split("@");
+        String openAppCode = arr[0];
+        String tenantId = arr[2];
+        String redisKey = String.format(REDIS_KEY_OPEN_APP_FORMAT, openAppCode, tenantId);
+        String openAppStr = stringRedisTemplate.opsForValue().get(redisKey);
+        if (openAppStr == null) {
+            List<Provider> providerList = Optional.ofNullable(socialProviderRepository.getProvider(Provider.realProviderId(providerId))).orElse(new ArrayList<>());
+            Provider nowProvider = providerList.stream()
+                    .filter(provider -> providerId.equals(Provider.uniqueProviderId(provider.getProviderId(), provider.getChannel(), provider.getOrganizationId())))
+                    .findFirst()
+                    .orElse(null);
+
+            if (nowProvider == null) {
+                //删除的三方方式不可认证
+                return false;
+            }
+            SocialAuthenticationServiceLocator locator = getAuthServiceLocator();
+            //刷新 Provider 使得Provider参数在界面修改后可以立即生效
+            refreshAuthProviders(nowProvider, (SocialAuthenticationServiceRegistry) locator, providerId);
+            stringRedisTemplate.opsForValue().set(redisKey, "1");
+        }
         Set<String> authProviders = getAuthServiceLocator().registeredAuthenticationProviderIds();
 
         return !authProviders.isEmpty() && authProviders.contains(providerId);
+    }
+
+    private void refreshAuthProviders(Provider provider, SocialAuthenticationServiceRegistry locator, String uniqueProviderId) {
+        if (!ObjectUtils.isEmpty(provider)) {
+            Provider newProvider = new Provider(uniqueProviderId, provider.getChannel(),
+                    provider.getAppId(), provider.getAppKey(), provider.getSubAppId(), provider.getOrganizationId());
+
+            CustomSocialConfiguration customSocialConfiguration = getDependency(applicationContext, CustomSocialConfiguration.class);
+            SocialConnectionFactoryBuilder socialConnectionFactoryBuilder = customSocialConfiguration.getSocialConnectionFactoryByProviderId(Provider.realProviderId(uniqueProviderId));
+            locator.addAuthenticationService(wrapAsSocialAuthenticationService(socialConnectionFactoryBuilder.buildConnectionFactory(newProvider)));
+        }
+    }
+
+    private <A> SocialAuthenticationService<A> wrapAsSocialAuthenticationService(ConnectionFactory<A> cf) {
+        if (cf instanceof OAuth1ConnectionFactory) {
+            return new OAuth1AuthenticationService<A>((OAuth1ConnectionFactory<A>) cf);
+        } else if (cf instanceof OAuth2ConnectionFactory) {
+            final OAuth2AuthenticationService<A> authService = new OAuth2AuthenticationService<A>((OAuth2ConnectionFactory<A>) cf);
+            authService.setDefaultScope(((OAuth2ConnectionFactory<A>) cf).getScope());
+            return authService;
+        }
+        throw new IllegalArgumentException("The connection factory must be one of OAuth1ConnectionFactory or OAuth2ConnectionFactory");
+    }
+
+    private <T> T getDependency(ApplicationContext applicationContext, Class<T> dependencyType) {
+        try {
+            T dependency = applicationContext.getBean(dependencyType);
+            return dependency;
+        } catch (NoSuchBeanDefinitionException e) {
+            throw new IllegalStateException("SpringSocialConfigurer depends on " + dependencyType.getName()
+                    + ". No single bean of that type found in application context.", e);
+        }
     }
 
     @Override
@@ -272,19 +337,16 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
                 SocialSessionHolder.add(request, PREFIX_REDIRECT_URL, state, bindRedirectUrl);
             }
         }
-        logger.warn("+++++++++++++=1");
 
         request.setAttribute("enableHttps", enableHttps);
         final SocialAuthenticationToken token = authService.getAuthToken(request, response);
         if (token == null) {
             return null;
         }
-        logger.warn("+++++++++++++=2");
 
         Assert.notNull(token.getConnection(), "token connection is null.");
 
         Authentication auth = getAuthentication(request);
-        logger.warn("+++++++++++++=3");
         if (auth == null || !auth.isAuthenticated()) {
             // 用户未登录，校验三方账号绑定的本地账号并进行登录
             return doAuthentication(authService, request, token);
@@ -300,8 +362,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
             if (!authService.getConnectionCardinality().isAuthenticatePossible()) {
                 return null;
             }
-            logger.warn("+++++++++++++=4");
-
             token.setDetails(authenticationDetailsSource.buildDetails(request));
             Authentication success = getAuthenticationManager().authenticate(token);
             Assert.isInstanceOf(UserDetails.class, success.getPrincipal(), "unexpected principle type");
@@ -330,7 +390,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
                 }
             }
         }
-        // todo 唯一覆盖逻辑 上下文获取的认证不准
+        // todo 覆盖逻辑 上下文获取的认证不准
         return null;
     }
 

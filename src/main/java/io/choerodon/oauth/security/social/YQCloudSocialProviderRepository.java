@@ -25,14 +25,11 @@ public class YQCloudSocialProviderRepository extends CustomSocialProviderReposit
 
     @Override
     public List<Provider> getProvider(String providerId) {
-        LOGGER.info("================================providerId:{}", providerId);
         BaseOpenApp params = new BaseOpenApp();
         params.setType(providerId);
+        params.setEnabledFlag(true);
         List<BaseOpenApp> apps = this.baseOpenAppRepository.select(params);
-        return CollectionUtils.isEmpty(apps) ? Collections.emptyList() : apps.stream().map((app) -> {
-            Provider provider = new Provider(providerId, "pc", app.getAppId(), app.getAppSecret(), null, app.getTenantId());
-//            provider.setAuthorizeUrl(app.getAuthUrl());
-            return provider;
-        }).collect(Collectors.toList());
+        return CollectionUtils.isEmpty(apps) ? Collections.emptyList() : apps.stream().map((app) ->
+                new Provider(providerId, "pc", app.getAppId(), app.getAppSecret(), null, app.getTenantId())).collect(Collectors.toList());
     }
 }

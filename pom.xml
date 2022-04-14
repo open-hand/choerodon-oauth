@@ -84,6 +84,7 @@
         <dependency>
             <groupId>org.hzero.starter</groupId>
             <artifactId>hzero-starter-social-core</artifactId>
+            <version>1.8.1.RELEASE</version>
         </dependency>
 
 
