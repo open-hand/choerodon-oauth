@@ -59,6 +59,9 @@ public class C7nUserAccountService extends DefaultUserAccountService {
         memberRoleE.setMemberType("user");
         List<MemberRoleE> memberRoleES = memberRoleMapper.select(memberRoleE);
         Set<Long> tenantIds = memberRoleES.stream().map(MemberRoleE::getSourceId).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(tenantIds)) {
+            return;
+        }
         //看看是不是所有的组织都被禁用
         List<TenantE> tenantES = tenantMapper.selectByIds(Joiner.on(BaseConstants.Symbol.COMMA).join(tenantIds));
         List<TenantE> enableTenants = tenantES.stream().filter(tenantE -> BaseConstants.Flag.YES.equals(tenantE.getEnabledFlag())).collect(Collectors.toList());
