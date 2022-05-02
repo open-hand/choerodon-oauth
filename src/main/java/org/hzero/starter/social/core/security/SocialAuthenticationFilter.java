@@ -378,18 +378,18 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
     }
 
     protected Authentication getAuthentication(HttpServletRequest request) {
-        if (callbackRequest(request)) {
-            String state = request.getParameter(PARAM_STATE);
-            request.setAttribute(PARAM_STATE, state);
-            String accessToken = SocialSessionHolder.get(request, PREFIX_ACCESS_TOKEN, state);
-            if (StringUtils.isNotBlank(accessToken)) {
-                Authentication authentication = tokenStore.readAuthentication(accessToken);
-                if (authentication != null) {
-                    authentication.setAuthenticated(true);
-                    return authentication;
-                }
-            }
-        }
+//        if (callbackRequest(request)) {
+//            String state = request.getParameter(PARAM_STATE);
+//            request.setAttribute(PARAM_STATE, state);
+//            String accessToken = SocialSessionHolder.get(request, PREFIX_ACCESS_TOKEN, state);
+//            if (StringUtils.isNotBlank(accessToken)) {
+//                Authentication authentication = tokenStore.readAuthentication(accessToken);
+//                if (authentication != null) {
+//                    authentication.setAuthenticated(true);
+//                    return authentication;
+//                }
+//            }
+//        }
         // todo 覆盖逻辑 上下文获取的认证不准
         return null;
     }
