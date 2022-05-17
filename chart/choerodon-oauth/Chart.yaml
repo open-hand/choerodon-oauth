@@ -6,13 +6,13 @@ dependencies:
   - name: common
     repository: https://openchart.choerodon.com.cn/choerodon/c7n
     version: 1.x.x
-description: Gateway of Choerodon.
+description: Oauth service of Choerodon.
 engine: gotpl
 home: https://github.com/open-hand/choerodon-oauth/tree/master/chart/choerodon-oauth
 icon: https://ui-avatars.com/api/?name=choerodon-oauth
 keywords:
   - choerodon
-  - gateway
+  - oauth
 maintainers:
   - email: zhuchiyu@vip.hand-china.com
     name: choerodon

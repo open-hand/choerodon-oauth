@@ -1,6 +1,6 @@
 # choerodon-oauth
 
-Gateway of Choerodon.
+Oauth service of Choerodon.
 
 ## Installing the Chart
 
