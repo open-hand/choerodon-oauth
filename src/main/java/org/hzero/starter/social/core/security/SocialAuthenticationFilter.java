@@ -18,6 +18,7 @@ import static org.hzero.starter.social.core.exception.SocialErrorCode.OPEN_ID_AL
 import static org.hzero.starter.social.core.exception.SocialErrorCode.USER_ALREADY_BIND;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -235,7 +236,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
             SocialAuthenticationServiceLocator locator = getAuthServiceLocator();
             //刷新 Provider 使得Provider参数在界面修改后可以立即生效
             refreshAuthProviders(nowProvider, (SocialAuthenticationServiceRegistry) locator, providerId);
-            stringRedisTemplate.opsForValue().set(redisKey, "1");
+            stringRedisTemplate.opsForValue().set(redisKey, "1", 60 * 5, TimeUnit.SECONDS);
         }
         Set<String> authProviders = getAuthServiceLocator().registeredAuthenticationProviderIds();
 
