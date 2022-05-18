@@ -236,7 +236,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
             SocialAuthenticationServiceLocator locator = getAuthServiceLocator();
             //刷新 Provider 使得Provider参数在界面修改后可以立即生效
             refreshAuthProviders(nowProvider, (SocialAuthenticationServiceRegistry) locator, providerId);
-            stringRedisTemplate.opsForValue().set(redisKey, "1", 60 * 5, TimeUnit.SECONDS);
+            stringRedisTemplate.opsForValue().set(redisKey, "1", 5, TimeUnit.MINUTES);
         }
         Set<String> authProviders = getAuthServiceLocator().registeredAuthenticationProviderIds();
 
