@@ -292,7 +292,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
             auth = attemptAuthService(authService, request, response);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new AuthenticationServiceException("authentication failed");
+            throw new AuthenticationServiceException(e.getMessage());
         }
         if (auth == null) {
             throw new AuthenticationServiceException("authentication failed");
@@ -368,12 +368,13 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
             Assert.isInstanceOf(UserDetails.class, success.getPrincipal(), "unexpected principle type");
             return success;
         } catch (UserUnbindException e) {
-            if (attemptBind && bindUrl != null) {
+            // 没有跳转绑定逻辑
+           /* if (attemptBind && bindUrl != null) {
                 // tokenStore ConnectionData in session and redirect to bind page
                 ProviderBindHelper.setConnection(request, token.getConnection());
                 //sessionStrategy.setAttribute(new ServletWebRequest(request), ProviderBindHelper.SESSION_ATTRIBUTE, new ProviderBindHelper(token.getConnection()));
                 throw new SocialAuthenticationRedirectException(buildBindUrl(request));
-            }
+            }*/
             throw e;
         }
     }
