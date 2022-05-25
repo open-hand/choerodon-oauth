@@ -52,6 +52,7 @@ public class CustomSocialFailureHandler implements SocialFailureHandler {
 //        } else {
 //            redirectUrl += "#social_error_message=" + URLEncoder.encode(exMsg, StandardCharsets.UTF_8.displayName());
 //        }
+        session.setAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION, URLEncoder.encode(exMsg, StandardCharsets.UTF_8.displayName()));
         String redirectUrl = RequestUtil.getBaseURL(request) + "#social_error_message=" + URLEncoder.encode(exMsg, StandardCharsets.UTF_8.displayName());
         logger.debug("social auth failed, redirect to {}", redirectUrl);
         redirectStrategy.sendRedirect(request, response, redirectUrl);
