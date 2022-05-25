@@ -43,16 +43,16 @@ public class CustomSocialFailureHandler implements SocialFailureHandler {
         HttpSession session = request.getSession();
         String exMsg = MessageAccessor.getMessage(exception.getMessage(), LoginUtil.getLanguageLocale()).desc();
         logger.debug("social authenticated failed, ex={}", exMsg, exception);
-        if (exception instanceof UserUnbindException) {
-            session.setAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION, exMsg);
-        }
+//        if (exception instanceof UserUnbindException) {
+//            session.setAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION, exMsg);
+//        }
 //        String redirectUrl = SocialSessionHolder.get(request, SocialConstant.PREFIX_REDIRECT_URL, request.getParameter(SocialConstant.PARAM_STATE));
 //        if (redirectUrl == null) {
 //            redirectUrl = RequestUtil.getBaseURL(request) + securityProperties.getLogin().getPage();
 //        } else {
 //            redirectUrl += "#social_error_message=" + URLEncoder.encode(exMsg, StandardCharsets.UTF_8.displayName());
 //        }
-        session.setAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION, URLEncoder.encode(exMsg, StandardCharsets.UTF_8.displayName()));
+        session.setAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION, exMsg);
         String redirectUrl = RequestUtil.getBaseURL(request) + "#social_error_message=" + URLEncoder.encode(exMsg, StandardCharsets.UTF_8.displayName());
         logger.debug("social auth failed, redirect to {}", redirectUrl);
         redirectStrategy.sendRedirect(request, response, redirectUrl);
