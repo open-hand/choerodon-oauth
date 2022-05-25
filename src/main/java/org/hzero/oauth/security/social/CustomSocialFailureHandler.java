@@ -13,8 +13,10 @@ import org.hzero.oauth.security.config.SecurityProperties;
 import org.hzero.oauth.security.constant.SecurityAttributes;
 import org.hzero.oauth.security.util.LoginUtil;
 import org.hzero.oauth.security.util.RequestUtil;
+import org.hzero.starter.social.core.common.constant.SocialConstant;
 import org.hzero.starter.social.core.exception.UserUnbindException;
 import org.hzero.starter.social.core.security.SocialFailureHandler;
+import org.hzero.starter.social.core.security.holder.SocialSessionHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
@@ -43,17 +45,16 @@ public class CustomSocialFailureHandler implements SocialFailureHandler {
         HttpSession session = request.getSession();
         String exMsg = MessageAccessor.getMessage(exception.getMessage(), LoginUtil.getLanguageLocale()).desc();
         logger.debug("social authenticated failed, ex={}", exMsg, exception);
-//        if (exception instanceof UserUnbindException) {
-//            session.setAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION, exMsg);
-//        }
-//        String redirectUrl = SocialSessionHolder.get(request, SocialConstant.PREFIX_REDIRECT_URL, request.getParameter(SocialConstant.PARAM_STATE));
-//        if (redirectUrl == null) {
-//            redirectUrl = RequestUtil.getBaseURL(request) + securityProperties.getLogin().getPage();
-//        } else {
-//            redirectUrl += "#social_error_message=" + URLEncoder.encode(exMsg, StandardCharsets.UTF_8.displayName());
-//        }
+        if (exception instanceof UserUnbindException) {
+            session.setAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION, exMsg);
+        }
+        String redirectUrl = SocialSessionHolder.get(request, SocialConstant.PREFIX_REDIRECT_URL, request.getParameter(SocialConstant.PARAM_STATE));
+        if (redirectUrl == null) {
+            redirectUrl = RequestUtil.getBaseURL(request) + securityProperties.getLogin().getPage();
+        } else {
+            redirectUrl += "#social_error_message=" + URLEncoder.encode(exMsg, StandardCharsets.UTF_8.displayName());
+        }
         session.setAttribute(SecurityAttributes.SECURITY_LAST_EXCEPTION, exMsg);
-        String redirectUrl = RequestUtil.getBaseURL(request) + "#social_error_message=" + URLEncoder.encode(exMsg, StandardCharsets.UTF_8.displayName());
         logger.debug("social auth failed, redirect to {}", redirectUrl);
         redirectStrategy.sendRedirect(request, response, redirectUrl);
     }
