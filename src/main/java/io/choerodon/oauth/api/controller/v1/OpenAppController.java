@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.choerodon.oauth.app.service.ExternalAuthorizationService;
+import io.choerodon.swagger.annotation.Permission;
 
 /**
  * @author scp
@@ -22,6 +23,7 @@ public class OpenAppController {
     private ExternalAuthorizationService externalAuthorizationService;
 
     @PostMapping(value = "/authorization_by_openId")
+    @Permission(permissionPublic = true)
     public OAuth2AccessToken authorizationByOpenId(@RequestParam("client_id") String clientId,
                                                    @RequestParam("client_secret") String clientSecret,
                                                    @RequestParam("open_id") String openId,
