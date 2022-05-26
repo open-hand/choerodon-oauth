@@ -1,9 +1,6 @@
 package io.choerodon.oauth.api.controller.v1;
 
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -11,12 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-
-import io.choerodon.oauth.api.vo.SysSettingVO;
-import io.choerodon.oauth.app.service.SystemSettingService;
-import io.choerodon.oauth.infra.enums.LoginException;
-import io.choerodon.oauth.infra.enums.ReturnPage;
-
 import org.hzero.oauth.domain.entity.User;
 import org.hzero.oauth.domain.service.UserLoginService;
 import org.hzero.oauth.infra.encrypt.EncryptClient;
@@ -28,13 +19,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import io.choerodon.oauth.api.vo.SysSettingVO;
+import io.choerodon.oauth.app.service.SystemSettingService;
+import io.choerodon.oauth.infra.enums.ReturnPage;
 
 
 /**
