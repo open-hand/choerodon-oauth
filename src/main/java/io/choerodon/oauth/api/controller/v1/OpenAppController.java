@@ -23,7 +23,6 @@ public class OpenAppController {
     private ExternalAuthorizationService externalAuthorizationService;
 
     @PostMapping(value = "/authorization_by_openId")
-    @Permission(permissionPublic = true)
     public OAuth2AccessToken authorizationByOpenId(@RequestParam("client_id") String clientId,
                                                    @RequestParam("client_secret") String clientSecret,
                                                    @RequestParam("open_id") String openId,
